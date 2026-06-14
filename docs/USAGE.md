@@ -163,15 +163,21 @@ The seeded demo user is `admin`.
 
 ---
 
-## 6. Bulk-loading sample data
+## 6. Loading your company's data
 
-`mock_company_data/` holds sample meeting/doc `.txt` files. With the API running:
+This is the **clean customization template** — no sample data is bundled. Add
+your company's knowledge through any of:
 
-```bash
-python ingest_all.py     # posts every .txt to /api/v1/ingest/file
-```
+- **Meetings** page → paste meeting transcripts (extraction runs automatically);
+- **Data Sources** page → upload documents (`.txt/.pdf/.docx`);
+- **Sources API** → `POST /api/v1/sources/{name}/sync` to push fragments from a
+  connector (see [ARCHITECTURE.md](ARCHITECTURE.md) → connectors).
 
-(`generate_mock_data.py` regenerates the sample set.)
+To seed the employee/org structure, create employees (they are also auto-created
+from meeting/commitment extraction) and set `manager_id`/`timezone` as needed.
+
+> The full prototype on the `main` branch bundles `mock_company_data/` plus
+> `ingest_all.py` if you want example data to explore first.
 
 ---
 
