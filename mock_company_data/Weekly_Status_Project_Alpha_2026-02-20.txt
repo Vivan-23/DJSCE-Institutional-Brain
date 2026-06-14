@@ -1,0 +1,11 @@
+# Weekly Status Report: Project Alpha
+**Date**: February 20, 2026
+**Status**: At Risk
+
+## Team Members
+Marcus Chen, Joshua Thomas, Amanda Smith
+
+## Updates
+- **Marcus Chen**: Conducted user interviews for the redesign.
+- **Joshua Thomas**: Drafted UI components for the new dashboard.
+- **Amanda Smith**: Refactored the core authentication module.

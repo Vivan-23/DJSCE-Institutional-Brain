@@ -1,0 +1,12 @@
+# Weekly Status Report: Data Pipeline Revamp
+**Date**: November 21, 2025
+**Status**: Completed
+
+## Team Members
+Olivia Brown, Daniel Wilson, David Kim, James Wilson
+
+## Updates
+- **Olivia Brown**: Blocked by DevOps on provision of new CI/CD runners.
+- **Daniel Wilson**: Optimized the search query performance by 30%.
+- **David Kim**: Optimized the search query performance by 30%.
+- **James Wilson**: Fixed a critical bug in the payment gateway.

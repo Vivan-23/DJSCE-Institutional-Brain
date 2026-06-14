@@ -1,0 +1,14 @@
+# Weekly Status Report: Data Pipeline Revamp
+**Date**: November 28, 2025
+**Status**: At Risk
+
+## Team Members
+Sophia Miller, Joshua Thomas, Emily Carter, Michael Chang, Olivia Brown, Alex Rivera
+
+## Updates
+- **Sophia Miller**: Updated the API documentation for the v2 release.
+- **Joshua Thomas**: Conducted user interviews for the redesign.
+- **Emily Carter**: Waiting on design assets for the landing page.
+- **Michael Chang**: Reviewing pull requests for the latest sprint.
+- **Olivia Brown**: Investigated memory leak in the worker nodes.
+- **Alex Rivera**: Attended cross-functional sync with the marketing team.

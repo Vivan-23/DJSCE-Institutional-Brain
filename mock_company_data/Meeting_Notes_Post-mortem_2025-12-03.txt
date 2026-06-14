@@ -1,0 +1,11 @@
+# Post-mortem - December 03, 2025
+
+**Attendees**: David Kim, Ryan Gosling, Marcus Chen, Andrew White, Alex Rivera, Olivia Brown, Mia Jackson, William Davis, Joshua Thomas, Emily Carter
+
+## Discussion Points
+- **Marcus Chen**: Reviewing pull requests for the latest sprint.
+- **Alex Rivera**: Drafted UI components for the new dashboard.
+- **Olivia Brown**: Waiting on design assets for the landing page.
+
+## Action Items
+- [ ] Emily Carter to follow up on related tasks.

@@ -1,0 +1,12 @@
+# Weekly Status Report: Data Pipeline Revamp
+**Date**: March 06, 2026
+**Status**: On Track
+
+## Team Members
+William Davis, Olivia Brown, Sophia Miller, Matthew Taylor
+
+## Updates
+- **William Davis**: Wrote unit tests for the billing service.
+- **Olivia Brown**: Conducted user interviews for the redesign.
+- **Sophia Miller**: Conducted user interviews for the redesign.
+- **Matthew Taylor**: Deployed the new database schema to staging.

@@ -1,0 +1,12 @@
+# Design Sync - April 07, 2026
+
+**Attendees**: Alex Rivera, James Wilson, Joshua Thomas, Mia Jackson, Daniel Wilson, Ryan Gosling, Michael Chang, Jessica Lee
+
+## Discussion Points
+- **Joshua Thomas**: Attended cross-functional sync with the marketing team.
+- **Michael Chang**: Reviewing pull requests for the latest sprint.
+- **Daniel Wilson**: Fixed a critical bug in the payment gateway.
+- **Alex Rivera**: Optimized the search query performance by 30%.
+
+## Action Items
+- [ ] Daniel Wilson to follow up on related tasks.

@@ -1,0 +1,18 @@
+from fastapi import APIRouter
+from app.api.v1 import (
+    auth, ingest, insights, chat, graph, transcripts, commitments, pa, skills,
+    sources, audit,
+)
+
+api_router = APIRouter()
+api_router.include_router(auth.router, prefix="/auth", tags=["auth"])
+api_router.include_router(ingest.router, prefix="/ingest", tags=["ingest"])
+api_router.include_router(insights.router, prefix="/insights", tags=["insights"])
+api_router.include_router(chat.router, prefix="/chat", tags=["chat"])
+api_router.include_router(graph.router, prefix="/graph", tags=["graph"])
+api_router.include_router(transcripts.router, prefix="/transcripts", tags=["transcripts"])
+api_router.include_router(commitments.router, prefix="/commitments", tags=["commitments"])
+api_router.include_router(pa.router, prefix="/pa", tags=["pa"])
+api_router.include_router(skills.router, prefix="/skills", tags=["skills"])
+api_router.include_router(sources.router, prefix="/sources", tags=["sources"])
+api_router.include_router(audit.router, prefix="/audit", tags=["audit"])

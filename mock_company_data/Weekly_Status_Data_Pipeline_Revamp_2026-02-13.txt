@@ -1,0 +1,15 @@
+# Weekly Status Report: Data Pipeline Revamp
+**Date**: February 13, 2026
+**Status**: Delayed
+
+## Team Members
+Olivia Brown, Michael Chang, Jessica Lee, Andrew White, Sarah Jenkins, Daniel Wilson, David Kim
+
+## Updates
+- **Olivia Brown**: Blocked by DevOps on provision of new CI/CD runners.
+- **Michael Chang**: Conducted user interviews for the redesign.
+- **Jessica Lee**: Deployed the new database schema to staging.
+- **Andrew White**: Attended cross-functional sync with the marketing team.
+- **Sarah Jenkins**: Updated the API documentation for the v2 release.
+- **Daniel Wilson**: Attended cross-functional sync with the marketing team.
+- **David Kim**: Reviewing pull requests for the latest sprint.

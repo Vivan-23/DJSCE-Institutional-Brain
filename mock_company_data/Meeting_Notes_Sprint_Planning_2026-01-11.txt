@@ -1,0 +1,12 @@
+# Sprint Planning - January 11, 2026
+
+**Attendees**: Andrew White, Joshua Thomas, Mia Jackson, Amanda Smith, Olivia Brown, James Wilson, Isabella Moore
+
+## Discussion Points
+- **Andrew White**: Successfully migrated 10k users to the new system.
+- **Isabella Moore**: Deployed the new database schema to staging.
+- **Mia Jackson**: Optimized the search query performance by 30%.
+
+## Action Items
+- [ ] Mia Jackson to follow up on related tasks.
+- [ ] Andrew White to follow up on related tasks.

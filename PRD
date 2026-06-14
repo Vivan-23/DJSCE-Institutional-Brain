@@ -1,0 +1,455 @@
+# 1. Product Overview
+
+**Product Name:** Company Brain — The Executable Knowledge Layer for AI Agents
+
+Company Brain pulls a company's operational know-how out of the fragmented places it lives — people's heads, meetings, email threads, Slack, support tickets, internal docs, and databases — structures it into **executable skills**, keeps those skills current, and serves them to AI agents so they can do real work safely and consistently.
+
+A *skill* is not a document and not a search result. It is a structured, executable procedure that captures **how the company actually does something**: how refunds get handled, how pricing exceptions are decided, how engineers respond to an incident. Each skill has a trigger, preconditions, steps, decision rules, guardrails, escalation paths, and citations back to the source evidence it was synthesized from.
+
+Company Brain captures this knowledge two ways. **Passively**, it ingests the fragments work already leaves behind — meeting transcripts, Slack, email, tickets, docs, databases. **Actively**, every employee gets a personal **AI assistant (the Company PA)** that attends/ingests their meetings, tracks the commitments made in them, and follows up in plain human language — including a brief end-of-day conversation where the employee simply *talks* about what they did. No forms, no questionnaires. The PA is how knowledge that only lives in people's heads gets captured without it feeling like a chore imposed by the company.
+
+Company Brain is explicitly **not** a company-wide search engine or a chatbot over documents. Those answer questions for humans. Company Brain produces machine-consumable skill files whose primary consumer is an AI agent that executes the work — fed by a continuous capture loop that keeps the underlying knowledge fresh.
+
+> The blocker to automating a company is no longer model capability — it is that the domain knowledge needed to act is scattered, undocumented, and locked in human memory. Company Brain is the missing layer between raw company data and reliable AI automation.
+
+---
+
+# 2. Problem Statement
+
+Modern AI models are good enough to operate a large share of routine company work. They do not, because they lack the company-specific know-how required to act correctly:
+
+* The *real* refund policy (including the exceptions never written down)
+* Who must approve a pricing deviation, and above what threshold
+* The exact runbook engineers follow when a specific service degrades
+* The unwritten conventions a new hire only learns by asking someone
+
+This knowledge exists, but it is:
+
+| Where knowledge lives | Why agents can't use it |
+| --- | --- |
+| People's heads | Never written down; lost when people leave |
+| Email / Slack threads | Buried, contradictory, undated, no single source of truth |
+| Support tickets | Implicit procedures encoded in thousands of one-off resolutions |
+| Internal docs / wikis | Stale, partial, written for humans not execution |
+| Databases / tools | Structured but lack the rules for *when* and *how* to act |
+
+Companies function because humans vaguely remember where the knowledge is and how to apply it. Agents cannot operate that way. They need the procedure, made explicit, current, and executable.
+
+Document search and RAG chatbots do not solve this. They retrieve text for a human to read and interpret. They do not produce an executable procedure an agent can follow, and they have no notion of whether that procedure is still correct.
+
+---
+
+# 3. Goals and Objectives
+
+## Primary Goals
+
+1. Extract operational procedures ("how X gets done") from fragmented company sources.
+2. Represent each procedure as a structured, executable **skill** with explicit triggers, steps, decision rules, and guardrails.
+3. Keep skills **current** — detect when new evidence contradicts an existing skill and flag it stale.
+4. Provide a **human review and approval** layer so skills are trustworthy before agents use them.
+5. Serve approved skills to AI agents as machine-consumable **skill files** via API.
+6. Enable agents to execute work using those skills **safely** (guardrails, escalation, audit).
+
+## Company PA Goals
+
+7. Give every employee a personal AI assistant that **attends/ingests their meetings** and understands what was decided and who owns what.
+8. Track **commitments** (action items) made in meetings and conversations, and **follow up proactively** in natural human language.
+9. Run a low-friction **end-of-day conversational check-in** so capturing daily progress feels like talking, not filling a form.
+10. Continuously feed everything the PA captures back into the knowledge base so skills and operational state stay current.
+
+## Business Goals
+
+* Prove that an agent given Company Brain skill files can complete a real company workflow it could not complete without them.
+* Validate inside one design-partner company on one high-value workflow (e.g., refunds or tier-1 support).
+* Establish the skill-file format as the interface between company knowledge and any agent runtime.
+
+---
+
+# 4. Scope of the System
+
+## In Scope (V1)
+
+### Fragmented source ingestion (live, incremental)
+* Meeting transcripts (uploaded, or pulled from Zoom/Meet/Teams/Otter/Fireflies)
+* Slack channels and threads
+* Email threads (Gmail / Outlook)
+* Support tickets (Zendesk / Intercom)
+* Internal docs (Notion / Confluence / uploaded files)
+* Structured databases (read-only connectors)
+* **Company PA elicitation** — proactive, natural-language follow-ups and an end-of-day check-in that capture what only lives in people's heads
+
+### Company PA capabilities
+* Meeting understanding — extract decisions, owners, new features, and deadlines from transcripts
+* Commitment tracking — first-class action items (who owns what, by when, status)
+* Proactive follow-ups — natural-language nudges on open/overdue commitments (not forms)
+* End-of-day check-in — a short conversation that turns "what I did today" into structured updates
+* Per-employee assistant — each employee talks to their own PA in the app
+
+### Core capabilities
+* Procedure extraction — synthesize a workflow from many fragments
+* Skill representation — structured, executable skill objects with citations
+* Skill review & approval — human-in-the-loop editing and sign-off
+* Freshness engine — contradiction detection, staleness flagging, re-extraction
+* Skill-file export — agent-consumable files served via API
+* Agent execution interface — agents fetch skills and report outcomes
+* Safety — guardrails, required-approval steps, escalation, audit log
+
+## Out of Scope (V1)
+
+* General-purpose company-wide search
+* A human-facing chatbot as the primary product (a review/Q&A assist UI is allowed, but it is not the deliverable)
+* A **live "join-the-call" meeting bot** (V1 ingests transcripts; real-time attendance is a later enhancement)
+* PA channels beyond **in-app chat** (Slack/email PA delivery is a later enhancement)
+* Fully autonomous agents acting with no guardrails or approval gates
+* Auto-execution of irreversible/high-risk actions without a human approval step
+* Building the end agents themselves (we serve skills; agent runtimes consume them)
+* Large-scale multi-tenant enterprise deployment
+
+---
+
+# 5. Functional Requirements
+
+## FR1: Source Connectors
+
+The system shall ingest from fragmented, live sources — not only manual uploads.
+
+| Source | Mechanism | Cadence |
+| --- | --- | --- |
+| Slack | Events API / history pull | Incremental |
+| Email (Gmail/Outlook) | Provider API | Incremental |
+| Support tickets (Zendesk/Intercom) | API | Incremental |
+| Docs (Notion/Confluence/files) | API + upload fallback | On change / on upload |
+| Databases | Read-only connector | Scheduled snapshot |
+| Human knowledge | Elicitation prompts (UI) | On demand |
+
+Each ingested fragment retains source metadata (origin, author, timestamp, permalink) for citation and freshness.
+
+## FR1a: Meeting Ingestion & Understanding
+
+The system shall ingest meeting **transcripts** (uploaded or pulled from meeting tools) and:
+* store the meeting (title, time, participants, raw transcript, summary);
+* split it into per-utterance/segment **fragments** with speaker attribution;
+* run extraction to identify **decisions, new features/initiatives, owners, and deadlines**.
+
+A live "join-the-call" bot is out of scope for V1; transcripts are the input.
+
+## FR1b: Commitment Tracking
+
+The system shall treat **commitments** (action items) as first-class objects:
+* `assignee`, `description`, `source` (meeting/fragment), `due_date`, `status` (open / in_progress / blocked / done / dropped), `last_followup_at`, `confidence`;
+* commitments are created automatically from meeting extraction and from PA conversations;
+* status changes are recorded as `CommitmentUpdate`s with the employee's own words preserved.
+
+## FR1c: Company PA (Proactive Elicitation)
+
+The system shall give each employee a personal assistant that:
+* generates **natural-language** follow-ups grounded in that employee's open/overdue commitments and recent activity (never a form or fixed questionnaire);
+* runs a short **end-of-day check-in** conversation — the employee describes their day in free text and the PA extracts structured updates;
+* writes every captured update back as `Fragment`s and `CommitmentUpdate`s, feeding procedure extraction and freshness.
+
+The PA conversation lives **in-app** in V1. The tone is a helpful colleague, not a compliance tool.
+
+## FR2: Procedure Extraction Engine
+
+The system shall synthesize **procedures** from fragments, not just entities.
+
+### Workflow
+```text
+Fragments (many, contradictory, undated)
+    ↓
+Clustering by topic / procedure
+    ↓
+LLM synthesis → candidate skill (trigger, steps, rules, guardrails)
+    ↓
+Citation linking (every step traces to source evidence)
+    ↓
+Candidate skill queued for human review
+```
+
+Extraction must capture conditional logic and exceptions ("if order > $500, escalate to a manager"), not just a linear list of steps.
+
+## FR3: Skill Representation
+
+Each skill shall be a structured object:
+
+| Field | Purpose |
+| --- | --- |
+| `name` / `description` | Identity and when-to-use summary |
+| `trigger` | The situation that invokes this skill |
+| `preconditions` | What must be true before acting |
+| `steps` | Ordered, executable actions |
+| `decision_rules` | Branching logic and thresholds |
+| `guardrails` | Hard constraints; actions that require approval |
+| `escalation` | Who/what to defer to when out of bounds |
+| `citations` | Source fragments each element was derived from |
+| `owner` | Accountable human |
+| `status` | draft / approved / stale / deprecated |
+| `freshness` | Last verified; contradicting-evidence flags |
+
+## FR4: Freshness Engine ("keeps it current")
+
+The system shall:
+* Re-scan sources on a schedule and on new events
+* Detect when new evidence **contradicts** an approved skill
+* Mark affected skills `stale` and notify the owner
+* Propose a re-extracted version for review
+
+A skill is never silently changed; changes flow through review.
+
+## FR5: Human Review & Approval
+
+The system shall provide a review UI to:
+* Inspect a candidate skill alongside its source citations
+* Edit any field
+* Approve, reject, or request re-extraction
+* Assign an owner
+
+Only `approved` skills are exported to agents by default.
+
+## FR6: Skill-File Export (the deliverable)
+
+The system shall export approved skills as agent-consumable **skill files** (Agent Skills / `SKILL.md`-style format) via API:
+
+| Method | Path | Description |
+| --- | --- | --- |
+| `GET` | `/api/v1/skills` | List available skills (metadata) |
+| `GET` | `/api/v1/skills/{id}` | Full structured skill |
+| `GET` | `/api/v1/skills/{id}/file` | Rendered executable skill file |
+| `POST` | `/api/v1/skills/{id}/feedback` | Agent reports execution outcome |
+
+## FR7: Agent Execution Safety
+
+When an agent uses a skill, the system shall enforce:
+* Guardrails and required-approval gates declared on the skill
+* An audit log of which skill was used, by which agent, with what outcome
+* Outcome feedback that feeds the freshness engine
+
+---
+
+# 6. Non-Functional Requirements
+
+| Requirement | Target |
+| --- | --- |
+| Skill-file fetch latency | <500 ms |
+| Extraction throughput | Batch + incremental |
+| Citation coverage | 100% of skill steps traceable to a source |
+| Approval before agent use | Required (configurable) |
+| Auditability | Every agent skill-use logged |
+| Security | Role-based access; source-level permissions preserved |
+
+---
+
+# 7. System Architecture Overview
+
+```text
+   Passive sources                    Active capture (Company PA)
+ Transcripts · Slack ·          Per-employee assistant: meeting
+ Email · Tickets ·              understanding · proactive follow-ups ·
+ Docs · DB                      end-of-day check-in
+        │                                   │
+        └─────────────┬─────────────────────┘
+                      ▼
+              Source Connectors / PA capture  ──────────────┐
+                      │                                      │ (re-scan
+                      ▼                                      │  on schedule
+        ┌──── Extraction Engine (LLM) ────┐                 │  / events)
+        ▼                                  ▼                 │
+  Decisions + Commitments         Procedures → Skills        │
+  (operational tracking)          (cluster → synth → cite)   │
+        │                                  │                 │
+        ▼                                  ▼                 │
+  Commitment Store                Human Review & Approval ◄──┘ Freshness Engine
+        │                                  │                   (contradiction
+        └──────────► Knowledge Base ◄──────┘                    → stale)
+        (Postgres skills/commitments/fragments + Chroma + Neo4j)
+                      │
+        ┌─────────────┴──────────────┐
+        ▼                            ▼
+  PA: check-ins & follow-ups   Skill-File Export API
+        ▲                            │
+        │                            ▼
+   employees talk            AI Agents (execute work, report outcomes)
+                                     │
+                                     ▼
+                              Audit & Feedback
+```
+
+---
+
+# 8. Data Sources
+
+## Fragmented operational knowledge
+* Slack / email / tickets — implicit procedures and exceptions
+* Docs / wikis — partial written procedures
+* Databases — current-state facts the rules operate on
+* Human elicitation — the unwritten knowledge in people's heads
+
+## Initial validation dataset
+* One design-partner company, one high-value workflow (e.g., refund handling or tier-1 support).
+* Goal: an agent completes that workflow using only Company Brain skill files.
+
+---
+
+# 9. AI/ML Components
+
+## Procedure Extraction
+* LLM synthesis of procedures from clustered fragments
+* Conditional/exception capture (decision rules, thresholds)
+* Citation linking for every extracted element
+
+## Clustering & Retrieval
+* Embeddings to group fragments by procedure/topic
+* Retrieval to assemble evidence for a candidate skill
+
+## Contradiction Detection
+* Compare new evidence against approved skills; flag conflicts
+
+## Skill-File Generation
+* Deterministic rendering of structured skills into the executable file format
+
+---
+
+# 10. Third-Party Integrations
+
+| Service | Purpose |
+| --- | --- |
+| Slack | Operational conversation / threads |
+| Gmail / Outlook | Email threads |
+| Zendesk / Intercom | Support tickets |
+| Notion / Confluence | Documentation |
+| GitHub | Engineering procedures / incident response |
+| Databases | Current-state facts |
+| Agent runtimes | Consume exported skill files |
+
+---
+
+# 11. User Experience Flow
+
+### Capture loop (Company PA)
+```text
+1. A meeting transcript is ingested → decisions + commitments extracted (with owners)
+        ↓
+2. The PA tracks each commitment and, when due/stale, sends the owner a
+   natural-language follow-up ("how's the auth feature coming along?")
+        ↓
+3. At end of day, the employee opens their PA and just talks about what they did
+        ↓
+4. The PA turns that conversation into structured updates: commitment statuses
+   change and new fragments are written to the knowledge base
+```
+
+### Skill loop (agent enablement)
+```text
+5. System extracts candidate procedures from accumulated fragments, with citations
+        ↓
+6. A human reviews, edits, and approves each skill
+        ↓
+7. Approved skills are exported as skill files via API
+        ↓
+8. AI agents fetch skills and execute work within guardrails
+        ↓
+9. Outcomes + new evidence feed the freshness engine; stale skills are re-proposed
+```
+
+---
+
+# 12. Safety, Guardrails & Audit
+
+* Every skill declares guardrails and approval-required steps.
+* Agents cannot execute approval-gated actions without a human gate.
+* Every agent skill-use is logged (skill version, agent, inputs, outcome).
+* Skills are never auto-mutated; all change flows through review.
+* Source-level permissions are preserved end to end.
+
+---
+
+# 13. Analytics and Reporting
+
+### Skill metrics
+* Skills extracted / approved / stale / deprecated
+* Citation coverage
+* Time-to-approval
+
+### Execution metrics
+* Skill usage by agents
+* Execution success / escalation / failure rates
+* Workflows fully automatable via skills
+
+---
+
+# 14. Security and Privacy
+
+* JWT auth; role-based access control
+* Source-level permission inheritance (an agent only sees skills it's entitled to)
+* Encrypted storage and transmission
+* Full audit trail of extraction, approval, and agent use
+
+---
+
+# 15. Deployment Strategy
+
+## Development
+* Docker Compose local stack
+
+## Production
+* Backend: FastAPI
+* Frontend (review UI): React + Next.js
+* Storage: PostgreSQL (skills, audit), vector store (fragment clustering), graph DB (procedure/entity relationships)
+* Workers: Celery + Redis (connectors, extraction, freshness)
+
+---
+
+# 16. Assumptions and Constraints
+
+## Assumptions
+* The knowledge exists across sources (and in people) even when undocumented.
+* A human owner is willing to review and approve skills.
+* An agent runtime exists to consume skill files.
+
+## Constraints
+* Procedure quality depends on source coverage and elicitation effort.
+* High-risk actions require human approval gates in V1.
+* We produce skills; we do not build the end agents.
+
+---
+
+# 17. Success Metrics
+
+| Metric | Target |
+| --- | --- |
+| Agent completes target workflow using only skill files | Yes (primary proof) |
+| Skill citation coverage | 100% |
+| Stale-skill detection latency | < 24 h after contradicting evidence |
+| Human review time per skill | Decreasing over time |
+| Workflows automatable end-to-end | Growing per design partner |
+| Employee daily check-in completion | > 70% (PA feels like talking, not a form) |
+| Commitments captured automatically from meetings | Majority, with correct owners |
+
+---
+
+# 18. Risks and Mitigation
+
+| Risk | Mitigation |
+| --- | --- |
+| Extracted procedure is wrong | Human review + citations required before export |
+| Knowledge in heads never captured | Structured elicitation prompts |
+| Skill goes stale | Freshness engine + contradiction detection |
+| Agent acts unsafely | Guardrails, approval gates, audit |
+| "Just a chatbot" drift | Deliverable is the skill file; review UI stays a support tool, not the product |
+
+---
+
+# 19. Future Enhancements
+
+* Auto-approval for low-risk skills with strong citation confidence
+* Cross-company skill templates (industry-standard procedures)
+* Simulation/testing of a skill before it goes live
+* Skill versioning and rollback
+* Real-time elicitation (capture knowledge as people work)
+* Organizational digital twin built from the skill graph
+
+---
+
+# 20. Conclusion
+
+Company Brain's job is to turn a company's scattered, undocumented, human-held know-how into **executable skills that AI agents can use to do real work** — kept current and gated by human approval. A personal **Company PA** for every employee is how that knowledge is captured continuously and painlessly: it understands meetings, tracks commitments, and replaces forms with a daily conversation. The product is the skill file and the capture-and-maintenance pipeline behind it, not a search box or a chatbot. V1 proves the thesis on a single high-value workflow inside one design-partner company.

@@ -1,0 +1,13 @@
+# Weekly Status Report: Legacy System Migration
+**Date**: December 12, 2025
+**Status**: Delayed
+
+## Team Members
+Joshua Thomas, Sophia Miller, James Wilson, Matthew Taylor, Emma Anderson
+
+## Updates
+- **Joshua Thomas**: Waiting on design assets for the landing page.
+- **Sophia Miller**: Investigated memory leak in the worker nodes.
+- **James Wilson**: Investigated memory leak in the worker nodes.
+- **Matthew Taylor**: Successfully migrated 10k users to the new system.
+- **Emma Anderson**: Reviewing pull requests for the latest sprint.

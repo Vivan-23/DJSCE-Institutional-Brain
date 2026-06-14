@@ -1,0 +1,14 @@
+# Sprint Planning - February 25, 2026
+
+**Attendees**: Sarah Jenkins, Ryan Gosling, Jessica Lee, Marcus Chen, Andrew White, Sophia Miller, Daniel Wilson
+
+## Discussion Points
+- **Marcus Chen**: Deployed the new database schema to staging.
+- **Sarah Jenkins**: Refactored the core authentication module.
+- **Marcus Chen**: Drafted UI components for the new dashboard.
+- **Jessica Lee**: Attended cross-functional sync with the marketing team.
+
+## Action Items
+- [ ] Marcus Chen to follow up on related tasks.
+- [ ] Marcus Chen to follow up on related tasks.
+- [ ] Daniel Wilson to follow up on related tasks.

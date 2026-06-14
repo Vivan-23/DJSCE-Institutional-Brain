@@ -1,0 +1,12 @@
+# Weekly Status Report: Project Beta
+**Date**: November 07, 2025
+**Status**: At Risk
+
+## Team Members
+Sarah Jenkins, Andrew White, James Wilson, Sophia Miller
+
+## Updates
+- **Sarah Jenkins**: Refactored the core authentication module.
+- **Andrew White**: Optimized the search query performance by 30%.
+- **James Wilson**: Refactored the core authentication module.
+- **Sophia Miller**: Reviewing pull requests for the latest sprint.

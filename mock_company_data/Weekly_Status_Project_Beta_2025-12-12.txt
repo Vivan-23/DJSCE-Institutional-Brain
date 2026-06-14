@@ -1,0 +1,14 @@
+# Weekly Status Report: Project Beta
+**Date**: December 12, 2025
+**Status**: At Risk
+
+## Team Members
+Sarah Jenkins, Daniel Wilson, Isabella Moore, Alex Rivera, James Wilson, David Kim
+
+## Updates
+- **Sarah Jenkins**: Reviewing pull requests for the latest sprint.
+- **Daniel Wilson**: Reviewing pull requests for the latest sprint.
+- **Isabella Moore**: Refactored the core authentication module.
+- **Alex Rivera**: Updated the API documentation for the v2 release.
+- **James Wilson**: Investigated memory leak in the worker nodes.
+- **David Kim**: Reviewing pull requests for the latest sprint.

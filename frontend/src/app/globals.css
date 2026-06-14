@@ -1,0 +1,33 @@
+@import "tailwindcss";
+
+/* Register custom design tokens so Tailwind generates
+   utilities like text-primary, bg-primary/20, text-warning, etc. */
+@theme {
+  --color-primary: hsl(217.2 91.2% 59.8%);
+  --color-primary-foreground: hsl(222.2 47.4% 11.2%);
+  --color-warning: hsl(38 92% 50%);
+  --color-danger: hsl(0 84.2% 60.2%);
+}
+
+/* CSS custom properties used directly in component styles */
+:root {
+  --background: 222.2 84% 4.9%;
+  --foreground: 210 40% 98%;
+  --border: 217.2 32.6% 17.5%;
+  --radius: 0.75rem;
+}
+
+body {
+  background-color: hsl(var(--background));
+  color: hsl(var(--foreground));
+  font-family: 'Inter', sans-serif;
+  margin: 0;
+  padding: 0;
+}
+
+.glass-panel {
+  background: rgba(13, 17, 23, 0.7);
+  backdrop-filter: blur(12px);
+  border: 1px solid hsl(var(--border));
+  border-radius: var(--radius);
+}

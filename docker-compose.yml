@@ -1,0 +1,163 @@
+services:
+
+  # ── Databases ──────────────────────────────────────────────────────────────
+  postgres:
+    image: postgres:16-alpine
+    container_name: cb_postgres
+    environment:
+      POSTGRES_USER: company_brain_user
+      POSTGRES_PASSWORD: brain_secure_pass
+      POSTGRES_DB: company_brain_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U company_brain_user -d company_brain_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  neo4j:
+    image: neo4j:5.18-community
+    container_name: cb_neo4j
+    ports:
+      - "7474:7474"   # Browser UI
+      - "7687:7687"   # Bolt protocol
+    environment:
+      NEO4J_AUTH: neo4j/brain_graph_pass
+    volumes:
+      - neo4jdata:/data
+    healthcheck:
+      test: ["CMD", "cypher-shell", "-u", "neo4j", "-p", "brain_graph_pass", "RETURN 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 60s   # Neo4j 5.x first boot is slow; don't fail early
+
+  chromadb:
+    image: chromadb/chroma:latest
+    container_name: cb_chroma
+    # Host port 8002 (container stays 8000). 8000 is often reserved by
+    # Windows/Hyper-V; the backend reaches Chroma via the internal network
+    # (chromadb:8000), so the host mapping is only for external/debug access.
+    ports:
+      - "8002:8000"
+    volumes:
+      - chromadata:/chroma/data
+    # NOTE: the chromadb/chroma image is minimal (no curl/python/wget), so an
+    # in-container HTTP healthcheck isn't possible. Dependents use
+    # `service_started`; the backend's Chroma connection is fault-tolerant and
+    # Chroma's HTTP listener is ready well before the backend finishes booting.
+
+  redis:
+    image: redis:7-alpine
+    container_name: cb_redis
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+  # ── Backend API ────────────────────────────────────────────────────────────
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: cb_backend
+    env_file: .env
+    environment:
+      - DATABASE_URL=postgresql://company_brain_user:brain_secure_pass@postgres:5432/company_brain_db
+      - NEO4J_URI=bolt://neo4j:7687
+      - NEO4J_USER=neo4j
+      - NEO4J_PASSWORD=brain_graph_pass
+      - CHROMA_HOST=chromadb
+      - CHROMA_PORT=8000
+      - REDIS_URL=redis://redis:6379/0
+      - CORS_ORIGINS=http://localhost:3000
+    ports:
+      - "8001:8001"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      neo4j:
+        condition: service_healthy
+      chromadb:
+        condition: service_started
+      redis:
+        condition: service_healthy
+
+  # ── Celery worker (background ingestion + intelligence) ────────────────────
+  celery_worker:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: cb_celery_worker
+    command: celery -A app.core.celery worker --loglevel=info --concurrency=2
+    # The backend image's HEALTHCHECK curls :8001 (a web server); celery containers
+    # don't serve HTTP, so disable the inherited check to avoid false "unhealthy".
+    healthcheck:
+      disable: true
+    env_file: .env
+    environment:
+      - DATABASE_URL=postgresql://company_brain_user:brain_secure_pass@postgres:5432/company_brain_db
+      - NEO4J_URI=bolt://neo4j:7687
+      - NEO4J_USER=neo4j
+      - NEO4J_PASSWORD=brain_graph_pass
+      - CHROMA_HOST=chromadb
+      - CHROMA_PORT=8000
+      - REDIS_URL=redis://redis:6379/0
+    depends_on:
+      redis:
+        condition: service_healthy
+      postgres:
+        condition: service_healthy
+      neo4j:
+        condition: service_healthy
+      chromadb:
+        condition: service_started
+
+  # ── Celery beat scheduler (daily intelligence tasks) ───────────────────────
+  celery_beat:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: cb_celery_beat
+    # Write the schedule DB to /tmp — the container runs as non-root `app` and
+    # the /app dir is root-owned, so beat can't create its file there.
+    command: celery -A app.core.celery beat --loglevel=info --schedule=/tmp/celerybeat-schedule
+    healthcheck:
+      disable: true
+    env_file: .env
+    environment:
+      - DATABASE_URL=postgresql://company_brain_user:brain_secure_pass@postgres:5432/company_brain_db
+      - NEO4J_URI=bolt://neo4j:7687
+      - NEO4J_USER=neo4j
+      - NEO4J_PASSWORD=brain_graph_pass
+      - CHROMA_HOST=chromadb
+      - CHROMA_PORT=8000
+      - REDIS_URL=redis://redis:6379/0
+    depends_on:
+      - celery_worker
+
+  # ── Frontend ───────────────────────────────────────────────────────────────
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      args:
+        NEXT_PUBLIC_API_URL: http://localhost:8001
+    container_name: cb_frontend
+    ports:
+      - "3000:3000"
+    environment:
+      - NEXT_PUBLIC_API_URL=http://localhost:8001
+    depends_on:
+      - backend
+
+volumes:
+  pgdata:
+  neo4jdata:
+  chromadata:

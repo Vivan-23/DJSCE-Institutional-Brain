@@ -1,0 +1,12 @@
+# Weekly Status Report: Data Pipeline Revamp
+**Date**: January 30, 2026
+**Status**: Completed
+
+## Team Members
+Andrew White, Isabella Moore, Marcus Chen, James Wilson
+
+## Updates
+- **Andrew White**: Attended cross-functional sync with the marketing team.
+- **Isabella Moore**: Successfully migrated 10k users to the new system.
+- **Marcus Chen**: Waiting on design assets for the landing page.
+- **James Wilson**: Reviewing pull requests for the latest sprint.

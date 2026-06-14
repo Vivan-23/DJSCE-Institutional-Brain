@@ -1,0 +1,15 @@
+# Weekly Status Report: Project Beta
+**Date**: May 15, 2026
+**Status**: On Track
+
+## Team Members
+Emma Anderson, William Davis, Matthew Taylor, David Kim, Mia Jackson, Daniel Wilson, Jessica Lee
+
+## Updates
+- **Emma Anderson**: Reviewing pull requests for the latest sprint.
+- **William Davis**: Deployed the new database schema to staging.
+- **Matthew Taylor**: Updated the API documentation for the v2 release.
+- **David Kim**: Drafted UI components for the new dashboard.
+- **Mia Jackson**: Attended cross-functional sync with the marketing team.
+- **Daniel Wilson**: Deployed the new database schema to staging.
+- **Jessica Lee**: Fixed a critical bug in the payment gateway.

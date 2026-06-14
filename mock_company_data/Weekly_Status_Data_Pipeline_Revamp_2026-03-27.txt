@@ -1,0 +1,11 @@
+# Weekly Status Report: Data Pipeline Revamp
+**Date**: March 27, 2026
+**Status**: On Track
+
+## Team Members
+Emily Carter, Amanda Smith, Olivia Brown
+
+## Updates
+- **Emily Carter**: Blocked by DevOps on provision of new CI/CD runners.
+- **Amanda Smith**: Reviewing pull requests for the latest sprint.
+- **Olivia Brown**: Blocked by DevOps on provision of new CI/CD runners.

@@ -1,0 +1,11 @@
+# Weekly Status Report: Project Beta
+**Date**: March 06, 2026
+**Status**: Delayed
+
+## Team Members
+Emma Anderson, Michael Chang, Olivia Brown
+
+## Updates
+- **Emma Anderson**: Refactored the core authentication module.
+- **Michael Chang**: Blocked by DevOps on provision of new CI/CD runners.
+- **Olivia Brown**: Waiting on design assets for the landing page.

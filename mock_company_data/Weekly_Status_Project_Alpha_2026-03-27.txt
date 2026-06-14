@@ -1,0 +1,13 @@
+# Weekly Status Report: Project Alpha
+**Date**: March 27, 2026
+**Status**: On Track
+
+## Team Members
+David Kim, Olivia Brown, Jessica Lee, Amanda Smith, Emily Carter
+
+## Updates
+- **David Kim**: Optimized the search query performance by 30%.
+- **Olivia Brown**: Successfully migrated 10k users to the new system.
+- **Jessica Lee**: Drafted UI components for the new dashboard.
+- **Amanda Smith**: Successfully migrated 10k users to the new system.
+- **Emily Carter**: Reviewing pull requests for the latest sprint.

@@ -1,0 +1,10 @@
+# Post-mortem - January 27, 2026
+
+**Attendees**: Michael Chang, William Davis, Daniel Wilson, Emily Carter, Andrew White, Ryan Gosling, Marcus Chen, David Kim, Olivia Brown
+
+## Discussion Points
+- **Ryan Gosling**: Conducted user interviews for the redesign.
+- **Marcus Chen**: Updated the API documentation for the v2 release.
+
+## Action Items
+- [ ] Emily Carter to follow up on related tasks.

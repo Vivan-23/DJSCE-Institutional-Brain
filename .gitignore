@@ -1,0 +1,54 @@
+# Secrets — never commit these
+.env
+*.env
+.env.local
+.env.production
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+*.egg-info/
+dist/
+build/
+.venv/
+venv/
+env/
+*.egg
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+htmlcov/
+.coverage
+coverage.xml
+
+# Node / Next.js
+node_modules/
+.next/
+out/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.npm
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
+
+# Docker volumes (local)
+pgdata/
+neo4jdata/
+chromadata/
+
+# spaCy models (downloaded at runtime)
+backend/app/models/en_core_web_sm*
+
+# Test artifacts
+*.db
+test.db

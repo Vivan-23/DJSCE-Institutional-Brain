@@ -1,0 +1,13 @@
+# Architecture Review - December 19, 2025
+
+**Attendees**: Isabella Moore, Joshua Thomas, Ryan Gosling, Daniel Wilson, Emma Anderson, Sarah Jenkins, Michael Chang
+
+## Discussion Points
+- **Isabella Moore**: Successfully migrated 10k users to the new system.
+- **Joshua Thomas**: Fixed a critical bug in the payment gateway.
+- **Daniel Wilson**: Drafted UI components for the new dashboard.
+- **Joshua Thomas**: Reviewing pull requests for the latest sprint.
+
+## Action Items
+- [ ] Ryan Gosling to follow up on related tasks.
+- [ ] Ryan Gosling to follow up on related tasks.

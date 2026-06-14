@@ -1,0 +1,12 @@
+# Weekly Status Report: Data Pipeline Revamp
+**Date**: May 08, 2026
+**Status**: Delayed
+
+## Team Members
+William Davis, Emma Anderson, David Kim, Amanda Smith
+
+## Updates
+- **William Davis**: Investigated memory leak in the worker nodes.
+- **Emma Anderson**: Updated the API documentation for the v2 release.
+- **David Kim**: Waiting on design assets for the landing page.
+- **Amanda Smith**: Reviewing pull requests for the latest sprint.

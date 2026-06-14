@@ -1,0 +1,14 @@
+# Weekly Status Report: Legacy System Migration
+**Date**: May 15, 2026
+**Status**: Completed
+
+## Team Members
+Michael Chang, Andrew White, Jessica Lee, Sophia Miller, Isabella Moore, Olivia Brown
+
+## Updates
+- **Michael Chang**: Conducted user interviews for the redesign.
+- **Andrew White**: Reviewing pull requests for the latest sprint.
+- **Jessica Lee**: Wrote unit tests for the billing service.
+- **Sophia Miller**: Optimized the search query performance by 30%.
+- **Isabella Moore**: Updated the API documentation for the v2 release.
+- **Olivia Brown**: Wrote unit tests for the billing service.

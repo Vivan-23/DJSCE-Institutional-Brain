@@ -1,0 +1,11 @@
+# Weekly Status Report: Project Beta
+**Date**: November 21, 2025
+**Status**: At Risk
+
+## Team Members
+Emily Carter, Joshua Thomas, David Kim
+
+## Updates
+- **Emily Carter**: Reviewing pull requests for the latest sprint.
+- **Joshua Thomas**: Fixed a critical bug in the payment gateway.
+- **David Kim**: Drafted UI components for the new dashboard.

@@ -1,0 +1,15 @@
+# Weekly Status Report: Data Pipeline Revamp
+**Date**: March 20, 2026
+**Status**: At Risk
+
+## Team Members
+Mia Jackson, Emma Anderson, Isabella Moore, Andrew White, David Kim, Marcus Chen, Sarah Jenkins
+
+## Updates
+- **Mia Jackson**: Updated the API documentation for the v2 release.
+- **Emma Anderson**: Drafted UI components for the new dashboard.
+- **Isabella Moore**: Blocked by DevOps on provision of new CI/CD runners.
+- **Andrew White**: Blocked by DevOps on provision of new CI/CD runners.
+- **David Kim**: Waiting on design assets for the landing page.
+- **Marcus Chen**: Drafted UI components for the new dashboard.
+- **Sarah Jenkins**: Blocked by DevOps on provision of new CI/CD runners.

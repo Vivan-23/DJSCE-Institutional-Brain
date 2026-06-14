@@ -1,0 +1,240 @@
+import structlog
+from celery import Celery
+from celery.schedules import crontab
+
+from app.core.config import settings
+
+log = structlog.get_logger()
+
+celery_app = Celery(
+    "company_brain",
+    broker=settings.REDIS_URL,
+    backend=settings.REDIS_URL,
+)
+
+celery_app.conf.update(
+    task_serializer="json",
+    accept_content=["json"],
+    result_serializer="json",
+    timezone="UTC",
+    enable_utc=True,
+    beat_schedule={
+        # Daily organizational intelligence sweep
+        "daily-active-intelligence": {
+            "task": "app.core.celery.run_daily_active_intelligence",
+            "schedule": crontab(hour=8, minute=0),
+        },
+        # Prepare each employee's end-of-day check-in
+        "daily-pa-checkins": {
+            "task": "app.core.celery.run_daily_checkins",
+            "schedule": crontab(hour=settings.PA_CHECKIN_HOUR, minute=0),
+        },
+        # Nudge owners of stale/overdue commitments (hourly eligibility scan)
+        "commitment-followups": {
+            "task": "app.core.celery.run_commitment_followups",
+            "schedule": crontab(minute=0),
+        },
+        # Procedure extraction + freshness scan over accumulated fragments
+        "skill-extraction": {
+            "task": "app.core.celery.run_skill_extraction",
+            "schedule": crontab(hour=3, minute=0),
+        },
+        "freshness-scan": {
+            "task": "app.core.celery.run_freshness_scan",
+            "schedule": crontab(hour=4, minute=0),
+        },
+    },
+)
+
+
+@celery_app.task(name="app.core.celery.process_document")
+def process_document_task(text: str, filename: str) -> dict:
+    """
+    Background ingestion pipeline:
+      1. Chunk the document text
+      2. Embed chunks and store in ChromaDB
+      3. Extract named entities with spaCy → upsert to Neo4j
+      4. Persist a Document row to Postgres
+    """
+    import uuid
+    from app.services.parser import chunk_document
+    from app.services.embedding import embedding_service
+    from app.services.ner_service import ner_service
+    from app.services.graph_service import graph_service
+    from app.core.chroma_db import chroma_conn
+    from app.core.db import engine
+    from app.models.structured import Document
+    from sqlmodel import Session
+
+    log.info("Starting document processing", filename=filename)
+
+    # --- 1. Chunk ---
+    chunks = chunk_document(text)
+
+    # --- 2. Embed + store ---
+    stored_chunks = 0
+    if chunks and chroma_conn.collection:
+        try:
+            embeddings = embedding_service.embed_texts(chunks)
+            ids = [str(uuid.uuid4()) for _ in chunks]
+            metadatas = [{"filename": filename} for _ in chunks]
+            chroma_conn.collection.add(
+                ids=ids,
+                embeddings=embeddings,
+                metadatas=metadatas,
+                documents=chunks,
+            )
+            stored_chunks = len(chunks)
+            log.info("Chunks embedded and stored", filename=filename, count=stored_chunks)
+        except Exception as e:
+            log.error("Chroma storage failed", filename=filename, error=str(e))
+
+    # --- 3. NER → Neo4j ---
+    entities = ner_service.extract_entities(text)
+
+    for person in entities["persons"]:
+        # Derive a deterministic internal email from the extracted name
+        email = person.lower().replace(" ", ".") + "@company.internal"
+        try:
+            graph_service.upsert_employee(name=person, email=email)
+        except Exception as e:
+            log.warning("Employee upsert failed", name=person, error=str(e))
+
+    for org in entities["orgs"]:
+        try:
+            graph_service.upsert_project(project_name=org, status="active")
+        except Exception as e:
+            log.warning("Project upsert failed", name=org, error=str(e))
+
+    log.info(
+        "Entities extracted",
+        filename=filename,
+        persons=len(entities["persons"]),
+        orgs=len(entities["orgs"]),
+    )
+
+    # --- 4. Persist Document row ---
+    try:
+        with Session(engine) as session:
+            doc = Document(
+                title=filename,
+                source_type="upload",
+                raw_content=text[:5_000],
+            )
+            session.add(doc)
+            session.commit()
+    except Exception as e:
+        log.error("Document DB write failed", filename=filename, error=str(e))
+
+    return {
+        "filename": filename,
+        "chunks_stored": stored_chunks,
+        "persons_found": entities["persons"],
+        "orgs_found": entities["orgs"],
+    }
+
+
+@celery_app.task(name="app.core.celery.process_transcript")
+def process_transcript_task(transcript: str, title: str, source: str = "upload") -> dict:
+    """
+    Background transcript pipeline:
+      1. LLM extraction → summary, decisions, commitments
+      2. Persist Meeting + speaker-attributed Fragments
+      3. Create Commitments (resolving assignees to Employees)
+    """
+    from app.core.db import engine
+    from app.services.transcript_service import transcript_service
+    from sqlmodel import Session
+
+    log.info("Starting transcript processing", title=title)
+    with Session(engine) as session:
+        result = transcript_service.ingest(
+            session, transcript=transcript, title=title, source=source
+        )
+    log.info("Transcript processing complete", title=title, **{
+        "commitments": result.get("commitments_created"),
+        "fragments": result.get("fragments"),
+    })
+    return result
+
+
+@celery_app.task(name="app.core.celery.run_daily_active_intelligence")
+def run_daily_active_intelligence() -> str:
+    from app.core.db import engine
+    from app.services.active_intel import active_intel_service
+    from sqlmodel import Session
+
+    with Session(engine) as session:
+        count = active_intel_service.check_bottlenecks(session)
+
+    log.info("Daily intelligence run complete", insights_created=count)
+    return f"Created {count} insights"
+
+
+@celery_app.task(name="app.core.celery.run_daily_checkins")
+def run_daily_checkins() -> str:
+    """Pre-create today's end-of-day check-in for each active employee."""
+    from app.core.db import engine
+    from app.services.employee_service import employee_service
+    from app.services.pa_service import pa_service
+    from sqlmodel import Session
+
+    prepared = 0
+    with Session(engine) as session:
+        for emp in employee_service.list_active(session):
+            pa_service.get_today_checkin(session, emp)
+            prepared += 1
+    log.info("Daily check-ins prepared", count=prepared)
+    return f"Prepared {prepared} check-ins"
+
+
+@celery_app.task(name="app.core.celery.run_commitment_followups")
+def run_commitment_followups() -> str:
+    """Scan for stale commitments and record a follow-up nudge per owner."""
+    from app.core.db import engine
+    from app.services.employee_service import employee_service
+    from app.services.pa_service import pa_service
+    from app.services.audit_service import audit_service
+    from sqlmodel import Session
+
+    generated = 0
+    with Session(engine) as session:
+        for emp in employee_service.list_active(session):
+            followups = pa_service.pending_followups(session, emp)
+            for f in followups:
+                audit_service.record(
+                    session,
+                    actor="pa",
+                    action="followup_generated",
+                    target_id=f["commitment_id"],
+                    metadata={"employee": emp.display_name},
+                )
+            generated += len(followups)
+    log.info("Commitment follow-ups generated", count=generated)
+    return f"Generated {generated} follow-ups"
+
+
+@celery_app.task(name="app.core.celery.run_skill_extraction")
+def run_skill_extraction() -> str:
+    """Cluster accumulated fragments and synthesize candidate skills for review."""
+    from app.core.db import engine
+    from app.services.skill_service import skill_service
+    from sqlmodel import Session
+
+    with Session(engine) as session:
+        created = skill_service.extract_candidates(session)
+    log.info("Skill extraction complete", candidates=created)
+    return f"Created {created} candidate skills"
+
+
+@celery_app.task(name="app.core.celery.run_freshness_scan")
+def run_freshness_scan() -> str:
+    """Compare recent evidence against approved skills; flag contradictions stale."""
+    from app.core.db import engine
+    from app.services.freshness_service import freshness_service
+    from sqlmodel import Session
+
+    with Session(engine) as session:
+        flagged = freshness_service.scan(session)
+    log.info("Freshness scan complete", flagged=flagged)
+    return f"Flagged {flagged} skills stale"
