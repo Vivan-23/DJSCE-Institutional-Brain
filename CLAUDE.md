@@ -8,8 +8,7 @@ running, and feature procedures, see [`docs/USAGE.md`](docs/USAGE.md).
 ## What this is
 The executable knowledge layer for AI agents: capture company knowledge
 (meeting transcripts + a per-employee Company PA) → synthesize **executable
-skills** → human review/approval → serve to agents, kept fresh. Product spec:
-[`PRD`](PRD).
+skills** → human review/approval → serve to agents, kept fresh.
 
 ## Documentation maintenance rule (important)
 Keep docs in lockstep with the code. **In the same change that you:**

@@ -9,7 +9,6 @@ re-reading the whole codebase.
 | [USAGE.md](USAGE.md) | Setup, running (Docker or local dev), and feature-by-feature procedures. Troubleshooting table at the end. |
 | [CUSTOMIZING.md](CUSTOMIZING.md) | Per-company customization — edit `company.yaml` (branding, settings, org structure). Read before forking for a company. |
 | [CHANGELOG.md](CHANGELOG.md) | What changed and why, newest first. Append here when you ship. |
-| [../PRD](../PRD) | Product requirements / target spec. |
 | [../README.md](../README.md) | Project pitch + API summary. |
 
 **Maintenance rule:** update the relevant doc in the *same change* as the code.

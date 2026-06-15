@@ -17,7 +17,6 @@ It is **not** a company-wide search engine and **not** a chatbot over documents.
 | **[docs/USAGE.md](docs/USAGE.md)** | Setup, running (Docker or local dev), feature-by-feature procedures, troubleshooting |
 | **[docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)** | Codebase map — services, routes, models, jobs, "where to change X" |
 | **[docs/CHANGELOG.md](docs/CHANGELOG.md)** | What changed and why |
-| [PRD](PRD) | Product requirements / target spec |
 
 New here? Read **[docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)** first.
 
@@ -117,7 +116,7 @@ Skills are exported in an agent-consumable format (Agent Skills / `SKILL.md`-sty
 | Connectors / extraction / freshness | Celery + Redis workers |
 | Containers | Docker + Docker Compose |
 
-> **Migration note:** the prior version of this project was an org-intelligence dashboard + RAG chatbot over uploaded documents. The RAG/clustering, auth, and storage plumbing are reused, but the product is being re-oriented around the **skill primitive and skill-file export** described above. The chat/search UI is retained only as a reviewer aid, not as the deliverable. See [PRD](PRD) for the full target spec.
+> **Migration note:** the prior version of this project was an org-intelligence dashboard + RAG chatbot over uploaded documents. The RAG/clustering, auth, and storage plumbing are reused, but the product is being re-oriented around the **skill primitive and skill-file export** described above. The chat/search UI is retained only as a reviewer aid, not as the deliverable.
 
 ---
 

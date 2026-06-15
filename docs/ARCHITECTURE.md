@@ -6,8 +6,7 @@
 
 Company Brain turns scattered company knowledge into **executable skills** for AI
 agents, fed by a continuous capture loop (meeting transcripts + a per-employee
-**Company PA**). See [PRD](../PRD) for the product spec and [README](../README.md)
-for the pitch. This file is the *engineering* map.
+**Company PA**). See [README](../README.md) for the pitch. This file is the *engineering* map.
 
 ---
 
