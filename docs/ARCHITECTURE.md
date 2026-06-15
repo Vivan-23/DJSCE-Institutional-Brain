@@ -37,6 +37,7 @@ core/
   celery.py        Celery app, beat schedule, and ALL task definitions.
   chroma_db.py     Chroma connection singleton (chroma_conn).
   neo4j_db.py      Neo4j connection singleton (neo4j_conn).
+  company_config.py  Loads company.yaml (per-company profile: branding, settings, org).
 models/
   structured.py    EVERY SQLModel table. Single source of truth for the schema.
 services/          Domain logic. Each module exposes a singleton (e.g. pa_service).
@@ -64,6 +65,7 @@ tests/             pytest suite. conftest.py mocks all external services.
 | `skill_service.py` | `skill_service` | Cluster fragments → synthesize skills → cite → lifecycle → render `SKILL.md`. |
 | `freshness_service.py` | `freshness_service` | Contradiction detection → flag skills `stale` + raise ActiveInsight. |
 | `audit_service.py` | `audit_service` | Append-only AuditLog for every autonomous action. |
+| `company_seed.py` | `seed_company()` | Idempotent org-structure seeding (Users+Employees+managers) from `company.yaml`, run on startup. |
 | `active_intel.py` | `active_intel_service` | Org-risk insights (bottlenecks) for the Active Feed. |
 | `graph_service.py` | `graph_service` | Neo4j upserts (employees/projects/edges). |
 | `rag_service.py` | `rag_service` | RAG chat over fragments/graph (reviewer aid). |
@@ -84,6 +86,7 @@ tests/             pytest suite. conftest.py mocks all external services.
 | `skills.py` | `/skills` | list / extract🔒 / get / patch🔒 / approve🔒 / reject🔒 / file / feedback. |
 | `sources.py` | `/sources` | list connectors / sync🔒. |
 | `audit.py` | `/audit` | audit trail🔒. |
+| `company.py` | `/company` | public branding (name + logo) from `company.yaml`. |
 
 🔒 = requires `manager` role (see RBAC below).
 
@@ -164,7 +167,7 @@ Docker. Patterns:
 - The test DB (SQLite) is **shared across the session** — assert on your own seeded rows, not global counts.
 - Promote a user to manager by setting `user.role` in `db_session`.
 
-Run: `cd backend && .venv/Scripts/python -m pytest -q` (currently **84 passing**).
+Run: `cd backend && .venv/Scripts/python -m pytest -q` (currently **88 passing**).
 
 ---
 
@@ -179,3 +182,4 @@ Run: `cd backend && .venv/Scripts/python -m pytest -q` (currently **84 passing**
 | Add a tunable | `core/config.py` (env-driven) |
 | Add a source | a `connectors/*.py` subclass + register in `connectors/registry.py` |
 | Add a UI page | `frontend/src/app/<name>/page.tsx` + add to `Sidebar.tsx` NAV |
+| Customize for a company | edit `company.yaml` (branding/settings/org) — see [CUSTOMIZING.md](CUSTOMIZING.md) |

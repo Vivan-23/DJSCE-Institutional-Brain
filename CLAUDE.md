@@ -26,5 +26,6 @@ Each doc has a "Last verified" date; bump it when you confirm it's current.
 - Schema = `backend/app/models/structured.py`; new tables must be added to `core/db.py:init_db()` **and** `tests/conftest.py`.
 - Scheduled jobs + Celery tasks: `backend/app/core/celery.py`.
 - RBAC: `auth.require_role()`; roles `employee < manager < admin`. Demo user `demo@companybrain.ai` / `demo123` (admin).
-- Tests (no Docker needed): `cd backend && .venv/Scripts/python -m pytest -q` → **84 passing**.
+- Tests (no Docker needed): `cd backend && .venv/Scripts/python -m pytest -q` → **88 passing**.
+- Per-company customization = edit root `company.yaml` (branding/settings/org); see [`docs/CUSTOMIZING.md`](docs/CUSTOMIZING.md).
 - Frontend is a non-standard Next.js with stricter lint — see `frontend/AGENTS.md` (e.g. no synchronous `setState` in effects).

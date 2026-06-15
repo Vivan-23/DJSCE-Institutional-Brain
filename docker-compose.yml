@@ -77,8 +77,12 @@ services:
       - CHROMA_PORT=8000
       - REDIS_URL=redis://redis:6379/0
       - CORS_ORIGINS=http://localhost:3000
+      - COMPANY_CONFIG=/app/company.yaml
     ports:
       - "8001:8001"
+    volumes:
+      # Single source of truth for per-company customization (live-editable).
+      - ./company.yaml:/app/company.yaml:ro
     depends_on:
       postgres:
         condition: service_healthy
@@ -109,6 +113,9 @@ services:
       - CHROMA_HOST=chromadb
       - CHROMA_PORT=8000
       - REDIS_URL=redis://redis:6379/0
+      - COMPANY_CONFIG=/app/company.yaml
+    volumes:
+      - ./company.yaml:/app/company.yaml:ro
     depends_on:
       redis:
         condition: service_healthy
@@ -139,6 +146,9 @@ services:
       - CHROMA_HOST=chromadb
       - CHROMA_PORT=8000
       - REDIS_URL=redis://redis:6379/0
+      - COMPANY_CONFIG=/app/company.yaml
+    volumes:
+      - ./company.yaml:/app/company.yaml:ro
     depends_on:
       - celery_worker
 

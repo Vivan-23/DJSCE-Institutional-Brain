@@ -1,0 +1,60 @@
+# ============================================================================
+# Company Brain — COMPANY PROFILE  (single source of truth for customization)
+# ============================================================================
+# This is the ONE file you edit to customize Company Brain for a company.
+# On startup the backend reads it and:
+#   - brands the UI (name + logo badge),
+#   - seeds the org structure (employees, roles, managers, timezones),
+#   - applies company-specific settings.
+#
+# It is idempotent: edit + restart and the app updates to match (matched by
+# email). Removing someone here does NOT delete them from the DB.
+#
+# Workflow: fork the `template` branch, describe the company to the agent, and it
+# fills in this file — nothing else needs editing for basic customization.
+# See docs/CUSTOMIZING.md for the full guide.
+# ============================================================================
+
+company:
+  name: "Company Brain"          # shown in the UI header / login
+  short_code: "CB"               # 2-3 letters for the logo badge
+  email_domain: "companybrain.ai"  # default domain for internal/derived emails
+
+settings:
+  pa_checkin_hour: 17            # local hour (0-23) for the end-of-day PA check-in
+  commitment_followup_hours: 48  # a commitment idle this long is eligible for a nudge
+
+# Org structure — seeded on startup. Each person becomes an Employee; those with
+# a `password` also get a login User with the given `role`.
+#   role:     employee | manager | admin   (controls access; default employee)
+#   manager:  email of this person's manager, or null
+#   timezone: IANA tz (e.g. America/New_York), default UTC
+employees:
+  - name: "Demo User"
+    email: "demo@companybrain.ai"
+    role: "admin"
+    title: "Administrator"
+    manager: null
+    timezone: "UTC"
+    password: "demo123"          # initial login password (change in production)
+
+  # --- Add the company's people below, for example: ---
+  # - name: "Dana Lee"
+  #   email: "dana@acme.com"
+  #   role: "admin"
+  #   title: "VP Engineering"
+  #   manager: null
+  #   timezone: "America/New_York"
+  #   password: "changeme123"
+  # - name: "Ravi Patel"
+  #   email: "ravi@acme.com"
+  #   role: "manager"
+  #   title: "Eng Manager"
+  #   manager: "dana@acme.com"
+  #   timezone: "America/New_York"
+  #   password: "changeme123"
+  # - name: "Maya Chen"          # no password → org structure only, no login yet
+  #   email: "maya@acme.com"
+  #   role: "employee"
+  #   manager: "ravi@acme.com"
+  #   timezone: "Asia/Kolkata"

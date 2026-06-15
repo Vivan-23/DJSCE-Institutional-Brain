@@ -2,11 +2,13 @@
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { setToken, API_BASE } from '@/lib/api';
+import { useCompany } from '@/lib/useCompany';
 
 type Mode = 'login' | 'register';
 
 export default function LoginPage() {
   const router = useRouter();
+  const company = useCompany();
   const [mode, setMode] = useState<Mode>('login');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -56,9 +58,9 @@ export default function LoginPage() {
         {/* Logo */}
         <div className="text-center mb-8">
           <div className="w-14 h-14 rounded-2xl bg-primary/20 border border-primary flex items-center justify-center mx-auto mb-4">
-            <span className="text-primary font-bold text-2xl">CB</span>
+            <span className="text-primary font-bold text-2xl">{company.short_code}</span>
           </div>
-          <h1 className="text-2xl font-bold text-white">Company Brain</h1>
+          <h1 className="text-2xl font-bold text-white">{company.name}</h1>
           <p className="text-gray-400 text-sm mt-1">
             Organizational Intelligence System
           </p>

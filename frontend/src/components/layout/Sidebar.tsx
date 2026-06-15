@@ -3,6 +3,7 @@ import React, { useCallback, useSyncExternalStore } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { clearToken, getToken } from '@/lib/api';
+import { useCompany } from '@/lib/useCompany';
 
 const NAV = [
   { href: '/', label: 'Active Feed' },
@@ -25,6 +26,7 @@ const subscribe = (cb: () => void) => {
 export default function Sidebar() {
   const pathname = usePathname();
   const router = useRouter();
+  const company = useCompany();
   const loggedIn = useSyncExternalStore(
     subscribe,
     useCallback(() => !!getToken(), []),
@@ -44,10 +46,10 @@ export default function Sidebar() {
       {/* Brand */}
       <div className="flex items-center mb-10">
         <div className="w-8 h-8 rounded-lg bg-primary/20 border border-primary flex items-center justify-center mr-3">
-          <span className="text-primary font-bold text-sm">CB</span>
+          <span className="text-primary font-bold text-sm">{company.short_code}</span>
         </div>
         <h2 className="text-xl font-bold text-white tracking-wide">
-          Company Brain
+          {company.name}
         </h2>
       </div>
 

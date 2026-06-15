@@ -50,3 +50,14 @@ class Settings(BaseSettings):
 
 
 settings = Settings()
+
+# Apply per-company overrides from company.yaml (single source of truth). Kept
+# out of the Settings class so a bad/missing profile can never break boot.
+try:
+    from app.core.company_config import get_company_config
+
+    _company = get_company_config()
+    settings.PA_CHECKIN_HOUR = _company.pa_checkin_hour
+    settings.COMMITMENT_FOLLOWUP_HOURS = _company.commitment_followup_hours
+except Exception:  # noqa: BLE001
+    pass

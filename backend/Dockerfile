@@ -37,13 +37,15 @@ COPY --from=builder /usr/local/bin /usr/local/bin
 # Install curl for the HEALTHCHECK (slim image doesn't include it)
 RUN apt-get update -qq && apt-get install -y --no-install-recommends curl && rm -rf /var/lib/apt/lists/*
 
-COPY --chown=app:app . .
-
 USER app
 
 # Bake the embedding model into the image so startup is fast and works offline
-# (no ~1.3GB re-download on every container start).
+# (no ~1.3GB re-download on every container start). Done BEFORE copying app code
+# so this expensive layer stays cached across code changes.
 RUN python -c "from sentence_transformers import SentenceTransformer; SentenceTransformer('BAAI/bge-large-en-v1.5')"
+
+# App code last — only this layer rebuilds on a code change.
+COPY --chown=app:app . .
 
 EXPOSE 8001
 
