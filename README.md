@@ -30,33 +30,38 @@ The blocker to automating company work is no longer model capability — it's th
 
 ## Architecture
 
-```
- Passive sources                Active capture (Company PA)
- Transcripts · Slack ·     per-employee assistant: meeting
- Email · Tickets ·         understanding · proactive follow-ups ·
- Docs · DB                 end-of-day check-in
-        │                            │
-        └─────────────┬──────────────┘
-                      ▼
-          Source Connectors / PA capture ──────────┐ (re-scan
-                      │                             │  on events)
-        ┌──── Extraction Engine (LLM) ────┐        │
-        ▼                                  ▼        │
-  Decisions + Commitments         Procedures →      │
-  (operational tracking)          Skills (cited)    │
-        │                                  │        ▼
-        ▼                                  ▼   Freshness Engine
-  Commitment Store          Human Review & Approval (contradiction
-        │                                  │     → mark stale)
-        └────────► Knowledge Base ◄────────┘
-        (Postgres skills/commitments/fragments · Chroma · Neo4j)
-                      │
-        ┌─────────────┴──────────────┐
-        ▼                            ▼
-  PA: check-ins & follow-ups   Skill-File Export API
-        ▲                            │
-        │                            ▼
-   employees talk              AI Agents (execute work, report outcomes)
+```mermaid
+flowchart TD
+    PS["Passive Sources<br/>Transcripts · Slack · Email · Tickets · Docs · DB"]
+    AC["Active Capture — Company PA<br/>meeting understanding · proactive follow-ups · end-of-day check-in"]
+    SC["Source Connectors / PA capture"]
+    EE["Extraction Engine (LLM)"]
+    DC["Decisions + Commitments<br/>(operational tracking)"]
+    PR["Procedures → Skills (cited)"]
+    FE["Freshness Engine<br/>contradiction → mark stale"]
+    CS["Commitment Store"]
+    HRA["Human Review & Approval"]
+    KB[("Knowledge Base<br/>Postgres · Chroma · Neo4j")]
+    PA["PA: check-ins & follow-ups"]
+    SX["Skill-File Export API"]
+    EMP(["employees talk"])
+    AGT(["AI Agents — execute work, report outcomes"])
+
+    PS --> SC
+    AC --> SC
+    SC --> EE
+    SC -->|re-scan on events| FE
+    EE --> DC
+    EE --> PR
+    DC --> CS
+    PR --> HRA
+    HRA --> FE
+    CS --> KB
+    HRA --> KB
+    KB --> PA
+    KB --> SX
+    EMP --> PA
+    SX --> AGT
 ```
 
 ### Capture loop (Company PA)
@@ -110,13 +115,11 @@ Skills are exported in an agent-consumable format (Agent Skills / `SKILL.md`-sty
 | Backend API | FastAPI, Python 3.11 |
 | Auth | JWT + bcrypt (role-based, source-permission aware) |
 | Skill store | PostgreSQL (skills, citations, audit) |
-| Fragment clustering | Vector store (embeddings) |
+| Fragment clustering + knowledge search | ChromaDB + sentence-transformers (RAG chat over all captured fragments) |
 | Procedure/entity graph | Neo4j |
 | Extraction LLM | Configurable (procedure synthesis + contradiction detection) |
 | Connectors / extraction / freshness | Celery + Redis workers |
 | Containers | Docker + Docker Compose |
-
-> **Migration note:** the prior version of this project was an org-intelligence dashboard + RAG chatbot over uploaded documents. The RAG/clustering, auth, and storage plumbing are reused, but the product is being re-oriented around the **skill primitive and skill-file export** described above. The chat/search UI is retained only as a reviewer aid, not as the deliverable.
 
 ---
 
