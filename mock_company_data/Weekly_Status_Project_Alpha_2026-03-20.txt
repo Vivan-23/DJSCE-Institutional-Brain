@@ -1,0 +1,14 @@
+# Weekly Status Report: Project Alpha
+**Date**: March 20, 2026
+**Status**: Delayed
+
+## Team Members
+Andrew White, Jessica Lee, Michael Chang, Daniel Wilson, Matthew Taylor, Alex Rivera
+
+## Updates
+- **Andrew White**: Drafted UI components for the new dashboard.
+- **Jessica Lee**: Deployed the new database schema to staging.
+- **Michael Chang**: Updated the API documentation for the v2 release.
+- **Daniel Wilson**: Wrote unit tests for the billing service.
+- **Matthew Taylor**: Drafted UI components for the new dashboard.
+- **Alex Rivera**: Conducted user interviews for the redesign.

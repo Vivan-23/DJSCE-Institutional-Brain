@@ -1,0 +1,13 @@
+# Weekly Status Report: Legacy System Migration
+**Date**: March 27, 2026
+**Status**: On Track
+
+## Team Members
+Marcus Chen, Ryan Gosling, Daniel Wilson, Sophia Miller, Mia Jackson
+
+## Updates
+- **Marcus Chen**: Successfully migrated 10k users to the new system.
+- **Ryan Gosling**: Wrote unit tests for the billing service.
+- **Daniel Wilson**: Reviewing pull requests for the latest sprint.
+- **Sophia Miller**: Blocked by DevOps on provision of new CI/CD runners.
+- **Mia Jackson**: Conducted user interviews for the redesign.

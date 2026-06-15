@@ -1,0 +1,13 @@
+# Architecture Review - January 28, 2026
+
+**Attendees**: Mia Jackson, Amanda Smith, Michael Chang, Jessica Lee, Isabella Moore, James Wilson, Daniel Wilson, Ryan Gosling, David Kim
+
+## Discussion Points
+- **Isabella Moore**: Deployed the new database schema to staging.
+- **Daniel Wilson**: Deployed the new database schema to staging.
+- **Amanda Smith**: Updated the API documentation for the v2 release.
+- **Isabella Moore**: Drafted UI components for the new dashboard.
+
+## Action Items
+- [ ] Michael Chang to follow up on related tasks.
+- [ ] Mia Jackson to follow up on related tasks.

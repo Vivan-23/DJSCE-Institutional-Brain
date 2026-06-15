@@ -100,10 +100,11 @@ class TestTranscriptPipeline:
         assert {c.description for c in commitments} == {"Build the refund API", "Write the UI"}
         assert all(c.assignee_employee_id is not None for c in commitments)
 
-        # Employees were created from the assignee names
+        # Assignee names resolved to employees (created as stubs, or matched to
+        # people already seeded from company.yaml — e.g. "Priya" -> "Priya Nair").
         employees = {e.display_name for e in db_session.exec(select(Employee)).all()}
-        assert "Priya" in employees
-        assert "Alex Chen" in employees
+        assert any(n == "Priya" or n.startswith("Priya") for n in employees)
+        assert any(n == "Alex Chen" or n.startswith("Alex") for n in employees)
 
         # Due date parsed where ISO-formatted
         ui = next(c for c in commitments if c.description == "Write the UI")

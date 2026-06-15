@@ -1,0 +1,13 @@
+# Architecture Review - December 29, 2025
+
+**Attendees**: Amanda Smith, Daniel Wilson, Joshua Thomas, James Wilson, Sarah Jenkins, Jessica Lee, William Davis
+
+## Discussion Points
+- **Sarah Jenkins**: Refactored the core authentication module.
+- **Amanda Smith**: Refactored the core authentication module.
+- **Daniel Wilson**: Wrote unit tests for the billing service.
+
+## Action Items
+- [ ] Daniel Wilson to follow up on related tasks.
+- [ ] Jessica Lee to follow up on related tasks.
+- [ ] Sarah Jenkins to follow up on related tasks.

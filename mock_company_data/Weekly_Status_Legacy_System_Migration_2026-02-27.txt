@@ -1,0 +1,11 @@
+# Weekly Status Report: Legacy System Migration
+**Date**: February 27, 2026
+**Status**: Delayed
+
+## Team Members
+Alex Rivera, Daniel Wilson, Sophia Miller
+
+## Updates
+- **Alex Rivera**: Blocked by DevOps on provision of new CI/CD runners.
+- **Daniel Wilson**: Deployed the new database schema to staging.
+- **Sophia Miller**: Attended cross-functional sync with the marketing team.

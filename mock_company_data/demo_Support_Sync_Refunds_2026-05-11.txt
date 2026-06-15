@@ -1,0 +1,11 @@
+Support Sync — Refund Handling follow-up — May 11, 2026
+Attendees: Ravi Patel, Maya Chen
+
+Maya Chen: The refund policy draft is done. One thing came up — a customer wanted a refund on a subscription they'd used for two months.
+Ravi Patel: Good case. For subscriptions, we prorate. Refund the unused portion only, not the whole term. If they used two months of a twelve-month plan, refund ten months' worth.
+Maya Chen: And the 500 dollar escalation rule still applies to the prorated amount?
+Ravi Patel: Yes — base the escalation threshold on the actual refund amount, not the original order total. If the prorated refund is over 500, escalate.
+Maya Chen: What about customers who are abusive or clearly abusing the policy?
+Ravi Patel: If you suspect refund abuse — like a third refund request in 90 days — flag the account and escalate to me before acting. Don't auto-approve repeat refunders.
+Maya Chen: Makes sense. I'll add the proration rule and the abuse-flag step to the policy doc by Wednesday.
+Ravi Patel: Perfect. And remember the core guardrail: refunds only go back to the original payment method, always log the reason code.

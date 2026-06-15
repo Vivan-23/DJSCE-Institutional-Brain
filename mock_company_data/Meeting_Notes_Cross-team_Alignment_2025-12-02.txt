@@ -1,0 +1,12 @@
+# Cross-team Alignment - December 02, 2025
+
+**Attendees**: Daniel Wilson, Joshua Thomas, Isabella Moore, Jessica Lee, David Kim, James Wilson, Mia Jackson
+
+## Discussion Points
+- **Daniel Wilson**: Waiting on design assets for the landing page.
+- **Mia Jackson**: Waiting on design assets for the landing page.
+- **David Kim**: Updated the API documentation for the v2 release.
+
+## Action Items
+- [ ] Jessica Lee to follow up on related tasks.
+- [ ] Jessica Lee to follow up on related tasks.

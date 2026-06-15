@@ -1,0 +1,13 @@
+# Daily Standup Summary - February 21, 2026
+
+**Attendees**: James Wilson, Ryan Gosling, Matthew Taylor, Emma Anderson, Marcus Chen
+
+## Discussion Points
+- **Ryan Gosling**: Successfully migrated 10k users to the new system.
+- **Emma Anderson**: Deployed the new database schema to staging.
+- **Emma Anderson**: Investigated memory leak in the worker nodes.
+- **James Wilson**: Fixed a critical bug in the payment gateway.
+
+## Action Items
+- [ ] Matthew Taylor to follow up on related tasks.
+- [ ] Matthew Taylor to follow up on related tasks.

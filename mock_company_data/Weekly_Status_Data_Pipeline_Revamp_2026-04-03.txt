@@ -1,0 +1,11 @@
+# Weekly Status Report: Data Pipeline Revamp
+**Date**: April 03, 2026
+**Status**: Completed
+
+## Team Members
+William Davis, James Wilson, Joshua Thomas
+
+## Updates
+- **William Davis**: Deployed the new database schema to staging.
+- **James Wilson**: Updated the API documentation for the v2 release.
+- **Joshua Thomas**: Updated the API documentation for the v2 release.

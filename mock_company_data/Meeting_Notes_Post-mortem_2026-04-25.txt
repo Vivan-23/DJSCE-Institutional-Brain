@@ -1,0 +1,13 @@
+# Post-mortem - April 25, 2026
+
+**Attendees**: Emma Anderson, Sophia Miller, Mia Jackson, Ryan Gosling, Michael Chang, Joshua Thomas, James Wilson, Daniel Wilson, Alex Rivera
+
+## Discussion Points
+- **Sophia Miller**: Successfully migrated 10k users to the new system.
+- **Emma Anderson**: Conducted user interviews for the redesign.
+- **Daniel Wilson**: Drafted UI components for the new dashboard.
+
+## Action Items
+- [ ] James Wilson to follow up on related tasks.
+- [ ] Daniel Wilson to follow up on related tasks.
+- [ ] Joshua Thomas to follow up on related tasks.

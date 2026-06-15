@@ -1,0 +1,11 @@
+# Weekly Status Report: Data Pipeline Revamp
+**Date**: March 13, 2026
+**Status**: At Risk
+
+## Team Members
+Andrew White, Matthew Taylor, Sophia Miller
+
+## Updates
+- **Andrew White**: Waiting on design assets for the landing page.
+- **Matthew Taylor**: Refactored the core authentication module.
+- **Sophia Miller**: Refactored the core authentication module.

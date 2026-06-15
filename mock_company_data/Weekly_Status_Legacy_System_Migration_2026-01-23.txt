@@ -1,0 +1,15 @@
+# Weekly Status Report: Legacy System Migration
+**Date**: January 23, 2026
+**Status**: At Risk
+
+## Team Members
+Alex Rivera, Michael Chang, Olivia Brown, David Kim, Joshua Thomas, Isabella Moore, Amanda Smith
+
+## Updates
+- **Alex Rivera**: Attended cross-functional sync with the marketing team.
+- **Michael Chang**: Reviewing pull requests for the latest sprint.
+- **Olivia Brown**: Reviewing pull requests for the latest sprint.
+- **David Kim**: Refactored the core authentication module.
+- **Joshua Thomas**: Optimized the search query performance by 30%.
+- **Isabella Moore**: Deployed the new database schema to staging.
+- **Amanda Smith**: Investigated memory leak in the worker nodes.

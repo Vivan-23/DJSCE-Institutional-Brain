@@ -1,0 +1,15 @@
+# Weekly Status Report: Project Beta
+**Date**: February 27, 2026
+**Status**: On Track
+
+## Team Members
+Daniel Wilson, Amanda Smith, Isabella Moore, Alex Rivera, Andrew White, David Kim, Michael Chang
+
+## Updates
+- **Daniel Wilson**: Attended cross-functional sync with the marketing team.
+- **Amanda Smith**: Investigated memory leak in the worker nodes.
+- **Isabella Moore**: Blocked by DevOps on provision of new CI/CD runners.
+- **Alex Rivera**: Deployed the new database schema to staging.
+- **Andrew White**: Wrote unit tests for the billing service.
+- **David Kim**: Deployed the new database schema to staging.
+- **Michael Chang**: Optimized the search query performance by 30%.

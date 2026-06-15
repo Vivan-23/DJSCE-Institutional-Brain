@@ -1,0 +1,14 @@
+# Daily Standup Summary - January 15, 2026
+
+**Attendees**: Mia Jackson, Amanda Smith, Emma Anderson, Daniel Wilson, David Kim, Olivia Brown, Alex Rivera, Joshua Thomas
+
+## Discussion Points
+- **Daniel Wilson**: Refactored the core authentication module.
+- **David Kim**: Refactored the core authentication module.
+- **Mia Jackson**: Deployed the new database schema to staging.
+- **Daniel Wilson**: Drafted UI components for the new dashboard.
+
+## Action Items
+- [ ] Alex Rivera to follow up on related tasks.
+- [ ] David Kim to follow up on related tasks.
+- [ ] Emma Anderson to follow up on related tasks.

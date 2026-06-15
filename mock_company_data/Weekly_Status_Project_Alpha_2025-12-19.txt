@@ -1,0 +1,14 @@
+# Weekly Status Report: Project Alpha
+**Date**: December 19, 2025
+**Status**: Completed
+
+## Team Members
+Sarah Jenkins, Ryan Gosling, Matthew Taylor, James Wilson, Mia Jackson, Amanda Smith
+
+## Updates
+- **Sarah Jenkins**: Wrote unit tests for the billing service.
+- **Ryan Gosling**: Fixed a critical bug in the payment gateway.
+- **Matthew Taylor**: Wrote unit tests for the billing service.
+- **James Wilson**: Reviewing pull requests for the latest sprint.
+- **Mia Jackson**: Wrote unit tests for the billing service.
+- **Amanda Smith**: Drafted UI components for the new dashboard.

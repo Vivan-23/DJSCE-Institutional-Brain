@@ -1,0 +1,11 @@
+Support Sync — Refund Handling sign-off — May 18, 2026
+Attendees: Ravi Patel, Maya Chen, Dana Lee
+
+Dana Lee: I reviewed the refund policy doc. It's solid. Let's confirm the final flow so the team and any automation can follow it exactly.
+Ravi Patel: Step one, look up the order and verify the purchase date and payment method. Step two, check the window — within 30 days is eligible for standard handling. Step three, apply the amount rules: under 200 approve directly, 200 to 500 approve with a logged reason, over 500 escalate to a manager.
+Maya Chen: Step four, for subscriptions, prorate to the unused portion and apply the same thresholds to the refund amount.
+Ravi Patel: Step five, always refund to the original payment method and log the reason code in Zendesk. Step six, if it's outside 30 days, or a suspected abuse case, or you're unsure, escalate to the support lead before promising anything.
+Dana Lee: Good. The hard guardrails are: never refund to a different payment method, never approve over 500 without manager approval, and never promise a refund to the customer before it's approved.
+Ravi Patel: Agreed. Maya, can you publish the final policy to the help center by Thursday?
+Maya Chen: I'll publish the final refund policy to the help center by Thursday.
+Dana Lee: I'll brief the rest of the support team on the new process next Monday.

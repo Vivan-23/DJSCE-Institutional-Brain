@@ -163,21 +163,36 @@ The seeded demo user is `admin`.
 
 ---
 
-## 6. Loading your company's data
+## 6. Loading the demo data
 
-This is the **clean customization template** — no sample data is bundled. Add
-your company's knowledge through any of:
+This is the **demo branch** — it bundles sample data so you can show the product
+end-to-end without setting anything up. The org is pre-seeded from
+[`company.yaml`](../company.yaml) (sign in as `demo@companybrain.ai` / `demo123`,
+or as any teammate listed there with `demo123`).
 
-- **Meetings** page → paste meeting transcripts (extraction runs automatically);
-- **Data Sources** page → upload documents (`.txt/.pdf/.docx`);
-- **Sources API** → `POST /api/v1/sources/{name}/sync` to push fragments from a
-  connector (see [ARCHITECTURE.md](ARCHITECTURE.md) → connectors).
+With the stack running (`docker compose up`) and `GROQ_API_KEY` set, load the
+sample meetings through the real pipeline:
 
-To seed the employee/org structure, create employees (they are also auto-created
-from meeting/commitment extraction) and set `manager_id`/`timezone` as needed.
+```bash
+pip install requests
+python ingest_all.py            # curated scenarios + a sample of generic notes
+python ingest_all.py --all      # load every file in mock_company_data/
+python ingest_all.py --approve  # also auto-approve skills so SKILL.md exports
+python ingest_all.py --quick    # only the curated refund + incident scenarios
+```
 
-> The full prototype on the `main` branch bundles `mock_company_data/` plus
-> `ingest_all.py` if you want example data to explore first.
+The loader logs in, posts the transcripts (→ **Meetings** + **Commitments**),
+sends a subset to the document pipeline (→ **Graph Map**), waits for the worker,
+then triggers **skill extraction**. The curated `demo_*` scenarios are written so
+extraction synthesizes clean, citable skills — e.g. *"Handle a refund request"*
+and *"Respond to a production incident"* — the headline capability to demo.
+
+**Suggested demo path:** Meetings → Commitments → Skills (review & approve) →
+open an approved skill and view its exported `SKILL.md` (the agent-consumable
+deliverable).
+
+> Other branches: `template` is the clean, data-free base to fork per company;
+> `main` is the original prototype.
 
 ---
 

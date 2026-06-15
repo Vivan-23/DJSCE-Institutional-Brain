@@ -1,0 +1,11 @@
+# Weekly Status Report: Legacy System Migration
+**Date**: January 02, 2026
+**Status**: At Risk
+
+## Team Members
+Marcus Chen, Daniel Wilson, David Kim
+
+## Updates
+- **Marcus Chen**: Blocked by DevOps on provision of new CI/CD runners.
+- **Daniel Wilson**: Waiting on design assets for the landing page.
+- **David Kim**: Blocked by DevOps on provision of new CI/CD runners.

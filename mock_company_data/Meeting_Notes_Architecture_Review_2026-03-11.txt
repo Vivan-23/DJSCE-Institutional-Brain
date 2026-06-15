@@ -1,0 +1,13 @@
+# Architecture Review - March 11, 2026
+
+**Attendees**: Jessica Lee, Sarah Jenkins, Marcus Chen, Mia Jackson, Isabella Moore, Olivia Brown, Michael Chang, Alex Rivera, Emily Carter
+
+## Discussion Points
+- **Michael Chang**: Conducted user interviews for the redesign.
+- **Emily Carter**: Optimized the search query performance by 30%.
+- **Marcus Chen**: Waiting on design assets for the landing page.
+
+## Action Items
+- [ ] Sarah Jenkins to follow up on related tasks.
+- [ ] Jessica Lee to follow up on related tasks.
+- [ ] Michael Chang to follow up on related tasks.

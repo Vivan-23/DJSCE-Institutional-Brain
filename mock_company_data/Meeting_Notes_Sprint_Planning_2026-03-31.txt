@@ -1,0 +1,11 @@
+# Sprint Planning - March 31, 2026
+
+**Attendees**: Andrew White, Marcus Chen, Olivia Brown, Matthew Taylor, Jessica Lee, Amanda Smith, Joshua Thomas, Emily Carter
+
+## Discussion Points
+- **Emily Carter**: Fixed a critical bug in the payment gateway.
+- **Amanda Smith**: Blocked by DevOps on provision of new CI/CD runners.
+- **Marcus Chen**: Deployed the new database schema to staging.
+
+## Action Items
+- [ ] Andrew White to follow up on related tasks.

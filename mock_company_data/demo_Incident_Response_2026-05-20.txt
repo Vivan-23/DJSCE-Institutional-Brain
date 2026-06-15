@@ -1,0 +1,11 @@
+Engineering Incident Review — sign-off — May 20, 2026
+Attendees: Sam Rivera, Priya Nair, Dana Lee
+
+Dana Lee: Let's finalize the incident response process so it's unambiguous for the team and for any automated assistant.
+Sam Rivera: Step one, detect — an alert fires or a customer reports an issue. Step two, declare the incident in #incidents and assign an incident commander. Step three, classify severity: SEV1 if a core flow like login or checkout is down or error rate is over 5 percent, SEV2 if degraded, SEV3 if minor.
+Priya Nair: Step four, respond — for SEV1 page on-call immediately and notify Dana within 15 minutes; escalate to the eng lead if on-call doesn't ack within 10 minutes.
+Sam Rivera: Step five, mitigate — roll back to last known-good first; fix forward only if rollback isn't possible, and any production change needs a second engineer's review. Step six, communicate — incident commander posts updates every 30 minutes, and no customer comms on a SEV1 without Dana's sign-off.
+Priya Nair: Step seven, after resolution, write a blameless postmortem within 48 hours with a timeline and action items.
+Dana Lee: The hard guardrails: no unreviewed production changes during an incident, no customer communication on SEV1 without my approval, and never leave a SEV1 unacknowledged.
+Sam Rivera: Priya, can you publish the final runbook and link it in #incidents by Thursday?
+Priya Nair: I'll publish the final incident runbook and pin it in #incidents by Thursday.

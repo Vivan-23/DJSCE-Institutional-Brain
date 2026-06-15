@@ -1,0 +1,11 @@
+# Weekly Status Report: Project Beta
+**Date**: February 06, 2026
+**Status**: At Risk
+
+## Team Members
+William Davis, Matthew Taylor, Amanda Smith
+
+## Updates
+- **William Davis**: Blocked by DevOps on provision of new CI/CD runners.
+- **Matthew Taylor**: Investigated memory leak in the worker nodes.
+- **Amanda Smith**: Optimized the search query performance by 30%.

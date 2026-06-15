@@ -1,0 +1,12 @@
+# Post-mortem - January 02, 2026
+
+**Attendees**: Amanda Smith, Sarah Jenkins, Alex Rivera, Emily Carter, William Davis, Ryan Gosling
+
+## Discussion Points
+- **Ryan Gosling**: Wrote unit tests for the billing service.
+- **Alex Rivera**: Drafted UI components for the new dashboard.
+
+## Action Items
+- [ ] Amanda Smith to follow up on related tasks.
+- [ ] Amanda Smith to follow up on related tasks.
+- [ ] Ryan Gosling to follow up on related tasks.

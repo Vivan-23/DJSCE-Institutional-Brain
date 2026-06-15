@@ -1,0 +1,15 @@
+# Design Sync - April 15, 2026
+
+**Attendees**: Daniel Wilson, Isabella Moore, James Wilson, Alex Rivera
+
+## Discussion Points
+- **James Wilson**: Refactored the core authentication module.
+- **James Wilson**: Conducted user interviews for the redesign.
+- **Isabella Moore**: Fixed a critical bug in the payment gateway.
+- **Isabella Moore**: Successfully migrated 10k users to the new system.
+- **Daniel Wilson**: Successfully migrated 10k users to the new system.
+
+## Action Items
+- [ ] Isabella Moore to follow up on related tasks.
+- [ ] Alex Rivera to follow up on related tasks.
+- [ ] Isabella Moore to follow up on related tasks.

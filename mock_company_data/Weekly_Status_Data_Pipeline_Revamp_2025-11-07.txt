@@ -1,0 +1,11 @@
+# Weekly Status Report: Data Pipeline Revamp
+**Date**: November 07, 2025
+**Status**: Delayed
+
+## Team Members
+Daniel Wilson, Amanda Smith, Andrew White
+
+## Updates
+- **Daniel Wilson**: Successfully migrated 10k users to the new system.
+- **Amanda Smith**: Wrote unit tests for the billing service.
+- **Andrew White**: Conducted user interviews for the redesign.

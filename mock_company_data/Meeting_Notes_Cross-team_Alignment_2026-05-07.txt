@@ -1,0 +1,11 @@
+# Cross-team Alignment - May 07, 2026
+
+**Attendees**: Emily Carter, Mia Jackson, Jessica Lee, Sarah Jenkins, William Davis, Daniel Wilson
+
+## Discussion Points
+- **Jessica Lee**: Blocked by DevOps on provision of new CI/CD runners.
+- **Daniel Wilson**: Conducted user interviews for the redesign.
+- **Mia Jackson**: Fixed a critical bug in the payment gateway.
+
+## Action Items
+- [ ] Jessica Lee to follow up on related tasks.

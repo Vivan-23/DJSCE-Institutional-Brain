@@ -1,0 +1,15 @@
+# Weekly Status Report: Data Pipeline Revamp
+**Date**: January 09, 2026
+**Status**: On Track
+
+## Team Members
+Isabella Moore, William Davis, James Wilson, Daniel Wilson, Ryan Gosling, Marcus Chen, Matthew Taylor
+
+## Updates
+- **Isabella Moore**: Refactored the core authentication module.
+- **William Davis**: Wrote unit tests for the billing service.
+- **James Wilson**: Successfully migrated 10k users to the new system.
+- **Daniel Wilson**: Waiting on design assets for the landing page.
+- **Ryan Gosling**: Blocked by DevOps on provision of new CI/CD runners.
+- **Marcus Chen**: Conducted user interviews for the redesign.
+- **Matthew Taylor**: Blocked by DevOps on provision of new CI/CD runners.

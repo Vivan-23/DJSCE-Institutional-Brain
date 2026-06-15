@@ -1,0 +1,12 @@
+# Weekly Status Report: Project Beta
+**Date**: January 09, 2026
+**Status**: At Risk
+
+## Team Members
+Ryan Gosling, Matthew Taylor, Jessica Lee, Emily Carter
+
+## Updates
+- **Ryan Gosling**: Reviewing pull requests for the latest sprint.
+- **Matthew Taylor**: Successfully migrated 10k users to the new system.
+- **Jessica Lee**: Conducted user interviews for the redesign.
+- **Emily Carter**: Fixed a critical bug in the payment gateway.

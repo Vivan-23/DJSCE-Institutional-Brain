@@ -30,31 +30,55 @@ settings:
 #   manager:  email of this person's manager, or null
 #   timezone: IANA tz (e.g. America/New_York), default UTC
 employees:
+  # ── Sample org (DEMO branch) ──────────────────────────────────────────────
+  # A small, realistic org used for product demos. The curated sample meetings
+  # in mock_company_data/ reference these people, so commitments resolve to real
+  # employees and the org chart looks populated. Everyone has a password here for
+  # demo convenience (so you can sign in as anyone and try their PA check-in).
   - name: "Demo User"
     email: "demo@companybrain.ai"
     role: "admin"
     title: "Administrator"
     manager: null
     timezone: "UTC"
-    password: "demo123"          # initial login password (change in production)
+    password: "demo123"          # primary demo login
 
-  # --- Add the company's people below, for example: ---
-  # - name: "Dana Lee"
-  #   email: "dana@acme.com"
-  #   role: "admin"
-  #   title: "VP Engineering"
-  #   manager: null
-  #   timezone: "America/New_York"
-  #   password: "changeme123"
-  # - name: "Ravi Patel"
-  #   email: "ravi@acme.com"
-  #   role: "manager"
-  #   title: "Eng Manager"
-  #   manager: "dana@acme.com"
-  #   timezone: "America/New_York"
-  #   password: "changeme123"
-  # - name: "Maya Chen"          # no password → org structure only, no login yet
-  #   email: "maya@acme.com"
-  #   role: "employee"
-  #   manager: "ravi@acme.com"
-  #   timezone: "Asia/Kolkata"
+  - name: "Dana Lee"
+    email: "dana@companybrain.ai"
+    role: "admin"
+    title: "VP Operations"
+    manager: null
+    timezone: "America/New_York"
+    password: "demo123"
+
+  - name: "Ravi Patel"
+    email: "ravi@companybrain.ai"
+    role: "manager"
+    title: "Customer Support Lead"
+    manager: "dana@companybrain.ai"
+    timezone: "America/New_York"
+    password: "demo123"
+
+  - name: "Maya Chen"
+    email: "maya@companybrain.ai"
+    role: "employee"
+    title: "Support Specialist"
+    manager: "ravi@companybrain.ai"
+    timezone: "Asia/Kolkata"
+    password: "demo123"
+
+  - name: "Sam Rivera"
+    email: "sam@companybrain.ai"
+    role: "manager"
+    title: "Engineering Lead"
+    manager: "dana@companybrain.ai"
+    timezone: "America/Los_Angeles"
+    password: "demo123"
+
+  - name: "Priya Nair"
+    email: "priya@companybrain.ai"
+    role: "employee"
+    title: "Backend Engineer"
+    manager: "sam@companybrain.ai"
+    timezone: "Asia/Kolkata"
+    password: "demo123"

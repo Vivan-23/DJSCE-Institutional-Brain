@@ -1,0 +1,14 @@
+# Design Sync - April 16, 2026
+
+**Attendees**: Andrew White, Jessica Lee, Mia Jackson, Matthew Taylor, William Davis
+
+## Discussion Points
+- **Mia Jackson**: Successfully migrated 10k users to the new system.
+- **Mia Jackson**: Investigated memory leak in the worker nodes.
+- **Jessica Lee**: Wrote unit tests for the billing service.
+- **William Davis**: Optimized the search query performance by 30%.
+
+## Action Items
+- [ ] Andrew White to follow up on related tasks.
+- [ ] Mia Jackson to follow up on related tasks.
+- [ ] Matthew Taylor to follow up on related tasks.

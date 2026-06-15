@@ -1,0 +1,13 @@
+# Cross-team Alignment - December 20, 2025
+
+**Attendees**: Emma Anderson, Mia Jackson, Emily Carter, Daniel Wilson, Ryan Gosling
+
+## Discussion Points
+- **Daniel Wilson**: Attended cross-functional sync with the marketing team.
+- **Emma Anderson**: Attended cross-functional sync with the marketing team.
+- **Mia Jackson**: Refactored the core authentication module.
+- **Emma Anderson**: Deployed the new database schema to staging.
+- **Emily Carter**: Reviewing pull requests for the latest sprint.
+
+## Action Items
+- [ ] Daniel Wilson to follow up on related tasks.

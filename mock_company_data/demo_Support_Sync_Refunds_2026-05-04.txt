@@ -1,0 +1,15 @@
+Support Sync — Refund Handling — May 4, 2026
+Attendees: Ravi Patel, Maya Chen, Dana Lee
+
+Ravi Patel: Let's lock down how we handle refund requests so it's consistent. When a customer asks for a refund, first pull up the order in the admin panel and confirm the purchase date.
+Maya Chen: And if it's within 30 days of purchase?
+Ravi Patel: If it's within 30 days and under 200 dollars, you can approve the refund immediately, no manager sign-off needed. Issue it to the original payment method.
+Maya Chen: What about bigger orders?
+Ravi Patel: If the order is over 500 dollars, you must escalate to a manager for approval before issuing anything. Anything between 200 and 500 needs a quick note in the ticket explaining the reason, but you can approve it yourself.
+Dana Lee: Important guardrail — never refund to a different card or account than the one used for the original purchase. That's how fraud slips in.
+Ravi Patel: Right. And always log the refund reason code in Zendesk so we can track patterns.
+Maya Chen: Got it. What if the customer is outside the 30-day window?
+Ravi Patel: Outside 30 days it's a judgment call — escalate to me. Don't promise anything to the customer until you have approval.
+Dana Lee: Maya, can you write up the first draft of the refund policy doc by Friday so we have something to point new hires to?
+Maya Chen: Yes, I'll have the refund policy draft ready by Friday.
+Ravi Patel: I'll set up the refund reason codes in Zendesk by end of week.
