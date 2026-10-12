@@ -1,0 +1,15 @@
+[DEMONSTRATION PROTOTYPE · SYNTHETIC INSTITUTIONAL RECORD]
+Academic Council Meeting: Autonomous Elective Curriculum Review
+Date: October 4, 2026
+Attendees: Dr. Aditi Rao, Dr. Rohan Mehta, Prof. Neha Iyer, Prof. Karan Shah
+
+Dr. Aditi Rao: Welcome everyone. Today we are reviewing the proposed elective on Applied Generative AI and Machine Learning for the final-year B.Tech Computer Engineering autonomous curriculum. This is a synthetic curriculum proposal under evaluation.
+Dr. Rohan Mehta: The Department of Computer Engineering has drafted the syllabus. The course incorporates 3 lecture hours and 2 laboratory practical hours per week. Prerequisites are Data Structures and Applied Mathematics.
+Prof. Neha Iyer: From an IQAC and accreditation perspective, we need mapped Course Outcomes (COs) aligned with Program Outcomes (POs), specifically modern tool usage and lifelong learning. Also, what are the GPU hardware requirements for this elective?
+Dr. Rohan Mehta: The existing Advanced Computing Lab has 30 workstations with RTX 4080 GPUs, which is sufficient for student lab batches of 15 pairs. However, cloud compute credits may be required for fine-tuning larger open models.
+Dr. Aditi Rao: Agreed. We approve the proposed elective syllabus in principle, pending formal validation by the external Board of Studies. Decision: The elective syllabus is cleared for Board of Studies external review with a cap of 60 students per batch.
+Dr. Aditi Rao: Decision: Cloud API compute allocation of Rs 75,000 is approved under department computing budget.
+Dr. Aditi Rao: Prof. Karan Shah, please compile the finalized course syllabus and CO-PO mapping matrix by Friday.
+Prof. Karan Shah: I will compile the finalized elective syllabus and CO-PO mapping matrix by Friday.
+Dr. Rohan Mehta: I will schedule the external Board of Studies ratification review meeting by next Monday.
+Prof. Neha Iyer: I will prepare the accreditation compliance checklist and prerequisite evaluation report by Wednesday.

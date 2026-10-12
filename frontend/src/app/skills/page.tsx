@@ -31,23 +31,23 @@ interface SkillFull extends SkillMeta {
   citations: Citation[];
 }
 
-const STATUS_STYLE: Record<Status, string> = {
-  draft: 'bg-blue-500/10 border-blue-500/30 text-blue-400',
-  approved: 'bg-emerald-500/10 border-emerald-500/30 text-emerald-400',
-  stale: 'bg-warning/10 border-warning/30 text-warning',
-  deprecated: 'bg-gray-700/20 border-gray-600/40 text-gray-500',
-  rejected: 'bg-danger/10 border-danger/30 text-danger',
+const STATUS_STYLE: Record<Status, { label: string; style: string }> = {
+  draft: { label: 'Draft Proposal', style: 'bg-blue-500/15 border-blue-500/30 text-blue-300' },
+  approved: { label: 'Ratified / Active', style: 'bg-emerald-500/15 border-emerald-500/30 text-emerald-300' },
+  stale: { label: 'Under Revision (Stale)', style: 'bg-amber-500/15 border-amber-500/30 text-amber-300' },
+  deprecated: { label: 'Superseded', style: 'bg-slate-700/20 border-slate-600/40 text-slate-400' },
+  rejected: { label: 'Rejected by Committee', style: 'bg-rose-500/15 border-rose-500/30 text-rose-300' },
 };
 
 function Section({ title, items, numbered }: { title: string; items: string[]; numbered?: boolean }) {
   if (!items?.length) return null;
   return (
     <div>
-      <h3 className="text-xs uppercase tracking-wide text-gray-500 mb-1.5">{title}</h3>
+      <h3 className="text-[11px] uppercase tracking-wider font-semibold text-slate-400 mb-1.5">{title}</h3>
       <ol className={numbered ? 'list-decimal list-inside space-y-1' : 'space-y-1'}>
         {items.map((s, i) => (
-          <li key={i} className="text-sm text-gray-300">
-            {!numbered && <span className="text-gray-600 mr-1.5">·</span>}
+          <li key={i} className="text-xs sm:text-sm text-slate-300 leading-relaxed">
+            {!numbered && <span className="text-slate-600 mr-1.5">·</span>}
             {s}
           </li>
         ))}
@@ -80,7 +80,7 @@ export default function SkillsPage() {
         setLoading(false);
       })
       .catch(() => {
-        setError('Could not load skills. Is the backend running?');
+        setError('Could not load institutional procedures. Please check backend status.');
         setLoading(false);
       });
   }, []);
@@ -113,14 +113,14 @@ export default function SkillsPage() {
     setActionMsg('');
     const res = await apiFetch(`/api/v1/skills/${id}/${action}`, { method: 'POST' });
     if (res.status === 403) {
-      setActionMsg('You need a manager role to review skills.');
+      setActionMsg('Notice: Committee Convener or Academic Coordinator role required to ratify procedures.');
       return;
     }
     if (res.ok) {
-      await openDetail(id); // collapse
+      await openDetail(id);
       load(filter);
     } else {
-      setActionMsg(`Action failed (HTTP ${res.status}).`);
+      setActionMsg(`Procedure update failed (HTTP ${res.status}).`);
     }
   };
 
@@ -129,7 +129,7 @@ export default function SkillsPage() {
     if (res.ok) {
       setFileText(await res.text());
     } else {
-      setActionMsg('Only approved skills export a file.');
+      setActionMsg('Notice: Only ratified and approved procedures export an executable SKILL.md file.');
     }
   };
 
@@ -137,171 +137,212 @@ export default function SkillsPage() {
     setActionMsg('');
     const res = await apiFetch('/api/v1/skills/extract', { method: 'POST' });
     if (res.status === 403) {
-      setActionMsg('You need a manager role to run extraction.');
+      setActionMsg('Notice: Academic Coordinator or Administrator role required to trigger procedure synthesis.');
       return;
     }
     if (res.ok) {
       const data = await res.json();
-      setActionMsg(`Extraction complete — ${data.candidates_created} candidate skill(s) created.`);
+      setActionMsg(`Extraction complete — ${data.candidates_created} candidate procedure(s) synthesized.`);
       load(filter);
     }
   };
 
   return (
-    <main className="min-h-screen p-8 md:p-12">
-      <div className="max-w-3xl mx-auto">
-        <div className="flex items-start justify-between gap-4 mb-2">
-          <h1 className="text-3xl font-bold text-white">Skills</h1>
-          <button
-            onClick={runExtraction}
-            className="text-sm bg-primary/10 border border-primary/30 text-primary px-3 py-1.5 rounded-lg hover:bg-primary/20 transition-colors"
-          >
-            Run extraction
-          </button>
+    <main className="p-6 md:p-10 max-w-4xl mx-auto space-y-6">
+      {/* Header */}
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <div>
+          <h1 className="text-2xl md:text-3xl font-bold text-slate-100 tracking-tight">
+            Institutional Procedures &amp; SOPs
+          </h1>
+          <p className="text-slate-400 text-xs sm:text-sm mt-1">
+            Structured operating procedures synthesized from committee decisions, exam bylaws, and quality audits.
+          </p>
         </div>
-        <p className="text-gray-400 mb-6">
-          Executable procedures synthesized from your company&apos;s fragments. Review,
-          approve, and export them as agent-consumable skill files.
-        </p>
+        <button
+          onClick={runExtraction}
+          className="text-xs bg-blue-600/20 border border-blue-500/40 text-blue-300 px-3.5 py-2 rounded font-semibold hover:bg-blue-600/30 transition-colors shrink-0 cursor-pointer shadow-xs"
+        >
+          Synthesize SOPs from Records
+        </button>
+      </div>
 
-        {actionMsg && (
-          <div className="mb-4 p-3 rounded-lg bg-primary/10 border border-primary/30 text-primary text-sm">
-            {actionMsg}
-          </div>
-        )}
+      <div className="p-3 rounded bg-slate-900/60 border border-slate-800 text-xs text-slate-400 flex items-center gap-2">
+        <span className="text-amber-400 font-semibold uppercase text-[10px] shrink-0">Demo Notice</span>
+        <span>Generated procedures are draft demonstration workflows and do not constitute official statutory college regulations.</span>
+      </div>
 
-        <div className="flex flex-wrap gap-1.5 mb-6">
-          {(['all', ...STATUSES] as const).map((s) => (
+      {actionMsg && (
+        <div className="p-3 rounded bg-blue-500/10 border border-blue-500/30 text-blue-300 text-xs">
+          {actionMsg}
+        </div>
+      )}
+
+      {/* Filter Tabs */}
+      <div className="flex flex-wrap gap-1.5 border-b border-slate-800 pb-3">
+        {(['all', ...STATUSES] as const).map((s) => {
+          const label = s === 'all' ? `All Procedures (${skills.length})` : STATUS_STYLE[s].label;
+          return (
             <button
               key={s}
               onClick={() => applyFilter(s)}
-              className={`text-xs px-3 py-1.5 rounded-full border transition-colors ${
+              className={`text-xs px-3 py-1.5 rounded-full border transition-colors cursor-pointer ${
                 filter === s
-                  ? 'bg-primary/10 border-primary/30 text-primary'
-                  : 'border-gray-700 text-gray-400 hover:text-white'
+                  ? 'bg-blue-600/20 border-blue-500/40 text-blue-300 font-semibold'
+                  : 'border-slate-800 text-slate-400 hover:text-slate-200 hover:bg-slate-900/60'
               }`}
             >
-              {s === 'all' ? 'All' : s.charAt(0).toUpperCase() + s.slice(1)}
+              {label}
             </button>
+          );
+        })}
+      </div>
+
+      {/* Procedures List */}
+      {loading ? (
+        <div className="space-y-3">
+          {[1, 2].map((i) => (
+            <div key={i} className="glass-panel p-5 animate-pulse h-20 bg-slate-900/60 rounded" />
           ))}
         </div>
-
-        {loading ? (
-          <p className="text-gray-500 text-sm">Loading skills…</p>
-        ) : error ? (
-          <div className="p-3 rounded-lg bg-danger/10 border border-danger/30 text-danger text-sm">
-            {error}
-          </div>
-        ) : skills.length === 0 ? (
-          <div className="glass-panel p-6 text-center text-gray-500 text-sm">
-            No skills yet. Ingest fragments, then run extraction to synthesize candidates.
-          </div>
-        ) : (
-          <ul className="space-y-3">
-            {skills.map((s) => {
-              const open = expandedId === s.id;
-              return (
-                <li key={s.id} className="glass-panel overflow-hidden">
-                  <button
-                    onClick={() => openDetail(s.id)}
-                    className="w-full text-left p-4 hover:bg-gray-900/40 transition-colors"
-                    aria-expanded={open}
-                  >
-                    <div className="flex items-start justify-between gap-4">
-                      <div className="min-w-0">
-                        <p className="text-white font-medium">{s.name}</p>
-                        <p className="text-sm text-gray-400 mt-0.5 line-clamp-2">{s.description}</p>
+      ) : error ? (
+        <div className="p-4 rounded-lg bg-rose-500/10 border border-rose-500/30 text-rose-400 text-xs">
+          {error}
+        </div>
+      ) : skills.length === 0 ? (
+        <div className="glass-panel p-8 text-center text-slate-400 text-xs space-y-2">
+          <p className="font-medium text-slate-300">No procedures match the selected view.</p>
+          <p className="text-[11px] text-slate-500">
+            Ingest committee records and run procedure extraction to automatically synthesize candidate institutional procedures.
+          </p>
+        </div>
+      ) : (
+        <ul className="space-y-3">
+          {skills.map((s) => {
+            const open = expandedId === s.id;
+            const badge = STATUS_STYLE[s.status] ?? STATUS_STYLE.draft;
+            return (
+              <li key={s.id} className="glass-panel overflow-hidden">
+                <button
+                  onClick={() => void openDetail(s.id)}
+                  className="w-full text-left p-4 sm:p-5 hover:bg-slate-900/50 transition-colors cursor-pointer"
+                  aria-expanded={open}
+                >
+                  <div className="flex items-start justify-between gap-4">
+                    <div className="min-w-0 space-y-1">
+                      <div className="flex items-center gap-2">
+                        <span className={`text-[10px] font-semibold uppercase px-2 py-0.5 rounded-full border ${badge.style}`}>
+                          {badge.label}
+                        </span>
+                        <span className="text-[11px] text-slate-400">Rev. v{s.version}</span>
                       </div>
-                      <span
-                        className={`shrink-0 text-xs px-2 py-0.5 rounded-full border ${STATUS_STYLE[s.status]}`}
-                      >
-                        {s.status}
-                      </span>
+                      <h2 className="text-sm sm:text-base font-semibold text-slate-100">
+                        {s.name}
+                      </h2>
+                      <p className="text-xs text-slate-300 line-clamp-2">
+                        {s.description}
+                      </p>
                     </div>
-                  </button>
+                    <span
+                      className={`text-slate-500 text-base leading-none transition-transform shrink-0 ${
+                        open ? 'rotate-180' : ''
+                      }`}
+                      aria-hidden
+                    >
+                      ⌄
+                    </span>
+                  </div>
+                </button>
 
-                  {open && (
-                    <div className="border-t border-gray-800 p-4 space-y-4">
-                      {!detail || detail.id !== s.id ? (
-                        <p className="text-gray-500 text-sm">Loading…</p>
-                      ) : (
-                        <>
-                          {detail.trigger && (
-                            <p className="text-sm text-gray-300">
-                              <span className="text-gray-500">Trigger:</span> {detail.trigger}
-                            </p>
-                          )}
-                          <Section title="Preconditions" items={detail.preconditions} />
-                          <Section title="Steps" items={detail.steps} numbered />
-                          <Section title="Decision Rules" items={detail.decision_rules} />
-                          <Section title="Guardrails" items={detail.guardrails} />
+                {open && (
+                  <div className="border-t border-slate-800/80 p-5 space-y-5 bg-slate-950/40">
+                    {detail && detail.id === s.id ? (
+                      <>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
+                          <div className="p-3 rounded bg-slate-900/60 border border-slate-800">
+                            <span className="text-[10px] uppercase tracking-wider font-semibold text-slate-400 block mb-1">
+                              Invocation Trigger
+                            </span>
+                            <p className="text-slate-200">{detail.trigger}</p>
+                          </div>
                           {detail.escalation && (
-                            <div>
-                              <h3 className="text-xs uppercase tracking-wide text-gray-500 mb-1">
-                                Escalation
-                              </h3>
-                              <p className="text-sm text-gray-300">{detail.escalation}</p>
+                            <div className="p-3 rounded bg-slate-900/60 border border-slate-800">
+                              <span className="text-[10px] uppercase tracking-wider font-semibold text-slate-400 block mb-1">
+                                Escalation Protocol
+                              </span>
+                              <p className="text-slate-200">{detail.escalation}</p>
                             </div>
                           )}
+                        </div>
 
-                          <div>
-                            <h3 className="text-xs uppercase tracking-wide text-gray-500 mb-1.5">
-                              Citations ({detail.citations.length})
+                        <Section title="Required Preconditions" items={detail.preconditions} />
+                        <Section title="Mandatory Execution Steps" items={detail.steps} numbered />
+                        <Section title="Decision Rules & Thresholds" items={detail.decision_rules} />
+                        <Section title="Safety Guardrails & Academic Integrity Checks" items={detail.guardrails} />
+
+                        {detail.citations?.length > 0 && (
+                          <div className="pt-2 border-t border-slate-800/80">
+                            <h3 className="text-[11px] uppercase tracking-wider font-semibold text-slate-400 mb-2">
+                              Evidentiary Source Citations ({detail.citations.length})
                             </h3>
-                            <ul className="space-y-1.5">
-                              {detail.citations.slice(0, 6).map((c) => (
-                                <li
-                                  key={c.citation_id}
-                                  className="text-xs text-gray-500 bg-black/30 border border-gray-800 rounded p-2"
-                                >
-                                  <span className="text-gray-600">[{c.source_type}]</span>{' '}
-                                  {c.content?.slice(0, 160)}
-                                </li>
+                            <div className="space-y-1.5">
+                              {detail.citations.map((c) => (
+                                <div key={c.citation_id} className="text-xs p-2 rounded bg-slate-900/60 border border-slate-800 text-slate-400 font-mono">
+                                  <span className="text-blue-400 font-sans font-semibold mr-1">[{c.source_type ?? 'evidence'}]:</span>
+                                  <span>{c.content?.slice(0, 180)}…</span>
+                                </div>
                               ))}
-                            </ul>
+                            </div>
                           </div>
+                        )}
 
-                          {/* Actions */}
-                          <div className="flex flex-wrap gap-2 pt-2 border-t border-gray-800">
-                            {detail.status !== 'approved' && (
+                        {/* Action buttons */}
+                        <div className="pt-3 border-t border-slate-800 flex flex-wrap gap-2 text-xs">
+                          {s.status === 'draft' && (
+                            <>
                               <button
                                 onClick={() => act(s.id, 'approve')}
-                                className="text-sm bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 px-3 py-1.5 rounded-lg hover:bg-emerald-500/20 transition-colors"
+                                className="px-3 py-1.5 rounded bg-emerald-600/20 hover:bg-emerald-600/30 text-emerald-300 border border-emerald-500/40 font-semibold transition-colors cursor-pointer"
                               >
-                                Approve
+                                Ratify Procedure (Approve)
                               </button>
-                            )}
-                            {detail.status !== 'rejected' && (
                               <button
                                 onClick={() => act(s.id, 'reject')}
-                                className="text-sm bg-danger/10 border border-danger/30 text-danger px-3 py-1.5 rounded-lg hover:bg-danger/20 transition-colors"
+                                className="px-3 py-1.5 rounded bg-rose-600/20 hover:bg-rose-600/30 text-rose-300 border border-rose-500/40 transition-colors cursor-pointer"
                               >
-                                Reject
+                                Reject Proposal
                               </button>
-                            )}
-                            <button
-                              onClick={() => viewFile(s.id)}
-                              className="text-sm border border-gray-700 text-gray-300 px-3 py-1.5 rounded-lg hover:bg-gray-900/50 transition-colors"
-                            >
-                              View skill file
-                            </button>
-                          </div>
+                            </>
+                          )}
+                          <button
+                            onClick={() => viewFile(s.id)}
+                            className="px-3 py-1.5 rounded bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 transition-colors cursor-pointer"
+                          >
+                            Export Standardized SKILL.md
+                          </button>
+                        </div>
 
-                          {fileText && (
-                            <pre className="mt-2 text-xs text-gray-400 whitespace-pre-wrap font-mono max-h-80 overflow-y-auto bg-black/40 rounded-lg p-3 border border-gray-800">
+                        {fileText && (
+                          <div className="mt-3">
+                            <h4 className="text-[11px] uppercase tracking-wider font-semibold text-slate-400 mb-1">
+                              Agent-Consumable Standardized SOP Specification:
+                            </h4>
+                            <pre className="p-3.5 rounded bg-slate-900 border border-slate-800 text-xs font-mono text-slate-300 overflow-x-auto whitespace-pre leading-relaxed">
                               {fileText}
                             </pre>
-                          )}
-                        </>
-                      )}
-                    </div>
-                  )}
-                </li>
-              );
-            })}
-          </ul>
-        )}
-      </div>
+                          </div>
+                        )}
+                      </>
+                    ) : (
+                      <p className="text-slate-400 text-xs">Loading procedure details…</p>
+                    )}
+                  </div>
+                )}
+              </li>
+            );
+          })}
+        </ul>
+      )}
     </main>
   );
 }

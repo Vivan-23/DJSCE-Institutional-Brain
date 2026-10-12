@@ -1,0 +1,32 @@
+[DEMONSTRATION PROTOTYPE · SYNTHETIC INSTITUTIONAL REFERENCE]
+Course Proposal: Applied Generative AI and Machine Learning (Elective IV)
+Program: Bachelor of Technology in Computer Engineering
+Autonomous Regulation: DJSCE-AR-2026
+Department: Computer Engineering
+
+1. Course Objectives:
+To provide students with rigorous foundations in deep neural representations, transformer architectures, diffusion models, and retrieval-augmented generation systems.
+
+2. Prerequisite Courses:
+- CS301: Advanced Data Structures & Algorithms (Grade C or above)
+- CS304: Applied Linear Algebra & Probability Theory
+- CS402: Fundamentals of Machine Learning
+
+3. Syllabus Modules:
+- Module 1: Mathematical Foundations of Attention Mechanisms (6 hours)
+- Module 2: Encoder-Decoder & Decoder-Only Transformer Architectures (8 hours)
+- Module 3: Representation Learning, Embeddings, and Vector Databases (ChromaDB, FAISS) (8 hours)
+- Module 4: Fine-Tuning Paradigms: LoRA, QLoRA, and Instruction Tuning (8 hours)
+- Module 5: Retrieval-Augmented Generation (RAG) Architectures and Factuality Evaluation (6 hours)
+- Module 6: Safety Guardrails, Hallucination Mitigation, and Ethical AI Governance (6 hours)
+
+4. Laboratory Infrastructure:
+- Lab Venue: Advanced Computing Laboratory (Lab 302)
+- Workstation Specs: 32 GB RAM, NVIDIA RTX 4080 (16GB VRAM), Ubuntu 24.04 LTS
+- Approved Batch Capacity: 60 students in two lab batches of 30 students each
+
+5. Assessment Scheme:
+- Continuous Assessment Test (CAT 1 & CAT 2): 20 marks
+- Mini-Project Evaluation using Rubric R3: 20 marks
+- Laboratory Practical Examination & Oral Viva: 25 marks
+- End Semester Written Examination: 60 marks (converted to 50 weightage)

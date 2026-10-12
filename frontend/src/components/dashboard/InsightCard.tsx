@@ -17,10 +17,11 @@ interface Props {
   onDismiss?: (id: string) => void;
 }
 
-const CATEGORY_STYLES: Record<string, string> = {
-  risk: 'text-warning border-warning/30 bg-warning/5',
-  opportunity: 'text-primary border-primary/30 bg-primary/5',
-  info: 'text-gray-400 border-gray-700 bg-gray-800/30',
+const CATEGORY_STYLES: Record<string, { label: string; style: string }> = {
+  risk: { label: 'Governance Alert', style: 'text-amber-400 border-amber-500/30 bg-amber-500/10' },
+  bottleneck: { label: 'Workflow Bottleneck', style: 'text-rose-400 border-rose-500/30 bg-rose-500/10' },
+  opportunity: { label: 'Academic Opportunity', style: 'text-blue-400 border-blue-500/30 bg-blue-500/10' },
+  info: { label: 'Institutional Notice', style: 'text-slate-300 border-slate-700 bg-slate-800/40' },
 };
 
 function parseActions(raw: string): string[] {
@@ -28,36 +29,39 @@ function parseActions(raw: string): string[] {
     const parsed = JSON.parse(raw);
     if (Array.isArray(parsed)) return parsed.filter((a) => typeof a === 'string');
   } catch {
-    // fallback: treat as a single action if parsing fails
     if (raw.trim()) return [raw.trim()];
   }
   return [];
 }
 
 export default function InsightCard({ insight, onDismiss }: Props) {
-  const categoryStyle =
-    CATEGORY_STYLES[insight.category?.toLowerCase()] ?? CATEGORY_STYLES.info;
+  const catKey = insight.category?.toLowerCase() || 'info';
+  const badgeConfig = CATEGORY_STYLES[catKey] ?? {
+    label: insight.category || 'Institutional Notice',
+    style: CATEGORY_STYLES.info.style,
+  };
+
   const actions = parseActions(insight.suggested_actions ?? '[]');
   const confidence = Math.round((insight.confidence_score ?? 0) * 100);
 
   return (
     <article
-      className="glass-panel p-6 flex flex-col gap-3 transition-transform hover:-translate-y-0.5 hover:shadow-lg hover:shadow-primary/10"
-      aria-label={`Insight: ${insight.observation}`}
+      className="glass-panel p-5 sm:p-6 flex flex-col gap-3 transition-colors hover:border-slate-700/80"
+      aria-label={`Governance Insight: ${insight.observation}`}
     >
       {/* Header row */}
       <div className="flex justify-between items-start gap-4">
         <span
-          className={`text-xs font-bold uppercase tracking-wider px-2 py-0.5 rounded border ${categoryStyle}`}
+          className={`text-[11px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded border ${badgeConfig.style}`}
         >
-          {insight.category ?? 'insight'}
+          {badgeConfig.label}
         </span>
         <div className="flex items-center gap-3 shrink-0">
-          <span className="text-xs text-gray-400">{confidence}% confidence</span>
+          <span className="text-xs text-slate-400 font-mono">{confidence}% confidence</span>
           {onDismiss && insight.id && (
             <button
               onClick={() => onDismiss(insight.id!)}
-              className="text-xs text-gray-600 hover:text-gray-300 transition-colors"
+              className="text-xs text-slate-400 hover:text-slate-200 transition-colors cursor-pointer px-1 py-0.5"
               aria-label="Dismiss insight"
             >
               Dismiss
@@ -67,23 +71,23 @@ export default function InsightCard({ insight, onDismiss }: Props) {
       </div>
 
       {/* Observation */}
-      <h3 className="text-base font-semibold text-white leading-snug">
+      <h3 className="text-sm sm:text-base font-semibold text-slate-100 leading-snug">
         {insight.observation}
       </h3>
 
-      {/* Why it matters */}
-      <p className="text-sm text-gray-300">{insight.impact_rationale}</p>
+      {/* Institutional Impact */}
+      <p className="text-xs sm:text-sm text-slate-300 leading-relaxed">{insight.impact_rationale}</p>
 
-      {/* Suggested actions */}
+      {/* Suggested institutional actions */}
       {actions.length > 0 && (
-        <div className="mt-2 pt-3 border-t border-gray-800">
-          <h4 className="text-xs text-gray-500 uppercase tracking-wider mb-2">
-            Suggested Actions
+        <div className="mt-1 pt-3 border-t border-slate-800/80">
+          <h4 className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider mb-2">
+            Recommended Follow-Up Steps
           </h4>
-          <ul className="space-y-1">
+          <ul className="space-y-1.5">
             {actions.map((action, i) => (
-              <li key={i} className="text-sm text-primary flex items-start gap-2">
-                <span className="mt-0.5 shrink-0">→</span>
+              <li key={i} className="text-xs text-blue-300 flex items-start gap-2">
+                <span className="mt-0.5 text-blue-400 shrink-0">→</span>
                 <span>{action}</span>
               </li>
             ))}
@@ -93,10 +97,12 @@ export default function InsightCard({ insight, onDismiss }: Props) {
 
       {/* Timestamp */}
       {insight.created_at && (
-        <p className="text-xs text-gray-600 mt-1">
-          {new Date(insight.created_at).toLocaleDateString('en-US', {
+        <p className="text-[11px] text-slate-400 mt-0.5">
+          Observed on{' '}
+          {new Date(insight.created_at).toLocaleDateString(undefined, {
             month: 'short',
             day: 'numeric',
+            year: 'numeric',
             hour: '2-digit',
             minute: '2-digit',
           })}

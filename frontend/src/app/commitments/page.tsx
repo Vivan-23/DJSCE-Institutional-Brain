@@ -19,23 +19,23 @@ interface Commitment {
 }
 
 const STATUS_LABEL: Record<Status, string> = {
-  open: 'Open',
+  open: 'Pending',
   in_progress: 'In Progress',
-  blocked: 'Blocked',
-  done: 'Done',
-  dropped: 'Dropped',
+  blocked: 'Blocked / Escalated',
+  done: 'Completed',
+  dropped: 'Deferred',
 };
 
 const STATUS_STYLE: Record<Status, string> = {
-  open: 'bg-blue-500/10 border-blue-500/30 text-blue-400',
-  in_progress: 'bg-amber-500/10 border-amber-500/30 text-amber-400',
-  blocked: 'bg-danger/10 border-danger/30 text-danger',
-  done: 'bg-emerald-500/10 border-emerald-500/30 text-emerald-400',
-  dropped: 'bg-gray-700/20 border-gray-600/40 text-gray-500',
+  open: 'bg-blue-500/15 border-blue-500/30 text-blue-300',
+  in_progress: 'bg-amber-500/15 border-amber-500/30 text-amber-300',
+  blocked: 'bg-rose-500/15 border-rose-500/30 text-rose-300',
+  done: 'bg-emerald-500/15 border-emerald-500/30 text-emerald-300',
+  dropped: 'bg-slate-700/20 border-slate-600/40 text-slate-400',
 };
 
 function formatDate(iso: string | null): string {
-  if (!iso) return '—';
+  if (!iso) return 'Not specified';
   const d = new Date(iso);
   if (Number.isNaN(d.getTime())) return iso;
   return d.toLocaleDateString(undefined, {
@@ -53,8 +53,6 @@ export default function CommitmentsPage() {
   const [mineOnly, setMineOnly] = useState(false);
   const [updatingId, setUpdatingId] = useState<string | null>(null);
 
-  // State is only set inside the async callbacks (never synchronously in the
-  // effect body); callers flip the spinner before invoking when desired.
   const load = useCallback((statusFilter: Status | 'all', mine: boolean) => {
     let path: string;
     if (mine) {
@@ -70,7 +68,6 @@ export default function CommitmentsPage() {
         return r.json();
       })
       .then((data: Commitment[]) => {
-        // The /mine endpoint has no server-side status filter; apply it here.
         const filtered =
           mine && statusFilter !== 'all'
             ? data.filter((c) => c.status === statusFilter)
@@ -101,7 +98,6 @@ export default function CommitmentsPage() {
 
   const updateStatus = async (id: string, status: Status) => {
     setUpdatingId(id);
-    // Optimistic update.
     setCommitments((prev) =>
       prev.map((c) => (c.id === id ? { ...c, status } : c)),
     );
@@ -114,7 +110,6 @@ export default function CommitmentsPage() {
       const updated = (await res.json()) as Commitment;
       setCommitments((prev) => prev.map((c) => (c.id === id ? updated : c)));
     } catch {
-      // Revert on failure.
       load(filter, mineOnly);
     } finally {
       setUpdatingId(null);
@@ -122,104 +117,112 @@ export default function CommitmentsPage() {
   };
 
   return (
-    <main className="min-h-screen p-8 md:p-12">
-      <div className="max-w-4xl mx-auto">
-        <h1 className="text-3xl font-bold mb-2 text-white">Commitments</h1>
-        <p className="text-gray-400 mb-8">
-          Action items extracted from meetings. Update status as work
-          progresses — Company Brain follows up on stale open items.
+    <main className="p-6 md:p-10 max-w-4xl mx-auto space-y-8">
+      {/* Header */}
+      <div>
+        <h1 className="text-2xl md:text-3xl font-bold text-slate-100 tracking-tight">
+          Action Commitments &amp; Responsibilities
+        </h1>
+        <p className="text-slate-400 text-xs sm:text-sm mt-1">
+          Track actionable institutional responsibilities, accreditation deliverables, and committee follow-up deadlines extracted from meeting records.
         </p>
+      </div>
 
-        {/* Controls */}
-        <div className="flex flex-wrap items-center gap-3 mb-6">
-          <div className="flex flex-wrap gap-1.5">
+      {/* Filter and View Controls */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-800 pb-4">
+        <div className="flex flex-wrap gap-1.5">
+          <button
+            onClick={() => applyFilter('all')}
+            className={`text-xs px-3 py-1.5 rounded-full border transition-colors cursor-pointer ${
+              filter === 'all'
+                ? 'bg-blue-600/20 border-blue-500/40 text-blue-300 font-semibold'
+                : 'border-slate-800 text-slate-400 hover:text-slate-200 hover:bg-slate-900/60'
+            }`}
+          >
+            All Items ({commitments.length})
+          </button>
+          {STATUSES.map((s) => (
             <button
-              onClick={() => applyFilter('all')}
-              className={`text-xs px-3 py-1.5 rounded-full border transition-colors ${
-                filter === 'all'
-                  ? 'bg-primary/10 border-primary/30 text-primary'
-                  : 'border-gray-700 text-gray-400 hover:text-white'
+              key={s}
+              onClick={() => applyFilter(s)}
+              className={`text-xs px-3 py-1.5 rounded-full border transition-colors cursor-pointer ${
+                filter === s
+                  ? 'bg-blue-600/20 border-blue-500/40 text-blue-300 font-semibold'
+                  : 'border-slate-800 text-slate-400 hover:text-slate-200 hover:bg-slate-900/60'
               }`}
             >
-              All
+              {STATUS_LABEL[s]}
             </button>
-            {STATUSES.map((s) => (
-              <button
-                key={s}
-                onClick={() => applyFilter(s)}
-                className={`text-xs px-3 py-1.5 rounded-full border transition-colors ${
-                  filter === s
-                    ? 'bg-primary/10 border-primary/30 text-primary'
-                    : 'border-gray-700 text-gray-400 hover:text-white'
-                }`}
-              >
-                {STATUS_LABEL[s]}
-              </button>
-            ))}
-          </div>
-
-          <label className="flex items-center gap-2 text-xs text-gray-400 ml-auto cursor-pointer select-none">
-            <input
-              type="checkbox"
-              checked={mineOnly}
-              onChange={(e) => toggleMine(e.target.checked)}
-              className="accent-primary"
-            />
-            Assigned to me
-          </label>
+          ))}
         </div>
 
-        {loading ? (
-          <p className="text-gray-500 text-sm">Loading commitments…</p>
-        ) : error ? (
-          <div className="p-3 rounded-lg bg-danger/10 border border-danger/30 text-danger text-sm">
-            {error}
-          </div>
-        ) : commitments.length === 0 ? (
-          <div className="glass-panel p-6 text-center text-gray-500 text-sm">
-            No commitments match this view.
-          </div>
-        ) : (
-          <ul className="space-y-3">
-            {commitments.map((c) => (
-              <li key={c.id} className="glass-panel p-4">
-                <div className="flex items-start justify-between gap-4">
-                  <div className="min-w-0">
-                    <p className="text-white text-sm">{c.description}</p>
-                    <div className="flex flex-wrap items-center gap-x-4 gap-y-1 mt-2 text-xs text-gray-500">
-                      <span>
-                        Owner:{' '}
-                        <span className="text-gray-400">
-                          {c.assignee ?? 'Unassigned'}
-                        </span>
-                      </span>
-                      <span>Due: {formatDate(c.due_date)}</span>
-                      {c.confidence != null && (
-                        <span>Confidence: {(c.confidence * 100).toFixed(0)}%</span>
-                      )}
-                    </div>
-                  </div>
+        <label className="flex items-center gap-2 text-xs text-slate-400 cursor-pointer select-none">
+          <input
+            type="checkbox"
+            checked={mineOnly}
+            onChange={(e) => toggleMine(e.target.checked)}
+            className="accent-blue-500 w-4 h-4 rounded"
+          />
+          <span>Assigned to my profile</span>
+        </label>
+      </div>
 
-                  <span
-                    className={`shrink-0 text-xs px-2 py-0.5 rounded-full border ${STATUS_STYLE[c.status]}`}
-                  >
-                    {STATUS_LABEL[c.status]}
-                  </span>
+      {/* Commitment List */}
+      {loading ? (
+        <div className="space-y-3">
+          {[1, 2, 3].map((i) => (
+            <div key={i} className="glass-panel p-4 animate-pulse h-20 bg-slate-900/60 rounded" />
+          ))}
+        </div>
+      ) : error ? (
+        <div className="p-4 rounded-lg bg-rose-500/10 border border-rose-500/30 text-rose-400 text-xs">
+          {error}
+        </div>
+      ) : commitments.length === 0 ? (
+        <div className="glass-panel p-8 text-center text-slate-400 text-xs">
+          No commitments found matching the current filter.
+        </div>
+      ) : (
+        <ul className="space-y-3">
+          {commitments.map((c) => (
+            <li key={c.id} className="glass-panel p-4 sm:p-5 space-y-3">
+              <div className="flex items-start justify-between gap-4">
+                <div className="min-w-0 space-y-1.5">
+                  <p className="text-slate-100 text-sm font-medium leading-relaxed">
+                    {c.description}
+                  </p>
+                  <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-slate-400">
+                    <span>
+                      Responsible Person:{' '}
+                      <strong className="text-slate-200 font-medium">
+                        {c.assignee ?? 'Unassigned Faculty/Staff'}
+                      </strong>
+                    </span>
+                    <span>Deadline: {formatDate(c.due_date)}</span>
+                    {c.confidence != null && (
+                      <span className="text-slate-400">Confidence: {(c.confidence * 100).toFixed(0)}%</span>
+                    )}
+                  </div>
                 </div>
 
-                <div className="mt-3 pt-3 border-t border-gray-800 flex items-center gap-2">
-                  <label
-                    htmlFor={`status-${c.id}`}
-                    className="text-xs text-gray-500"
-                  >
-                    Set status:
+                <span
+                  className={`shrink-0 text-[11px] font-semibold px-2.5 py-0.5 rounded-full border ${STATUS_STYLE[c.status]}`}
+                >
+                  {STATUS_LABEL[c.status]}
+                </span>
+              </div>
+
+              <div className="pt-3 border-t border-slate-800/80 flex items-center justify-between text-xs">
+                <div className="flex items-center gap-2">
+                  <label htmlFor={`status-${c.id}`} className="text-slate-400 font-medium">
+                    Update Workflow Status:
                   </label>
                   <select
                     id={`status-${c.id}`}
                     value={c.status}
                     disabled={updatingId === c.id}
                     onChange={(e) => void updateStatus(c.id, e.target.value as Status)}
-                    className="text-xs bg-black/40 border border-gray-700 rounded-md px-2 py-1 text-gray-300 focus:outline-none focus:border-primary/60 disabled:opacity-50"
+                    className="bg-slate-900 border border-slate-700 rounded px-2.5 py-1 text-slate-200 focus:outline-none focus:border-blue-500 text-xs cursor-pointer"
                   >
                     {STATUSES.map((s) => (
                       <option key={s} value={s}>
@@ -227,15 +230,15 @@ export default function CommitmentsPage() {
                       </option>
                     ))}
                   </select>
-                  {updatingId === c.id && (
-                    <span className="text-xs text-gray-600">saving…</span>
-                  )}
                 </div>
-              </li>
-            ))}
-          </ul>
-        )}
-      </div>
+                {updatingId === c.id && (
+                  <span className="text-[11px] text-blue-400 animate-pulse">Syncing change…</span>
+                )}
+              </div>
+            </li>
+          ))}
+        </ul>
+      )}
     </main>
   );
 }

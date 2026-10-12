@@ -17,7 +17,7 @@ export default function LoginPage() {
   const [loading, setLoading] = useState(false);
 
   const fillDemo = () => {
-    setEmail('demo@companybrain.ai');
+    setEmail('demo@example.com');
     setPassword('demo123');
   };
 
@@ -41,6 +41,20 @@ export default function LoginPage() {
       });
       const data = await res.json();
       if (!res.ok) {
+        // If demo@example.com was attempted and user existed under legacy seed, attempt legacy demo email
+        if (email === 'demo@example.com' && mode === 'login') {
+          const res2 = await fetch(`${API_BASE}${endpoint}`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email: 'demo@companybrain.ai', password }),
+          });
+          const data2 = await res2.json();
+          if (res2.ok) {
+            setToken(data2.access_token);
+            router.push('/');
+            return;
+          }
+        }
         throw new Error(data.detail ?? 'Authentication failed');
       }
       setToken(data.access_token);
@@ -53,56 +67,59 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-black to-gray-900 flex items-center justify-center p-4">
-      <div className="glass-panel p-8 w-full max-w-md">
-        {/* Logo */}
-        <div className="text-center mb-8">
-          <div className="w-14 h-14 rounded-2xl bg-primary/20 border border-primary flex items-center justify-center mx-auto mb-4">
-            <span className="text-primary font-bold text-2xl">{company.short_code}</span>
+    <div className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 flex flex-col items-center justify-center p-4">
+      <div className="glass-panel p-8 w-full max-w-md border border-slate-800 shadow-xl space-y-6">
+        {/* Institutional Logo & Identity */}
+        <div className="text-center">
+          <div className="w-14 h-14 rounded-xl bg-blue-600/15 border border-blue-500/40 flex items-center justify-center mx-auto mb-3 shadow-xs">
+            <span className="text-blue-400 font-bold text-xl tracking-wider">{company.short_code}</span>
           </div>
-          <h1 className="text-2xl font-bold text-white">{company.name}</h1>
-          <p className="text-gray-400 text-sm mt-1">
-            Organizational Intelligence System
+          <h1 className="text-xl font-bold text-slate-100 tracking-tight">{company.name}</h1>
+          <p className="text-slate-400 text-xs mt-1">
+            Institutional Knowledge, Governance Intelligence &amp; Decision Support
           </p>
+          <div className="mt-2.5 inline-block px-2.5 py-0.5 rounded bg-slate-900 border border-slate-800 text-[10px] text-amber-400 font-medium">
+            DEMONSTRATION PROTOTYPE · NOT AN OFFICIAL COLLEGE SYSTEM
+          </div>
         </div>
 
         {/* Tab switcher */}
-        <div className="flex mb-6 bg-gray-900/60 rounded-lg p-1">
+        <div className="flex bg-slate-900 rounded-lg p-1 border border-slate-800">
           {(['login', 'register'] as Mode[]).map((m) => (
             <button
               key={m}
               onClick={() => { setMode(m); setError(''); }}
-              className={`flex-1 py-2 rounded-md text-sm font-medium transition-colors ${
+              className={`flex-1 py-1.5 rounded-md text-xs font-semibold transition-colors cursor-pointer ${
                 mode === m
-                  ? 'bg-primary text-white'
-                  : 'text-gray-400 hover:text-white'
+                  ? 'bg-blue-600 text-white shadow-xs'
+                  : 'text-slate-400 hover:text-slate-200'
               }`}
             >
-              {m === 'login' ? 'Sign In' : 'Register'}
+              {m === 'login' ? 'Sign In' : 'Register Account'}
             </button>
           ))}
         </div>
 
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form onSubmit={handleSubmit} className="space-y-3.5">
           {mode === 'register' && (
             <input
               type="text"
-              placeholder="Full Name"
+              placeholder="Full Name (e.g. Prof. Academic Lead)"
               value={fullName}
               onChange={(e) => setFullName(e.target.value)}
               required
               aria-label="Full name"
-              className="w-full bg-gray-900 border border-gray-700 rounded-md px-4 py-2.5 text-white placeholder-gray-500 focus:outline-none focus:border-primary transition-colors"
+              className="w-full bg-slate-900 border border-slate-700/80 rounded-md px-3.5 py-2 text-xs sm:text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:border-blue-500 transition-colors"
             />
           )}
           <input
             type="email"
-            placeholder="Email"
+            placeholder="Academic Email Address"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             required
             aria-label="Email address"
-            className="w-full bg-gray-900 border border-gray-700 rounded-md px-4 py-2.5 text-white placeholder-gray-500 focus:outline-none focus:border-primary transition-colors"
+            className="w-full bg-slate-900 border border-slate-700/80 rounded-md px-3.5 py-2 text-xs sm:text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:border-blue-500 transition-colors"
           />
           <input
             type="password"
@@ -111,11 +128,11 @@ export default function LoginPage() {
             onChange={(e) => setPassword(e.target.value)}
             required
             aria-label="Password"
-            className="w-full bg-gray-900 border border-gray-700 rounded-md px-4 py-2.5 text-white placeholder-gray-500 focus:outline-none focus:border-primary transition-colors"
+            className="w-full bg-slate-900 border border-slate-700/80 rounded-md px-3.5 py-2 text-xs sm:text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:border-blue-500 transition-colors"
           />
 
           {error && (
-            <p role="alert" className="text-danger text-sm">
+            <p role="alert" className="text-rose-400 text-xs">
               {error}
             </p>
           )}
@@ -123,31 +140,30 @@ export default function LoginPage() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-primary text-white py-2.5 rounded-md hover:bg-primary/80 transition-colors disabled:opacity-50 font-medium"
+            className="w-full bg-blue-600 text-white py-2.5 rounded-md hover:bg-blue-500 transition-colors disabled:opacity-50 font-semibold text-xs sm:text-sm cursor-pointer shadow-xs"
           >
             {loading
-              ? 'Please wait…'
+              ? 'Authenticating…'
               : mode === 'login'
-              ? 'Sign In'
-              : 'Create Account'}
+              ? 'Access Institutional Workspace'
+              : 'Register New Academic Account'}
           </button>
 
           {mode === 'login' && (
             <button
               type="button"
               onClick={fillDemo}
-              className="w-full bg-gray-800 text-gray-300 py-2.5 rounded-md hover:bg-gray-700 transition-colors text-sm border border-gray-700"
+              className="w-full bg-slate-800/80 text-slate-300 py-2 rounded-md hover:bg-slate-700/80 transition-colors text-xs border border-slate-700 cursor-pointer"
             >
-              Use Demo Credentials
+              Fill Demo Evaluation Credentials
             </button>
           )}
         </form>
 
         {mode === 'login' && (
-          <p className="text-center text-gray-600 text-xs mt-6">
-            Demo account: <span className="text-gray-400">demo@companybrain.ai</span>{' '}
-            /{' '}
-            <span className="text-gray-400">demo123</span>
+          <p className="text-center text-slate-500 text-[11px]">
+            Demo credentials: <span className="text-slate-300 font-mono">demo@example.com</span> /{' '}
+            <span className="text-slate-300 font-mono">demo123</span>
           </p>
         )}
       </div>

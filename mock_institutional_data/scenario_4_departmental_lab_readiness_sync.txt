@@ -1,0 +1,14 @@
+[DEMONSTRATION PROTOTYPE · SYNTHETIC INSTITUTIONAL RECORD]
+Departmental Committee Meeting: Laboratory Readiness & Examination Scheduling
+Date: October 8, 2026
+Attendees: Dr. Rohan Mehta, Prof. Pooja Verma, Prof. Karan Shah
+
+Dr. Rohan Mehta: Let us review laboratory readiness ahead of the upcoming mid-term practical evaluations and autonomous semester examinations.
+Prof. Pooja Verma: In the Advanced Computing Laboratory, workstation OS images have been refreshed with Ubuntu 24.04 and GPU drivers. Python 3.12, PyTorch, and local IDE environments are verified across all 30 machines.
+Prof. Karan Shah: From the examination desk perspective, we need the randomized question bank finalized by the subject teachers for Software Engineering and Machine Learning labs.
+Dr. Rohan Mehta: Decision: Question paper moderation for all laboratory practicals must be completed by the departmental scrutiny committee by October 14.
+Prof. Pooja Verma: We also identified a minor network switch bottleneck affecting student Git pushes in Lab 4 during peak simulation hours.
+Dr. Rohan Mehta: Decision: Network administrator will install a Gigabit managed switch in Lab 4 over the weekend.
+Prof. Karan Shah: I will submit the moderated laboratory practical question paper sets and examiner duty rosters by Friday.
+Prof. Pooja Verma: I will inspect the newly installed network switch and verify test client bandwidth in Lab 4 by Monday.
+Dr. Rohan Mehta: I will send the consolidated examiner list to Dr. Aditi Rao for institutional appointment orders by Wednesday.

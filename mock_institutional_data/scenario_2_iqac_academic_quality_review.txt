@@ -1,0 +1,14 @@
+[DEMONSTRATION PROTOTYPE · SYNTHETIC INSTITUTIONAL RECORD]
+Internal Quality Assurance Cell (IQAC): Academic Quality & Feedback Audit
+Date: October 6, 2026
+Attendees: Dr. Aditi Rao, Prof. Neha Iyer, Dr. Rohan Mehta, Prof. Pooja Verma
+
+Prof. Neha Iyer: Thank you for joining the mid-semester quality audit. We have reviewed student feedback analytics across the Engineering departments. Average course satisfaction index is at 87%, but three laboratory subjects flagged delays in assignment grading.
+Dr. Aditi Rao: Timely continuous evaluation is critical for autonomous grading compliance. Decision: All laboratory rubrics and continuous evaluation marks must be posted within 7 working days of experiment completion.
+Prof. Pooja Verma: In the Computer Engineering and Electronics labs, faculty were waiting for unified grading rubrics for mini-projects.
+Prof. Neha Iyer: Decision: Unified mini-project rubrics developed by the IQAC committee are hereby adopted for all autonomous semester batches.
+Dr. Rohan Mehta: We also conducted the internal course file audit. 14 out of 16 faculty course files are 100% compliant with question banks, lecture notes, and sample answer scripts. Two files require updated attainment sheets.
+Prof. Neha Iyer: Decision: Departments must conduct mandatory peer-course file verification before the end-semester examination week.
+Prof. Pooja Verma: I will update the laboratory continuous assessment rubrics and share the grading guidelines with all lab in-charges by Thursday.
+Prof. Neha Iyer: I will publish the consolidated student feedback report and action-taken recommendations by next Tuesday.
+Dr. Rohan Mehta: I will follow up with the remaining faculty on missing course file attainment sheets by end of week.

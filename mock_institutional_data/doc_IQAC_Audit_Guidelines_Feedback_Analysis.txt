@@ -1,0 +1,24 @@
+[DEMONSTRATION PROTOTYPE · SYNTHETIC INSTITUTIONAL REFERENCE]
+Institutional Quality Assurance Cell (IQAC): Continuous Assessment and Course File Quality Guidelines
+Notice Reference: IQAC/DJSCE/2026/CIR-14
+
+1. Purpose:
+To streamline teaching-learning documentation, outcome attainment evaluation, and student feedback mechanisms across all undergraduate engineering programs under autonomous status.
+
+2. Student Feedback Review Norms:
+- Student feedback is collected twice per semester: Mid-term feedback (Week 6) and End-term feedback (Week 13).
+- Any course scoring below 75% on clarity of evaluation rubrics triggers an automatic departmental review.
+- The IQAC committee requires faculty action-taken reports to be documented and archived in the departmental quality file within 10 days of feedback publication.
+
+3. Continuous Evaluation Rubrics:
+- Laboratory experiments must be graded on three criteria: Conceptual Preparedness (25%), Execution & Results (50%), and Viva-Voce & Analysis (25%).
+- Marks must be recorded in the departmental continuous assessment portal within 7 working days of experiment completion.
+
+4. Course File Standardization:
+Every academic course file must contain:
+1. Approved Syllabus with Course Outcomes (COs) and Bloom's Taxonomy levels.
+2. CO to Program Outcome (PO) mapping matrix with justified correlation weights (1, 2, or 3).
+3. Lecture conduction logbook and delivery plan.
+4. Internal assessment question papers along with model answer keys and evaluation schemes.
+5. Attainment calculation sheets detailing Direct and Indirect CO attainments.
+6. Sample evaluated student answer scripts representing high, medium, and low performance bands.

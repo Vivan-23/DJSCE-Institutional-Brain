@@ -1,0 +1,36 @@
+# [DEMONSTRATION PROTOTYPE · SYNTHETIC INSTITUTIONAL SOP]
+# Standard Operating Procedure: End-Semester Laboratory Practical Examination & External Moderation
+# Target Organization: Dwarkadas J. Sanghvi College of Engineering (Demo Prototype)
+# Document Identifier: DJSCE/EXAM/SOP-2026-03
+# Notice: This is a synthetic procedure draft for evaluation and does not represent official college exam bylaws.
+
+## 1. Trigger
+End-of-semester autonomous practical examinations and viva-voce evaluations for undergraduate laboratory courses.
+
+## 2. Preconditions
+- Students must meet minimum laboratory attendance eligibility (75% minimum aggregate attendance or authorized medical condonation).
+- Laboratory journal and certified experiment write-ups must be signed by the respective laboratory in-charge at least 5 days prior to the examination date.
+- External and internal examiners must be appointed and approved by the Controller of Examinations and Academic Coordinator.
+
+## 3. Examination Procedure Steps
+1. The Examination Committee prepares sealed question paper sets containing balanced problem statements across basic, intermediate, and advanced experiment difficulty tiers.
+2. The internal examiner verifies candidate roll numbers and laboratory identity badges upon student admission to the test lab.
+3. Students draw lots or randomized problem statements generated from the examination portal.
+4. Candidates complete coding, circuit wiring, or simulation tasks within the designated 2-hour duration without internet access, unless approved for cloud sandbox testing.
+5. The external examiner and internal examiner jointly conduct oral viva-voce questioning focused on experiment methodology, theoretical foundations, and output validation.
+6. Marks are compiled independently by both examiners on encrypted grade evaluation sheets according to the approved IQAC rubric.
+7. Any discrepancy in scoring exceeding 15% between internal and external examiners requires immediate reconciliation before the sheet is signed.
+
+## 4. Decision Rules & Thresholds
+- Rule 1: If a student's laboratory journal is incomplete or uncertified, student is deferred until external examiner approval or supplementary session.
+- Rule 2: If the variance between internal examiner and external examiner marks is <= 10%, average the score and record finalized grade.
+- Rule 3: If the variance between internal and external marks is > 15%, both examiners must review student code output together and agree on a consensus mark within 24 hours.
+
+## 5. Guardrails & Integrity Checks
+- Examiner mark entry sheets must be sealed in tamper-evident envelopes immediately following the examination session.
+- No electronic grading marks may be uploaded over unencrypted or public networks.
+- Retesting or re-examination is strictly prohibited without written authorization from the Academic Coordinator and Principal.
+
+## 6. Escalation Protocol
+- For examiner non-appearance or hardware failures affecting >25% of candidates: Escalate immediately to the Examination In-charge (Prof. Karan Shah) and Department Lead (Dr. Rohan Mehta).
+- For unresolvable grading disputes: Escalate to the Academic Coordinator (Dr. Aditi Rao).

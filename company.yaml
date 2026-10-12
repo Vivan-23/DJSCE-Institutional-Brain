@@ -1,84 +1,73 @@
 # ============================================================================
-# Company Brain — COMPANY PROFILE  (single source of truth for customization)
+# DJSCE Institutional Brain — INSTITUTIONAL PROFILE
 # ============================================================================
-# This is the ONE file you edit to customize Company Brain for a company.
-# On startup the backend reads it and:
-#   - brands the UI (name + logo badge),
-#   - seeds the org structure (employees, roles, managers, timezones),
-#   - applies company-specific settings.
+# Single source of truth for institutional customization.
+# Demonstration configuration for Dwarkadas J. Sanghvi College of Engineering.
 #
-# It is idempotent: edit + restart and the app updates to match (matched by
-# email). Removing someone here does NOT delete them from the DB.
-#
-# Workflow: fork the `template` branch, describe the company to the agent, and it
-# fills in this file — nothing else needs editing for basic customization.
-# See docs/CUSTOMIZING.md for the full guide.
+# NOTE: All individuals, committee records, and documents in this demo profile
+# are synthetic demonstration artifacts and do NOT represent official college
+# deployments, official records, or actual personnel data.
 # ============================================================================
 
 company:
-  name: "Company Brain"          # shown in the UI header / login
-  short_code: "CB"               # 2-3 letters for the logo badge
-  email_domain: "companybrain.ai"  # default domain for internal/derived emails
+  name: "DJSCE Institutional Brain"
+  short_code: "DJSCE"
+  email_domain: "example.com"
 
 settings:
-  pa_checkin_hour: 17            # local hour (0-23) for the end-of-day PA check-in
-  commitment_followup_hours: 48  # a commitment idle this long is eligible for a nudge
+  pa_checkin_hour: 17            # Local hour (0-23) for faculty end-of-day desk check-in
+  commitment_followup_hours: 48  # Threshold in hours for actionable commitment follow-ups
 
-# Org structure — seeded on startup. Each person becomes an Employee; those with
-# a `password` also get a login User with the given `role`.
-#   role:     employee | manager | admin   (controls access; default employee)
-#   manager:  email of this person's manager, or null
-#   timezone: IANA tz (e.g. America/New_York), default UTC
+# Institutional Governance Structure — Seeded on startup into Postgres.
+#   role:     employee | manager | admin (Enforces RBAC: employee < manager < admin)
+#   manager:  email of this person's reporting dean/coordinator, or null
+#   timezone: IANA timezone (Asia/Kolkata)
 employees:
-  # ── Sample org (DEMO branch) ──────────────────────────────────────────────
-  # A small, realistic org used for product demos. The curated sample meetings
-  # in mock_company_data/ reference these people, so commitments resolve to real
-  # employees and the org chart looks populated. Everyone has a password here for
-  # demo convenience (so you can sign in as anyone and try their PA check-in).
-  - name: "Demo User"
-    email: "demo@companybrain.ai"
+  # ── Synthetic Institutional Governance Identities ──────────────────────────
+  - name: "Demo Administrator"
+    email: "demo@example.com"
     role: "admin"
-    title: "Administrator"
+    title: "Institutional Platform Administrator"
     manager: null
-    timezone: "UTC"
-    password: "demo123"          # primary demo login
-
-  - name: "Dana Lee"
-    email: "dana@companybrain.ai"
-    role: "admin"
-    title: "VP Operations"
-    manager: null
-    timezone: "America/New_York"
-    password: "demo123"
-
-  - name: "Ravi Patel"
-    email: "ravi@companybrain.ai"
-    role: "manager"
-    title: "Customer Support Lead"
-    manager: "dana@companybrain.ai"
-    timezone: "America/New_York"
-    password: "demo123"
-
-  - name: "Maya Chen"
-    email: "maya@companybrain.ai"
-    role: "employee"
-    title: "Support Specialist"
-    manager: "ravi@companybrain.ai"
     timezone: "Asia/Kolkata"
     password: "demo123"
 
-  - name: "Sam Rivera"
-    email: "sam@companybrain.ai"
-    role: "manager"
-    title: "Engineering Lead"
-    manager: "dana@companybrain.ai"
-    timezone: "America/Los_Angeles"
+  - name: "Dr. Aditi Rao"
+    email: "aditi.rao@example.com"
+    role: "admin"
+    title: "Demo Academic Coordinator & Professor"
+    manager: null
+    timezone: "Asia/Kolkata"
     password: "demo123"
 
-  - name: "Priya Nair"
-    email: "priya@companybrain.ai"
+  - name: "Dr. Rohan Mehta"
+    email: "rohan.mehta@example.com"
+    role: "manager"
+    title: "Demo Department Lead (Computer Engineering)"
+    manager: "aditi.rao@example.com"
+    timezone: "Asia/Kolkata"
+    password: "demo123"
+
+  - name: "Prof. Neha Iyer"
+    email: "neha.iyer@example.com"
+    role: "manager"
+    title: "Demo Quality & Committee Coordinator (IQAC)"
+    manager: "aditi.rao@example.com"
+    timezone: "Asia/Kolkata"
+    password: "demo123"
+
+  - name: "Prof. Karan Shah"
+    email: "karan.shah@example.com"
     role: "employee"
-    title: "Backend Engineer"
-    manager: "sam@companybrain.ai"
+    title: "Demo Faculty Member & Examination In-charge"
+    manager: "rohan.mehta@example.com"
+    timezone: "Asia/Kolkata"
+    password: "demo123"
+
+  - name: "Prof. Pooja Verma"
+    email: "pooja.verma@example.com"
+    role: "employee"
+    title: "Demo Faculty Member & Laboratory In-charge"
+    manager: "rohan.mehta@example.com"
     timezone: "Asia/Kolkata"
     password: "demo123"

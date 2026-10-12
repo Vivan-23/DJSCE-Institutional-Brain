@@ -48,125 +48,116 @@ export default function SourcesPage() {
   };
 
   return (
-    <main className="min-h-screen p-8 md:p-12">
-      <div className="max-w-2xl mx-auto">
-        <h1 className="text-3xl font-bold mb-2 text-white">Data Sources</h1>
-        <p className="text-gray-400 mb-8">
-          Upload documents to ingest them into Company Brain. Supported formats:
-          .txt, .pdf, .docx.
+    <main className="p-6 md:p-10 max-w-3xl mx-auto space-y-6">
+      {/* Header */}
+      <div>
+        <h1 className="text-2xl md:text-3xl font-bold text-slate-100 tracking-tight">
+          Document Repositories &amp; Ingestion
+        </h1>
+        <p className="text-slate-400 text-xs sm:text-sm mt-1">
+          Ingest institutional circulars, syllabus specifications, accreditation working papers, and committee notes into vector storage and knowledge graph.
         </p>
-
-        {/* File Upload */}
-        <section className="glass-panel p-6 mb-6">
-          <h2 className="text-lg font-semibold text-white mb-1">
-            Upload Document
-          </h2>
-          <p className="text-sm text-gray-400 mb-4">
-            Meeting notes, status reports, architecture docs — anything up to 10 MB.
-            Entities (people &amp; projects) will be extracted and added to the
-            relationship graph automatically.
-          </p>
-
-          <div className="space-y-3">
-            <label
-              htmlFor="doc-upload"
-              className={`flex items-center justify-center w-full h-28 border-2 border-dashed rounded-lg cursor-pointer transition-colors ${
-                file
-                  ? 'border-primary/50 bg-primary/5'
-                  : 'border-gray-700 hover:border-gray-600'
-              }`}
-            >
-              <div className="text-center">
-                {file ? (
-                  <>
-                    <p className="text-primary text-sm font-medium">{file.name}</p>
-                    <p className="text-gray-500 text-xs mt-1">
-                      {(file.size / 1024).toFixed(1)} KB — ready to upload
-                    </p>
-                  </>
-                ) : (
-                  <>
-                    <p className="text-gray-400 text-sm">
-                      Click to choose a file
-                    </p>
-                    <p className="text-gray-600 text-xs mt-1">
-                      .txt · .pdf · .docx up to 10 MB
-                    </p>
-                  </>
-                )}
-              </div>
-              <input
-                id="doc-upload"
-                ref={fileRef}
-                type="file"
-                accept=".txt,.pdf,.docx"
-                className="sr-only"
-                onChange={(e) => {
-                  setFile(e.target.files?.[0] ?? null);
-                  setStatus('idle');
-                  setResult(null);
-                  setErrorMsg('');
-                }}
-              />
-            </label>
-
-            <button
-              onClick={handleUpload}
-              disabled={!file || status === 'uploading'}
-              className="w-full bg-primary text-white py-2.5 rounded-lg hover:bg-primary/80 transition-colors disabled:opacity-40 font-medium"
-            >
-              {status === 'uploading' ? 'Uploading…' : 'Upload & Ingest'}
-            </button>
-          </div>
-
-          {/* Status messages */}
-          {status === 'queued' && result && (
-            <div className="mt-4 p-3 rounded-lg bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-sm">
-              <p className="font-medium">✓ {result.filename} queued successfully</p>
-              <p className="text-xs mt-1 text-emerald-500/80">{result.message}</p>
-              <p className="text-xs mt-0.5 text-emerald-600">Task ID: {result.task_id}</p>
-            </div>
-          )}
-          {status === 'error' && (
-            <div className="mt-4 p-3 rounded-lg bg-danger/10 border border-danger/30 text-danger text-sm">
-              {errorMsg}
-            </div>
-          )}
-        </section>
-
-        {/* External integrations (placeholder — backend not wired) */}
-        <section className="glass-panel p-6 mb-4 opacity-60">
-          <div className="flex justify-between items-start">
-            <div>
-              <h2 className="text-lg font-semibold text-white mb-1">
-                GitHub Integration
-              </h2>
-              <p className="text-sm text-gray-400">
-                Sync commit history, PRs, and issues automatically.
-              </p>
-            </div>
-            <span className="text-xs text-gray-600 border border-gray-700 rounded px-2 py-0.5">
-              Coming soon
-            </span>
-          </div>
-        </section>
-
-        <section className="glass-panel p-6 opacity-60">
-          <div className="flex justify-between items-start">
-            <div>
-              <h2 className="text-lg font-semibold text-white mb-1">
-                Jira / Trello
-              </h2>
-              <p className="text-sm text-gray-400">
-                Sync project boards and task dependencies.
-              </p>
-            </div>
-            <span className="text-xs text-gray-600 border border-gray-700 rounded px-2 py-0.5">
-              Coming soon
-            </span>
-          </div>
-        </section>
       </div>
+
+      {/* File Upload Panel */}
+      <section className="glass-panel p-6 space-y-4">
+        <div>
+          <h2 className="text-sm font-semibold text-slate-200 uppercase tracking-wider mb-1">
+            Upload Institutional Working Document
+          </h2>
+          <p className="text-xs text-slate-400">
+            Committee resolutions, departmental policies, or lab readiness reports (.txt, .pdf, .docx up to 10 MB).
+            Entities and fragments are chunked, embedded via sentence-transformers, and mapped into Neo4j.
+          </p>
+        </div>
+
+        <div className="space-y-3">
+          <label
+            htmlFor="doc-upload"
+            className={`flex items-center justify-center w-full h-32 border-2 border-dashed rounded-lg cursor-pointer transition-colors ${
+              file
+                ? 'border-blue-500/60 bg-blue-500/10'
+                : 'border-slate-700 hover:border-slate-600 bg-slate-900/40'
+            }`}
+          >
+            <div className="text-center p-4">
+              {file ? (
+                <>
+                  <p className="text-blue-300 text-xs sm:text-sm font-semibold">{file.name}</p>
+                  <p className="text-slate-400 text-[11px] mt-1 font-mono">
+                    {(file.size / 1024).toFixed(1)} KB · Ready to queue
+                  </p>
+                </>
+              ) : (
+                <>
+                  <p className="text-slate-300 text-xs sm:text-sm font-medium">
+                    Select institutional document to ingest
+                  </p>
+                  <p className="text-slate-500 text-[11px] mt-1 font-mono">
+                    .txt · .pdf · .docx up to 10 MB
+                  </p>
+                </>
+              )}
+            </div>
+            <input
+              id="doc-upload"
+              ref={fileRef}
+              type="file"
+              accept=".txt,.pdf,.docx"
+              className="sr-only"
+              onChange={(e) => {
+                setFile(e.target.files?.[0] ?? null);
+                setStatus('idle');
+                setResult(null);
+                setErrorMsg('');
+              }}
+            />
+          </label>
+
+          <button
+            onClick={handleUpload}
+            disabled={!file || status === 'uploading'}
+            className="w-full bg-blue-600 hover:bg-blue-500 text-white py-2.5 rounded-lg text-xs sm:text-sm font-semibold transition-colors disabled:opacity-40 cursor-pointer shadow-sm"
+          >
+            {status === 'uploading' ? 'Uploading & Indexing…' : 'Queue Document for Embeddings & Graph Extraction'}
+          </button>
+        </div>
+
+        {/* Status notification */}
+        {status === 'queued' && result && (
+          <div className="p-3.5 rounded-lg bg-emerald-500/10 border border-emerald-500/30 text-emerald-300 text-xs space-y-1">
+            <p className="font-semibold">✓ {result.filename} queued successfully</p>
+            <p className="text-emerald-400/80">{result.message}</p>
+            <p className="text-[10px] text-slate-500 font-mono">Task ID: {result.task_id}</p>
+          </div>
+        )}
+        {status === 'error' && (
+          <div className="p-3.5 rounded-lg bg-rose-500/10 border border-rose-500/30 text-rose-400 text-xs">
+            {errorMsg}
+          </div>
+        )}
+      </section>
+
+      {/* Institutional Ingestion Pipeline Description */}
+      <section className="glass-panel p-5 space-y-3">
+        <h2 className="text-xs font-semibold text-slate-300 uppercase tracking-wider">
+          Multi-Database Ingestion Architecture
+        </h2>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-3 text-xs">
+          <div className="p-3 rounded bg-slate-900/60 border border-slate-800 space-y-1">
+            <p className="font-semibold text-slate-200">Relational Store</p>
+            <p className="text-slate-400 text-[11px]">PostgreSQL persists structured document provenance, title, and timestamp metadata.</p>
+          </div>
+          <div className="p-3 rounded bg-slate-900/60 border border-slate-800 space-y-1">
+            <p className="font-semibold text-slate-200">Semantic Vectors</p>
+            <p className="text-slate-400 text-[11px]">ChromaDB indexes chunked passages embedded via BAAI/bge-large for RAG search.</p>
+          </div>
+          <div className="p-3 rounded bg-slate-900/60 border border-slate-800 space-y-1">
+            <p className="font-semibold text-slate-200">Knowledge Graph</p>
+            <p className="text-slate-400 text-[11px]">Neo4j links named faculty and committee entities extracted by spaCy NER.</p>
+          </div>
+        </div>
+      </section>
     </main>
   );
 }

@@ -1,0 +1,19 @@
+[DEMONSTRATION PROTOTYPE · SYNTHETIC INSTITUTIONAL REFERENCE]
+Department of Computer Engineering: Laboratory Upgrades & Computing Infrastructure Plan
+Academic Year: 2026-2027
+Department Lead: Dr. Rohan Mehta
+
+1. Laboratory Allocation Overview:
+- Laboratory 301: Systems Programming and Database Engineering (40 Dell OptiPlex workstations)
+- Laboratory 302: Advanced Computing & Artificial Intelligence (30 GPU Workstations, NVIDIA RTX 4080)
+- Laboratory 303: Cyber Security & Cloud Networks (35 HP Enterprise workstations with dual NICs)
+- Laboratory 304: Software Testing & Project Innovation Sandbox (35 Apple Mac Mini M2 units)
+
+2. Recent Infrastructure Actions & Maintenance:
+- Network switch upgrade completed in Lab 4 with 1 Gbps full-duplex managed switch to eliminate throughput bottlenecks during Git classroom synchronizations.
+- Ubuntu 24.04 LTS enterprise image deployment across all 30 machines in Lab 302 with container runtime support.
+- Approved cloud compute API grant of Rs 75,000 for students undergoing experimental evaluation in Applied Generative AI.
+
+3. Faculty Responsibilities:
+- Laboratory In-charge (Prof. Pooja Verma): Maintenance logs, vendor annual maintenance contracts (AMC), consumable inventory, and daily lab readiness checks.
+- Examination Desk In-charge (Prof. Karan Shah): Question bank moderation, exam slot allocation, randomized problem assignment, and external examiner roster coordination.

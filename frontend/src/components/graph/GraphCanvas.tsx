@@ -176,9 +176,10 @@ export default function GraphCanvas() {
             ctx.fillText(label, n.x, n.y + radius + 14);
 
             // Type badge
-            ctx.fillStyle = color + 'aa';
+            const badge = n.type === 'Employee' ? 'Faculty' : n.type === 'Project' ? 'Committee/Dept' : n.type;
+            ctx.fillStyle = color + 'cc';
             ctx.font = '9px Inter, sans-serif';
-            ctx.fillText(n.type, n.x, n.y + radius + 25);
+            ctx.fillText(badge, n.x, n.y + radius + 25);
           }
         };
 
@@ -200,28 +201,28 @@ export default function GraphCanvas() {
 
   if (status === 'loading') {
     return (
-      <div className="glass-panel p-12 text-center text-gray-400 animate-pulse">
-        Loading relationship graph…
+      <div className="glass-panel p-12 text-center text-slate-400 animate-pulse">
+        Loading institutional relationship graph…
       </div>
     );
   }
   if (status === 'error') {
     return (
-      <div className="glass-panel p-12 text-center text-danger">
-        Failed to load graph data. Ensure the backend is running.
+      <div className="glass-panel p-12 text-center text-rose-400">
+        Failed to load graph data. Ensure the backend and Neo4j database are running.
       </div>
     );
   }
   if (status === 'empty') {
     return (
-      <div className="glass-panel p-12 text-center">
-        <p className="text-gray-400 font-medium mb-2">No relationships found</p>
-        <p className="text-gray-600 text-sm">
-          Upload meeting notes or status reports in{' '}
-          <a href="/sources" className="text-primary hover:underline">
-            Data Sources
+      <div className="glass-panel p-12 text-center space-y-2">
+        <p className="text-slate-300 font-medium">No institutional relationships mapped yet</p>
+        <p className="text-slate-400 text-xs max-w-md mx-auto">
+          Upload committee minutes or departmental circulars in{' '}
+          <a href="/sources" className="text-blue-400 hover:underline">
+            Document Repositories
           </a>{' '}
-          — entities (people &amp; projects) will appear here after processing.
+          — faculty, deans, and committee entities will appear here automatically following NER indexing.
         </p>
       </div>
     );

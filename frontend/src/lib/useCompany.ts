@@ -7,16 +7,13 @@ export interface Company {
   short_code: string;
 }
 
-// Branding comes from the backend (driven by company.yaml). Defaults keep the UI
-// sensible before the fetch resolves or if the API is unreachable.
-const DEFAULT: Company = { name: 'Company Brain', short_code: 'CB' };
+// Institutional branding fallback aligned with DJSCE Institutional Brain
+const DEFAULT: Company = { name: 'DJSCE Institutional Brain', short_code: 'DJSCE' };
 
 export function useCompany(): Company {
   const [company, setCompany] = useState<Company>(DEFAULT);
 
   useEffect(() => {
-    // State is only set inside the async callback (never synchronously in the
-    // effect body), per the project's React 19 lint rule.
     fetch(`${API_BASE}/api/v1/company`)
       .then((r) => (r.ok ? r.json() : null))
       .then((d) => {

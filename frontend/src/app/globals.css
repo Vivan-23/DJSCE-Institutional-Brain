@@ -1,33 +1,47 @@
 @import "tailwindcss";
 
-/* Register custom design tokens so Tailwind generates
-   utilities like text-primary, bg-primary/20, text-warning, etc. */
+/* Design tokens for DJSCE Institutional Brain */
 @theme {
   --color-primary: hsl(217.2 91.2% 59.8%);
   --color-primary-foreground: hsl(222.2 47.4% 11.2%);
+  --color-navy: hsl(222 47% 14%);
+  --color-navy-border: hsl(217 33% 20%);
   --color-warning: hsl(38 92% 50%);
   --color-danger: hsl(0 84.2% 60.2%);
+  --color-success: hsl(152 76% 40%);
 }
 
-/* CSS custom properties used directly in component styles */
 :root {
-  --background: 222.2 84% 4.9%;
+  --background: 222 47% 6%;
   --foreground: 210 40% 98%;
-  --border: 217.2 32.6% 17.5%;
-  --radius: 0.75rem;
+  --border: 217 30% 18%;
+  --radius: 0.5rem;
 }
 
 body {
   background-color: hsl(var(--background));
   color: hsl(var(--foreground));
-  font-family: 'Inter', sans-serif;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   margin: 0;
   padding: 0;
+  -webkit-font-smoothing: antialiased;
 }
 
+/* Institutional Card and Panel styles: crisp, restrained, enterprise-grade */
 .glass-panel {
-  background: rgba(13, 17, 23, 0.7);
-  backdrop-filter: blur(12px);
-  border: 1px solid hsl(var(--border));
+  background: rgba(15, 23, 42, 0.75);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(51, 65, 85, 0.6);
   border-radius: var(--radius);
+}
+
+.academic-panel {
+  background: rgba(15, 23, 42, 0.9);
+  border: 1px solid rgba(51, 65, 85, 0.7);
+  border-radius: var(--radius);
+}
+
+.demo-banner {
+  background: rgba(30, 41, 59, 0.85);
+  border-bottom: 1px solid rgba(51, 65, 85, 0.8);
 }
