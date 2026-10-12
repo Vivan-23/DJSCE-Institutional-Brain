@@ -41,10 +41,10 @@ def login() -> str:
         alt_email = "demo@companybrain.ai"
         r2 = requests.post(f"{API}/api/v1/auth/login", json={"email": alt_email, "password": PASSWORD})
         if r2.status_code == 200:
-            print(f"✓ Logged in as {alt_email}")
+            print(f"[OK] Logged in as {alt_email}")
             return r2.json()["access_token"]
         sys.exit(f"Login failed ({r.status_code}): {r.text}\nIs backend running and is {EMAIL} seeded in company.yaml?")
-    print(f"✓ Logged in as {EMAIL}")
+    print(f"[OK] Logged in as {EMAIL}")
     return r.json()["access_token"]
 
 
@@ -66,10 +66,10 @@ def post_transcripts(token: str) -> int:
         )
         if r.status_code == 202:
             posted += 1
-            print(f"  ✓ Queued meeting transcript: {filename}")
+            print(f"  [OK] Queued meeting transcript: {filename}")
         else:
-            print(f"  ! Transcript rejected: {filename} ({r.status_code}) {r.text[:120]}")
-    print(f"✓ Queued {posted} institutional transcript(s)")
+            print(f"  [!] Transcript rejected: {filename} ({r.status_code}) {r.text[:120]}")
+    print(f"[OK] Queued {posted} institutional transcript(s)")
     return posted
 
 
@@ -88,16 +88,16 @@ def post_documents(token: str) -> int:
             )
         if r.status_code in (200, 202):
             sent += 1
-            print(f"  ✓ Ingested document for graph: {filename}")
+            print(f"  [OK] Ingested document for graph: {filename}")
         else:
-            print(f"  ! Document upload failed: {filename} ({r.status_code})")
-    print(f"✓ Ingested {sent} document(s) for RAG and Knowledge Graph")
+            print(f"  [!] Document upload failed: {filename} ({r.status_code})")
+    print(f"[OK] Ingested {sent} document(s) for RAG and Knowledge Graph")
     return sent
 
 
 def wait_for_processing(token: str, expected_meetings: int) -> None:
     headers = {"Authorization": f"Bearer {token}"}
-    print("… Waiting for worker to process transcripts", end="", flush=True)
+    print("... Waiting for worker to process transcripts", end="", flush=True)
     deadline = time.time() + PROCESS_WAIT_SECONDS
     last = -1
     stable = 0
@@ -121,10 +121,10 @@ def extract_skills(token: str, approve: bool) -> None:
     headers = {"Authorization": f"Bearer {token}"}
     r = requests.post(f"{API}/api/v1/skills/extract", headers=headers)
     if r.status_code != 202:
-        print(f"  ! Procedure extraction notice ({r.status_code}): {r.text[:140]}")
+        print(f"  [!] Procedure extraction notice ({r.status_code}): {r.text[:140]}")
         return
     created = r.json().get("candidates_created", 0)
-    print(f"✓ Synthesized {created} candidate institutional procedure(s)")
+    print(f"[OK] Synthesized {created} candidate institutional procedure(s)")
 
     if not approve:
         return
@@ -138,7 +138,7 @@ def extract_skills(token: str, approve: bool) -> None:
             a = requests.post(f"{API}/api/v1/skills/{s['id']}/approve", headers=headers)
             if a.status_code == 200:
                 approved += 1
-    print(f"✓ Approved {approved} procedure(s) for formal SKILL.md export")
+    print(f"[OK] Approved {approved} procedure(s) for formal SKILL.md export")
 
 
 def print_summary(token: str) -> None:

@@ -22,7 +22,7 @@ class Settings(BaseSettings):
 
     # LLM — model used for RAG, extraction, and the Company PA. A high-capability
     # model improves extraction/PA reasoning; override via env for production.
-    LLM_MODEL: str = "meta-llama/llama-4-scout-17b-16e-instruct"
+    LLM_MODEL: str = "openai/gpt-oss-120b"
 
     # Company PA — end-of-day check-in time (local hour, 24h) per employee timezone
     PA_CHECKIN_HOUR: int = 17

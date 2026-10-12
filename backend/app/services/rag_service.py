@@ -72,7 +72,7 @@ class RAGService:
                     {"role": "system", "content": system_prompt},
                     {"role": "user", "content": user_query},
                 ],
-                model="meta-llama/llama-4-scout-17b-16e-instruct",
+                model=settings.LLM_MODEL,
                 max_tokens=1024,
                 temperature=0.2,
             )
