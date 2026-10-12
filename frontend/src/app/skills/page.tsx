@@ -1,6 +1,7 @@
 'use client';
 import React, { useCallback, useEffect, useState } from 'react';
 import { apiFetch } from '@/lib/api';
+import EvidencePanel, { Citation } from '@/components/skills/EvidencePanel';
 
 const STATUSES = ['draft', 'approved', 'stale', 'deprecated', 'rejected'] as const;
 type Status = (typeof STATUSES)[number];
@@ -13,13 +14,6 @@ interface SkillMeta {
   status: Status;
   version: number;
   updated_at: string;
-}
-
-interface Citation {
-  citation_id: string;
-  fragment_id: string;
-  source_type: string | null;
-  content: string | null;
 }
 
 interface SkillFull extends SkillMeta {
@@ -280,21 +274,7 @@ export default function SkillsPage() {
                         <Section title="Decision Rules & Thresholds" items={detail.decision_rules} />
                         <Section title="Safety Guardrails & Academic Integrity Checks" items={detail.guardrails} />
 
-                        {detail.citations?.length > 0 && (
-                          <div className="pt-2 border-t border-slate-800/80">
-                            <h3 className="text-[11px] uppercase tracking-wider font-semibold text-slate-400 mb-2">
-                              Evidentiary Source Citations ({detail.citations.length})
-                            </h3>
-                            <div className="space-y-1.5">
-                              {detail.citations.map((c) => (
-                                <div key={c.citation_id} className="text-xs p-2 rounded bg-slate-900/60 border border-slate-800 text-slate-400 font-mono">
-                                  <span className="text-blue-400 font-sans font-semibold mr-1">[{c.source_type ?? 'evidence'}]:</span>
-                                  <span>{c.content?.slice(0, 180)}…</span>
-                                </div>
-                              ))}
-                            </div>
-                          </div>
-                        )}
+                        <EvidencePanel citations={detail.citations} />
 
                         {/* Action buttons */}
                         <div className="pt-3 border-t border-slate-800 flex flex-wrap gap-2 text-xs">

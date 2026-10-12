@@ -33,9 +33,11 @@ export default function Sidebar() {
   );
 
   // Close mobile drawer on route change
-  useEffect(() => {
+  const [prevPathname, setPrevPathname] = useState(pathname);
+  if (prevPathname !== pathname) {
+    setPrevPathname(pathname);
     setMobileOpen(false);
-  }, [pathname]);
+  }
 
   // Close drawer on escape key
   useEffect(() => {
