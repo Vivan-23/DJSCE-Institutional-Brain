@@ -1,0 +1,285 @@
+================================================================================
+ COMPANY BRAIN — COMPLETE ARCHITECTURAL STUDY & PROJECT ANALYSIS
+================================================================================
+
+1. PROJECT STRUCTURE
+--------------------------------------------------------------------------------
+The project is organized as a production-grade full-stack mono-repo with a
+FastAPI backend, a Next.js (React 19) frontend, multi-database storage engines
+(PostgreSQL, ChromaDB, Neo4j, Redis), and background Celery workers.
+
+Directory Layout:
+
+Company-Brain/
+│
+├── .env / .env.example       Environment variables (keys, DB connections, secrets)
+├── company.yaml              Single source of truth for company profile, branding,
+│                             org structure (employees, roles, timezones, managers)
+├── docker-compose.yml        Multi-container orchestration (Postgres, ChromaDB,
+│                             Neo4j, Redis, Backend API, Celery Worker, Celery Beat)
+├── ingest_all.py             Demo ingestion script (loads mock meetings, triggers
+│                             parsing, graph population, and skill extraction)
+├── generate_mock_data.py     Utility to generate realistic synthetic company transcripts
+├── mock_company_data/        Curated sample transcripts & notes (e.g. refunds,
+│                             incident response, operational syncs)
+├── README.md                 High-level project introduction & architecture diagrams
+├── CLAUDE.md                 Coding instructions and run commands
+│
+├── docs/                     Comprehensive documentation suite
+│   ├── ARCHITECTURE.md       Detailed architectural and service map
+│   ├── USAGE.md              Setup, running, test instructions, and walkthrough
+│   ├── CUSTOMIZING.md        Guide for configuring company profiles via company.yaml
+│   └── CHANGELOG.md          Changelog of feature implementations
+│
+├── backend/                  FastAPI Core Backend (Python 3.11)
+│   ├── Dockerfile            Container build specification
+│   ├── pyproject.toml        Python packaging & tool configurations
+│   ├── requirements.txt      Core production dependencies
+│   ├── requirements.lock     Pinned dependency lockfile
+│   │
+│   ├── app/
+│   │   ├── main.py           FastAPI app initialization, middleware, startup hooks
+│   │   │
+│   │   ├── core/             Infrastructure & Configuration
+│   │   │   ├── config.py             Pydantic BaseSettings (env-driven configuration)
+│   │   │   ├── company_config.py     Loads and validates company.yaml profile
+│   │   │   ├── db.py                 SQLModel database engine & table registration
+│   │   │   ├── chroma_db.py          ChromaDB client & collection management
+│   │   │   ├── neo4j_db.py           Neo4j driver client & graph session management
+│   │   │   └── celery.py             Celery instance, task definitions & beat schedules
+│   │   │
+│   │   ├── models/           Data Schemas
+│   │   │   └── structured.py         SQLModel relational tables (Postgres/SQLite):
+│   │   │                             User, Employee, Meeting, Fragment, Commitment,
+│   │   │                             CommitmentUpdate, CheckIn, Skill, SkillCitation,
+│   │   │                             AuditLog, Document, ProgressReport, ActiveInsight
+│   │   │
+│   │   ├── services/         Domain Business Logic (Singletons)
+│   │   │   ├── llm_service.py        Unified LLM client (Groq wrapper with JSON extraction)
+│   │   │   ├── embedding.py          Sentence-Transformer vector embeddings
+│   │   │   ├── ner_service.py        spaCy named entity recognition (PERSON, ORG, PRODUCT)
+│   │   │   ├── parser.py             Document parser (txt, pdf, docx) & chunking
+│   │   │   ├── employee_service.py   Resolves names to employees; links users to employees
+│   │   │   ├── fragment_service.py   Stores raw evidence into Postgres & ChromaDB
+│   │   │   ├── extraction_service.py LLM extraction for meetings & skill procedures
+│   │   │   ├── transcript_service.py Ingests transcripts into fragments, commitments & meetings
+│   │   │   ├── commitment_service.py Action item lifecycle, follow-up flags, status updates
+│   │   │   ├── date_parser.py        Deterministic NLP parser for relative due dates
+│   │   │   ├── pa_service.py         Company PA logic: conversational follow-ups & EOD check-in
+│   │   │   ├── skill_service.py      Clusters fragments, synthesizes skills, renders SKILL.md
+│   │   │   ├── freshness_service.py  Scans new fragments for contradictions; flags stale skills
+│   │   │   ├── audit_service.py      Append-only audit logging for system actions
+│   │   │   ├── company_seed.py       Seeds org structure from company.yaml on startup
+│   │   │   ├── active_intel.py       Calculates bottleneck insights & organizational risk
+│   │   │   ├── graph_service.py      Upserts nodes & edges into Neo4j
+│   │   │   ├── rag_service.py        Retrieval-augmented chat over fragments and graph
+│   │   │   └── connectors/           Extensible ingestion connectors (Slack, DB, manual)
+│   │   │
+│   │   ├── api/              FastAPI Web Layer
+│   │   │   ├── router.py             Mounts all V1 resource routes under /api/v1
+│   │   │   └── v1/                   Endpoint routes:
+│   │   │       ├── auth.py           JWT login/register + Role-Based Access Control (RBAC)
+│   │   │       ├── transcripts.py    Meeting transcript upload & status
+│   │   │       ├── commitments.py    Commitment listing & status patches
+│   │   │       ├── pa.py             Personal Assistant follow-ups & daily check-in
+│   │   │       ├── skills.py         Skill extraction, review, approve/reject, SKILL.md export
+│   │   │       ├── sources.py        Connector statuses & synchronization triggers
+│   │   │       ├── insights.py       Active intelligence feed & bottleneck alerts
+│   │   │       ├── chat.py           Internal RAG chat assistant
+│   │   │       ├── graph.py          Neo4j entity and relationship visualization API
+│   │   │       ├── ingest.py         Generic file/document ingestion (PDF/DOCX/TXT)
+│   │   │       ├── audit.py          System compliance audit log
+│   │   │       └── company.py        Public company profile & branding endpoint
+│   │   │
+│   │   └── tests/            Pytest test suite (unit and integration tests)
+│   │
+└── frontend/                 Next.js Web Application
+    ├── package.json          Frontend dependencies (Next.js 16, React 19, Tailwind v4)
+    ├── tsconfig.json         TypeScript configurations
+    └── src/
+        ├── lib/api.ts        Client-side HTTP wrapper with JWT injection & 401 redirect
+        ├── components/
+        │   ├── layout/       Sidebar navigation, branding header, user session
+        │   ├── graph/        Interactive knowledge graph canvas (Neo4j explorer)
+        │   └── dashboard/    Insight alert cards & summary widgets
+        └── app/              Next.js App Router:
+            ├── page.tsx              Active Intelligence Feed (Bottlenecks, insights)
+            ├── login/page.tsx        Authentication page
+            ├── assistant/page.tsx    Company PA: interactive EOD check-in & follow-ups
+            ├── skills/page.tsx       Skill review, editing, approval & SKILL.md exporter
+            ├── meetings/page.tsx     Transcript ingestion, speaker parsing & notes
+            ├── commitments/page.tsx  Action items dashboard (open, in-progress, blocked)
+            ├── relationships/page.tsx Entity relationship graph visualizer
+            ├── chat/page.tsx         RAG search and query over captured company memory
+            └── sources/page.tsx      Data connector status & management
+
+
+================================================================================
+2. TECHNOLOGIES, MODELS & ARCHITECTURE USED
+================================================================================
+
+A. CORE PROGRAMMING LANGUAGES & FRAMEWORKS
+- Python 3.11: Powers the entire backend service, asynchronous pipelines, and AI engines.
+- FastAPI (>=0.111.0): High-performance, async REST API server with OpenAPI docs.
+- SQLModel / SQLAlchemy: Python ORM blending SQLAlchemy with Pydantic type safety.
+- TypeScript / Next.js 16 / React 19: Modern server and client components.
+- Tailwind CSS v4: Modern styling layer for the human review and assistant UI.
+
+B. POLYGLOT STORAGE ARCHITECTURE (Multi-Database System)
+1. PostgreSQL 16 (Relational Store):
+   - Stores core operational records: Users, Employees, Meetings, Fragments,
+     Commitments, Commitment Updates, CheckIns, Skills, Skill Citations, and Audit Logs.
+   - Uses JSON-serialized text storage for arrays/dicts, allowing seamless SQLite fallback in tests.
+2. ChromaDB (Vector Store):
+   - Stores 1024-dimensional dense vector embeddings of every ingested Fragment.
+   - Enables semantic similarity search, RAG retrieval, and fragment clustering.
+3. Neo4j 5.18 (Graph Database):
+   - Stores knowledge graph entities (Employees, Teams, Projects, Documents) and
+     relationships (WORKS_ON, MANAGES, MENTIONED_IN) for structural company reasoning.
+4. Redis 7 (Message Broker & Cache):
+   - Task queue broker and state storage for Celery background jobs.
+
+C. AI & MACHINE LEARNING MODELS USED IN CODE
+1. Large Language Model (LLM):
+   - Provider: Groq API client (`groq>=0.9.0`) with low-latency inference.
+   - Default Model: `meta-llama/llama-4-scout-17b-16e-instruct` (configurable to Llama-3.1/3.3/etc.).
+   - Responsibilities:
+     * Transcript Extraction: Parses speakers, generates executive summaries, extracts
+       decisions, and identifies commitments with owners and deadlines.
+     * Procedure / Skill Synthesis: Groups related fragments and synthesizes formal,
+       executable skills (triggers, preconditions, step-by-step actions, decision rules,
+       guardrails, and escalation protocols).
+     * Company PA Check-In & Follow-ups: Conducts natural, empathetic end-of-day
+       conversations, maps casual human speech to formal commitment updates, and writes
+       new commitments without forcing employees into form-filling.
+     * Contradiction / Freshness Engine: Evaluates recent company fragments against
+       approved skills to detect obsolete rules, threshold changes, or procedural drift.
+     * RAG Chat: Answers questions over company fragments with cited sources.
+2. Embedding Model:
+   - Model: `BAAI/bge-large-en-v1.5`
+   - Library: `sentence-transformers` (>=3.0.1) backed by PyTorch (`torch>=2.3.1`).
+   - Function: Generates normalized 1024-dimensional semantic embeddings for all company
+     fragments to power vector clustering and hybrid search.
+3. Named Entity Recognition (NER) Model:
+   - Model: `en_core_web_sm`
+   - Library: `spacy` (>=3.7.4).
+   - Function: Identifies real-world entities (PERSON, ORG, PRODUCT) from uploaded documents
+     and meeting transcripts to populate the Neo4j graph nodes and edges.
+4. Natural Language Rule-Based Processing:
+   - Custom Date Parser (`app/services/date_parser.py`): Parses natural expressions like
+     "by Friday", "next week", "in 3 days", or ISO dates into strict UTC timestamps.
+
+D. ASYNCHRONOUS ORCHESTRATION & BACKGROUND JOBS
+- Celery 5.4 + Celery Beat:
+  * `process_transcript`: Background processing of uploaded audio/text transcripts.
+  * `process_document`: Chunking and vectorizing PDF/DOCX/TXT files.
+  * `run_daily_active_intelligence`: Daily scan for project bottlenecks and roadblocks.
+  * `run_daily_checkins`: Evening trigger preparing end-of-day PA check-ins per timezone.
+  * `run_commitment_followups`: Scans commitments inactive for >48 hours to generate nudges.
+  * `run_skill_extraction`: Nightly clustering of newly ingested fragments into candidate skills.
+  * `run_freshness_scan`: Periodic audit of approved skills against new company evidence.
+
+E. SECURITY & ACCESS CONTROL
+- Authentication: JWT tokens with HS256 encryption.
+- Password Security: Passlib with bcrypt hashing.
+- Role-Based Access Control (RBAC): Strict tiered permissions: `employee` < `manager` < `admin`.
+
+
+================================================================================
+3. COMPREHENSIVE USE CASES OF COMPANY BRAIN
+================================================================================
+
+Based on the architecture and implementations in this codebase, here are the
+core and extended real-world use cases:
+
+1. Autonomous AI Agent Enablement (Executable SOP Generation):
+   - Rather than giving an AI agent free reign or forcing humans to manually write prompts,
+     Company Brain compiles messy real-world conversations into machine-executable `SKILL.md`
+     files.
+   - Agents (Claude Code, Antigravity, CrewAI, AutoGen, LangChain) fetch approved skills via
+     `GET /api/v1/skills/{id}/file` and execute operational workflows with deterministic
+     guardrails, decision trees, and escalation contacts.
+
+2. Automated Meeting Action-Item Tracking & Accountability:
+   - Ingests meeting transcripts (from Zoom, Google Meet, Teams, Fireflies, Otter).
+   - Automatically identifies who promised what, the exact deadline, and the context.
+   - Saves human project managers from manually typing minutes and chasing assignees.
+
+3. Zero-Form Personal Assistant (The "Company PA"):
+   - Eliminates tedious status-reporting software and questionnaires.
+   - At the end of the day (e.g., 5:00 PM), employees have a quick 2-minute chat with their
+     in-app PA: "I finished the billing bug fix, but I'm waiting on legal for the contract."
+   - The PA automatically marks commitments as 'done' or 'blocked' and captures new evidence.
+   - Proactively nudges employees on stalled tasks in natural language without sounding robotic.
+
+4. Procedural Drift & Freshness Detection (Automatic Anti-Rot for Company Knowledge):
+   - Standard internal wikis (Notion, Confluence) go out of date within weeks because nobody
+     updates them.
+   - Company Brain continuously compares new meeting discussions and check-ins against approved
+     skills. If a meeting decides "We no longer offer $50 refunds; the new limit is $20," the
+     freshness engine immediately flags the refund skill as "stale", notifies the owner, and
+     prevents autonomous agents from executing obsolete refund limits.
+
+5. Risk & Bottleneck Early Warning System (Active Intelligence):
+   - Analyzes progress reports, roadblocks, and overdue commitments across all teams.
+   - Detects when multiple employees are blocked by the same team, API, or decision, raising
+     automated "Active Insights" on the management feed before projects derail.
+
+6. Instant Employee Onboarding & Institutional Knowledge Preservation:
+   - When key engineers, support leads, or executives leave the company, their implicit knowledge
+     usually disappears with them.
+   - Company Brain preserves how decisions are made, who has authority, and the exact procedures
+     used, cited directly back to the original discussions. New hires can review the skills or
+     query the RAG chat to understand organizational practices immediately.
+
+7. Enterprise Compliance, Evidence Citation & Human-in-the-Loop Governance:
+   - Every single line in a generated skill is linked back to a `Fragment` citation (meeting ID,
+     timestamp, speaker).
+   - Managers must review, edit, and click "Approve" before an automated procedure can be deployed
+     to autonomous agents.
+   - Full append-only `AuditLog` records who extracted, edited, approved, or executed every skill.
+
+
+================================================================================
+4. WHAT IS THIS PROJECT'S USP (UNIQUE SELLING PROPOSITION)?
+================================================================================
+
+Most enterprise AI projects are either:
+  (a) Passive Q&A chatbots (Enterprise Search / RAG over docs), or
+  (b) Autonomous agent frameworks that lack real company context and hallucinate safely.
+
+Company Brain's USP is:
+"THE EXECUTABLE KNOWLEDGE LAYER THAT TURNS TACIT HUMAN WORK INTO SAFE,
+ CITED, CONTINUOUSLY FRESH AGENT SKILLS."
+
+Key differentiators that make this project uniquely valuable:
+
+1. FROM "SEARCH FOR HUMANS" TO "EXECUTION FOR AGENTS":
+   Existing tools (Glean, Notion AI, Guru) answer questions for humans to read.
+   Company Brain does not stop at answering questions—it synthesizes machine-consumable
+   procedures (`SKILL.md`) structured specifically for autonomous AI agents to execute work
+   (triggers, preconditions, steps, branching rules, guardrails, and escalation).
+
+2. ACTIVE CONVERSATIONAL CAPTURE (NO FORMS, NO WIKIS):
+   The greatest failure of knowledge management is that humans hate documenting their work.
+   Company Brain captures knowledge passively from transcripts and actively through the
+   Company PA. An employee simply talks to their PA for 60 seconds at the end of the day;
+   the system handles structuring, attribution, and logging behind the scenes.
+
+3. CONTINUOUS FRESHNESS & CONTRADICTION DETECTION:
+   Company wikis die because they rot. Company Brain treats knowledge as a living organism.
+   When verbal company reality diverges from written procedure, the Freshness Engine detects
+   the contradiction, marks the skill as stale, and prevents agents from operating on obsolete
+   guidelines until human verification occurs.
+
+4. END-TO-END CITATION & SAFETY GUARDRAILS:
+   Autonomous agents cannot be trusted in production without deterministic boundaries.
+   Company Brain enforces:
+   - Full traceability: Every procedure step cites the exact transcript fragment it came from.
+   - Built-in guardrails: Thresholds (e.g., "$500+ requires human approval") are baked directly
+     into the exported skill.
+   - Human-in-the-loop: Only manager-approved skills are exported to executing agents.
+
+In summary, Company Brain bridges the critical missing gap between unstructured human
+operations and reliable, safe enterprise AI automation.
+================================================================================
