@@ -18,6 +18,11 @@
   --radius: 0.5rem;
 }
 
+html {
+  scroll-behavior: smooth;
+  height: 100%;
+}
+
 body {
   background-color: hsl(var(--background));
   color: hsl(var(--foreground));
@@ -25,23 +30,51 @@ body {
   margin: 0;
   padding: 0;
   -webkit-font-smoothing: antialiased;
+  -webkit-overflow-scrolling: touch;
+  min-height: 100%;
+}
+
+/* Custom smooth dark scrollbar for modern browsers */
+::-webkit-scrollbar {
+  width: 7px;
+  height: 7px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(15, 23, 42, 0.6);
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(51, 65, 85, 0.65);
+  border-radius: 9999px;
+  border: 1px solid rgba(15, 23, 42, 0.4);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(71, 85, 105, 0.9);
+}
+
+/* Firefox scrollbar standard */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(51, 65, 85, 0.65) rgba(15, 23, 42, 0.6);
 }
 
 /* Institutional Card and Panel styles: crisp, restrained, enterprise-grade */
 .glass-panel {
-  background: rgba(15, 23, 42, 0.75);
+  background: rgba(15, 23, 42, 0.8);
   backdrop-filter: blur(8px);
-  border: 1px solid rgba(51, 65, 85, 0.6);
+  border: 1px solid rgba(51, 65, 85, 0.65);
   border-radius: var(--radius);
 }
 
 .academic-panel {
-  background: rgba(15, 23, 42, 0.9);
-  border: 1px solid rgba(51, 65, 85, 0.7);
+  background: rgba(15, 23, 42, 0.92);
+  border: 1px solid rgba(51, 65, 85, 0.75);
   border-radius: var(--radius);
 }
 
 .demo-banner {
-  background: rgba(30, 41, 59, 0.85);
-  border-bottom: 1px solid rgba(51, 65, 85, 0.8);
+  background: rgba(30, 41, 59, 0.9);
+  border-bottom: 1px solid rgba(51, 65, 85, 0.85);
 }

@@ -29,27 +29,30 @@ export default function RootLayout({
       lang="en"
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex bg-slate-950 m-0 overflow-hidden text-slate-100">
+      <body className="h-screen w-screen flex flex-col lg:flex-row bg-slate-950 m-0 overflow-hidden text-slate-100">
         <Sidebar />
-        <div className="flex-1 flex flex-col min-w-0 overflow-hidden bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950">
+        <div className="flex-1 flex flex-col min-w-0 min-h-0 h-full overflow-hidden bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950">
           {/* Persistent Academic Prototype Notice */}
-          <header className="demo-banner px-4 py-1.5 flex items-center justify-between text-xs text-slate-400 shrink-0">
-            <div className="flex items-center gap-2">
+          <header className="demo-banner px-3 sm:px-4 py-1.5 flex items-center justify-between text-xs text-slate-400 shrink-0 z-10">
+            <div className="flex items-center gap-2 min-w-0">
               <span className="w-2 h-2 rounded-full bg-amber-400 inline-block shrink-0" />
-              <span className="font-semibold text-slate-300 tracking-wide uppercase text-[10px]">
+              <span className="font-semibold text-slate-300 tracking-wide uppercase text-[10px] shrink-0">
                 Demonstration Prototype
               </span>
-              <span className="text-slate-500">·</span>
-              <span className="truncate">Not an official college system, ERP, or authorized deployment</span>
+              <span className="text-slate-500 hidden sm:inline">·</span>
+              <span className="truncate text-[11px] text-slate-400">
+                Not an official college system, ERP, or authorized deployment
+              </span>
             </div>
-            <div className="hidden sm:flex items-center gap-3 text-[11px] text-slate-400">
+            <div className="hidden md:flex items-center gap-2 text-[11px] text-slate-400 shrink-0">
               <span>Dwarkadas J. Sanghvi College of Engineering</span>
               <span className="text-slate-600">|</span>
-              <span className="font-mono text-slate-400">Research &amp; Decision Support</span>
+              <span className="font-mono text-slate-400 text-[10px]">Decision Support</span>
             </div>
           </header>
 
-          <div className="flex-1 overflow-auto">
+          {/* Primary Viewport Scroll Area */}
+          <div className="flex-1 overflow-y-auto overflow-x-hidden min-h-0">
             {children}
           </div>
         </div>

@@ -179,8 +179,8 @@ export default function AssistantPage() {
           )}
         </div>
 
-        <div className="glass-panel flex flex-col h-[52vh] rounded-lg overflow-hidden">
-          <div ref={scrollRef} className="flex-1 overflow-y-auto p-4 sm:p-5 space-y-3.5">
+        <div className="glass-panel flex flex-col h-[380px] sm:h-[460px] md:h-[520px] rounded-lg overflow-hidden">
+          <div ref={scrollRef} className="flex-1 min-h-0 overflow-y-auto p-4 sm:p-5 space-y-3.5">
             {(checkin?.conversation ?? []).map((turn, i) => (
               <div
                 key={i}

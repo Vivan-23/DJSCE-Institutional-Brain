@@ -36,6 +36,7 @@ export default function GraphCanvas() {
 
   useEffect(() => {
     let animId = 0;
+    let onResize: (() => void) | null = null;
 
     apiFetch('/api/v1/graph/data')
       .then((r) => r.json())
@@ -54,10 +55,20 @@ export default function GraphCanvas() {
         const ctx = canvas.getContext('2d');
         if (!ctx) return;
 
-        const W = canvas.offsetWidth || 900;
-        const H = canvas.offsetHeight || 600;
+        let W = canvas.offsetWidth || 900;
+        let H = canvas.offsetHeight || 600;
         canvas.width = W;
         canvas.height = H;
+
+        const handleResize = () => {
+          if (!canvasRef.current) return;
+          W = canvasRef.current.offsetWidth || 900;
+          H = canvasRef.current.offsetHeight || 600;
+          canvasRef.current.width = W;
+          canvasRef.current.height = H;
+        };
+        onResize = handleResize;
+        window.addEventListener('resize', handleResize);
 
         // Initialise node positions in a circle to avoid initial clustering
         const nodes: GraphNode[] = rawNodes.map((n, i) => {
@@ -196,6 +207,7 @@ export default function GraphCanvas() {
 
     return () => {
       if (animId) cancelAnimationFrame(animId);
+      if (onResize) window.removeEventListener('resize', onResize);
     };
   }, []);
 
@@ -232,8 +244,7 @@ export default function GraphCanvas() {
     <div className="glass-panel overflow-hidden">
       <canvas
         ref={canvasRef}
-        className="w-full"
-        style={{ height: 600 }}
+        className="w-full h-[360px] sm:h-[460px] md:h-[540px] lg:h-[600px] block"
         aria-label="Force-directed organizational relationship graph"
         role="img"
       />

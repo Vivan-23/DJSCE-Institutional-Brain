@@ -72,9 +72,9 @@ export default function ChatPage() {
   };
 
   return (
-    <main className="p-4 sm:p-8 max-w-4xl mx-auto flex flex-col h-[calc(100vh-3rem)]">
+    <main className="p-4 sm:p-6 md:p-8 max-w-4xl mx-auto flex flex-col h-full min-h-[520px] w-full">
       {/* Header */}
-      <div className="mb-4 shrink-0">
+      <div className="mb-3 shrink-0">
         <div className="flex items-center justify-between">
           <div>
             <h1 className="text-xl sm:text-2xl font-bold text-slate-100 tracking-tight">
@@ -109,15 +109,15 @@ export default function ChatPage() {
         </div>
       </div>
 
-      {/* Messages Scroll Area */}
-      <div className="glass-panel flex-1 overflow-y-auto p-4 sm:p-6 space-y-4 mb-3">
+      {/* Messages Scroll Area with custom dark scrollbar */}
+      <div className="glass-panel flex-1 min-h-[260px] overflow-y-auto p-4 sm:p-6 space-y-4 mb-3">
         {messages.map((msg, i) => (
           <div
             key={i}
             className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}
           >
             <div
-              className={`max-w-[85%] rounded-lg px-4 py-3 text-xs sm:text-sm leading-relaxed ${
+              className={`max-w-[90%] sm:max-w-[82%] rounded-lg px-4 py-3 text-xs sm:text-sm leading-relaxed ${
                 msg.role === 'user'
                   ? 'bg-blue-600/20 border border-blue-500/40 text-slate-100'
                   : 'bg-slate-900/90 border border-slate-800 text-slate-200'
