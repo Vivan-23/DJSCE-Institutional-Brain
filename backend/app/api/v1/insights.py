@@ -12,6 +12,7 @@ log = structlog.get_logger()
 router = APIRouter()
 
 
+@router.get("")
 @router.get("/")
 def get_insights(
     db: Session = Depends(get_session),

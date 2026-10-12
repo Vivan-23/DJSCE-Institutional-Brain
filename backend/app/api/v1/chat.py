@@ -19,6 +19,7 @@ class ChatRequest(BaseModel):
     messages: list[ChatMessage]
 
 
+@router.post("")
 @router.post("/")
 def chat_endpoint(
     request: ChatRequest,

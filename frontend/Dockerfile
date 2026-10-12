@@ -11,8 +11,11 @@ COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 
 # Build-time env (injected by docker-compose or CI)
-ARG NEXT_PUBLIC_API_URL=http://localhost:8001
+ARG NEXT_PUBLIC_API_URL=""
 ENV NEXT_PUBLIC_API_URL=$NEXT_PUBLIC_API_URL
+
+ARG INTERNAL_API_URL="http://backend:8001"
+ENV INTERNAL_API_URL=$INTERNAL_API_URL
 
 RUN npm run build
 
@@ -27,6 +30,7 @@ ENV NEXT_TELEMETRY_DISABLED=1
 # published port.
 ENV HOSTNAME=0.0.0.0
 ENV PORT=3000
+ENV INTERNAL_API_URL=http://backend:8001
 
 RUN addgroup --system nodejs && adduser --system --ingroup nodejs nextjs
 

@@ -158,12 +158,14 @@ services:
       context: ./frontend
       dockerfile: Dockerfile
       args:
-        NEXT_PUBLIC_API_URL: http://localhost:8001
+        NEXT_PUBLIC_API_URL: ""
+        INTERNAL_API_URL: http://backend:8001
     container_name: cb_frontend
     ports:
       - "3000:3000"
     environment:
-      - NEXT_PUBLIC_API_URL=http://localhost:8001
+      - NEXT_PUBLIC_API_URL=""
+      - INTERNAL_API_URL=http://backend:8001
     depends_on:
       - backend
 
