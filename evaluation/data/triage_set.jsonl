@@ -1,0 +1,96 @@
+{"id": "t01", "category": "academics", "urgent": false, "text": "Which electives are offered in Semester VI of Computer Engineering?"}
+{"id": "t02", "category": "academics", "urgent": false, "text": "What are the prerequisites for the Applied Generative AI elective?"}
+{"id": "t03", "category": "academics", "urgent": false, "text": "Can you share the syllabus for Data Structures in Semester III?"}
+{"id": "t04", "category": "academics", "urgent": false, "text": "How many credits is the IPD course worth in the fourth semester?"}
+{"id": "t05", "category": "academics", "urgent": false, "text": "I want to know what topics are taught under Compiler Design."}
+{"id": "t06", "category": "academics", "urgent": false, "text": "Is Deep Learning a compulsory paper or optional in final year?"}
+{"id": "t07", "category": "academics", "urgent": false, "text": "Who decides the list of department electives each year?"}
+{"id": "t08", "category": "academics", "urgent": true, "text": "Elective selection form closes tonight and I still don't know which subjects are available, please help asap"}
+{"id": "t09", "category": "academics", "urgent": false, "text": "What are the Program Outcomes for the IT branch?"}
+{"id": "t10", "category": "academics", "urgent": false, "text": "Sem 5 mein kaunse subjects hai Computer Engineering ke?"}
+{"id": "t11", "category": "academics", "urgent": false, "text": "Is there a minor or honours option alongside the B.Tech degree?"}
+{"id": "t12", "category": "academics", "urgent": false, "text": "What will I study in the Software Engineering course?"}
+{"id": "t13", "category": "academics", "urgent": false, "text": "Which programming languages are covered in the first two years?"}
+{"id": "t14", "category": "academics", "urgent": false, "text": "Where can I find the course outcomes for Operating Systems?"}
+{"id": "t15", "category": "academics", "urgent": false, "text": "How is the final-year project split into stages?"}
+{"id": "t16", "category": "academics", "urgent": false, "text": "Can I change my department elective after the semester has started?"}
+{"id": "t17", "category": "examinations", "urgent": false, "text": "How do I apply for re-evaluation of my semester exam marks?"}
+{"id": "t18", "category": "examinations", "urgent": true, "text": "My hall ticket is not downloading and the exam is tomorrow morning"}
+{"id": "t19", "category": "examinations", "urgent": false, "text": "When will the end semester results be declared?"}
+{"id": "t20", "category": "examinations", "urgent": false, "text": "I have a KT in Maths III, how do I register for the backlog paper?"}
+{"id": "t21", "category": "examinations", "urgent": false, "text": "What is the passing criteria for the practical viva?"}
+{"id": "t22", "category": "examinations", "urgent": false, "text": "My internal marks in the portal look lower than what the teacher told me in class."}
+{"id": "t23", "category": "examinations", "urgent": true, "text": "Practical is in two hours and my name is missing from the batch list for the lab test"}
+{"id": "t24", "category": "examinations", "urgent": false, "text": "How are discrepancies between internal and external examiners resolved?"}
+{"id": "t25", "category": "examinations", "urgent": false, "text": "Can I get a photocopy of my answer sheet?"}
+{"id": "t26", "category": "examinations", "urgent": false, "text": "Paper ka result kab aayega? Still waiting for sem 4 marks"}
+{"id": "t27", "category": "examinations", "urgent": false, "text": "Is a calculator allowed in the Engineering Mathematics paper?"}
+{"id": "t28", "category": "examinations", "urgent": false, "text": "What happens if I miss the continuous assessment test because of a family function?"}
+{"id": "t29", "category": "examinations", "urgent": false, "text": "How is the grade point average calculated for this semester?"}
+{"id": "t30", "category": "examinations", "urgent": false, "text": "Who moderates the question papers for laboratory exams?"}
+{"id": "t31", "category": "examinations", "urgent": true, "text": "I was marked absent for yesterday's test even though I wrote it, the grade sheet locks today"}
+{"id": "t32", "category": "examinations", "urgent": false, "text": "How long does it take for my rechecked marks to be updated?"}
+{"id": "t33", "category": "attendance", "urgent": false, "text": "What is the minimum attendance requirement to sit for exams?"}
+{"id": "t34", "category": "attendance", "urgent": false, "text": "I was sick for two weeks, how do I submit a medical certificate for my absences?"}
+{"id": "t35", "category": "attendance", "urgent": true, "text": "My name is on the defaulter list and the deadline to clear it is today"}
+{"id": "t36", "category": "attendance", "urgent": false, "text": "Does attending a hackathon count as on-duty leave?"}
+{"id": "t37", "category": "attendance", "urgent": false, "text": "What is the college policy on plagiarism in assignments?"}
+{"id": "t38", "category": "attendance", "urgent": false, "text": "Can lectures I missed for a sports competition be condoned?"}
+{"id": "t39", "category": "attendance", "urgent": false, "text": "Mera attendance 70% hai, kya main exam de sakta hoon?"}
+{"id": "t40", "category": "attendance", "urgent": false, "text": "Is there a dress code rule for laboratory sessions?"}
+{"id": "t41", "category": "attendance", "urgent": false, "text": "How do I apply for leave for a family wedding next month?"}
+{"id": "t42", "category": "attendance", "urgent": false, "text": "Are we allowed to use AI tools to write lab reports?"}
+{"id": "t43", "category": "attendance", "urgent": false, "text": "My attendance on the portal is wrong for the last three lectures of DBMS."}
+{"id": "t44", "category": "attendance", "urgent": false, "text": "What is the penalty if someone copies my code in a mini project?"}
+{"id": "t45", "category": "attendance", "urgent": false, "text": "How many classes can I skip and still be eligible?"}
+{"id": "t46", "category": "attendance", "urgent": false, "text": "Is there a rule about using mobile phones during lectures?"}
+{"id": "t47", "category": "attendance", "urgent": true, "text": "I was debarred from the exam because of low presence, the appeal window closes tomorrow"}
+{"id": "t48", "category": "attendance", "urgent": false, "text": "Who approves condonation for long medical absence?"}
+{"id": "t49", "category": "facilities", "urgent": false, "text": "The wifi in the third floor library keeps disconnecting."}
+{"id": "t50", "category": "facilities", "urgent": true, "text": "Lab 302 workstations won't boot and our practical starts in an hour"}
+{"id": "t51", "category": "facilities", "urgent": false, "text": "Can students use the GPU workstations after college hours for projects?"}
+{"id": "t52", "category": "facilities", "urgent": false, "text": "The projector in classroom 405 is not working properly."}
+{"id": "t53", "category": "facilities", "urgent": false, "text": "Which software is installed on the department lab computers?"}
+{"id": "t54", "category": "facilities", "urgent": false, "text": "How do I get a library card renewed?"}
+{"id": "t55", "category": "facilities", "urgent": false, "text": "Git push is extremely slow from Lab 4 machines during the afternoon."}
+{"id": "t56", "category": "facilities", "urgent": false, "text": "Is there a printer students can use near the computer engineering department?"}
+{"id": "t57", "category": "facilities", "urgent": false, "text": "Lab ke PCs pe Python install nahi hai, kisko bolein?"}
+{"id": "t58", "category": "facilities", "urgent": false, "text": "The air conditioning in the seminar hall has been broken for a week."}
+{"id": "t59", "category": "facilities", "urgent": false, "text": "Can I borrow an Arduino kit from the electronics store for my project?"}
+{"id": "t60", "category": "facilities", "urgent": true, "text": "I can't log in to any lab machine with my student ID and my viva is today"}
+{"id": "t61", "category": "facilities", "urgent": false, "text": "Are reference books for Machine Learning available in the reading room?"}
+{"id": "t62", "category": "facilities", "urgent": false, "text": "How many workstations are in the Advanced Computing Laboratory?"}
+{"id": "t63", "category": "facilities", "urgent": false, "text": "The drinking water cooler on the second floor is leaking."}
+{"id": "t64", "category": "facilities", "urgent": false, "text": "Can we book the seminar hall for a student chapter event?"}
+{"id": "t65", "category": "careers", "urgent": false, "text": "Which companies recruit from the Computer Engineering department?"}
+{"id": "t66", "category": "careers", "urgent": false, "text": "How do I register for the campus placement drive?"}
+{"id": "t67", "category": "careers", "urgent": true, "text": "The internship offer letter needs a college NOC by tomorrow, who signs it?"}
+{"id": "t68", "category": "careers", "urgent": false, "text": "Does the college help students preparing for GRE and MS abroad?"}
+{"id": "t69", "category": "careers", "urgent": false, "text": "What is the eligibility CGPA for sitting in placement interviews?"}
+{"id": "t70", "category": "careers", "urgent": false, "text": "Are there any summer internship opportunities with research labs like IIT Bombay?"}
+{"id": "t71", "category": "careers", "urgent": false, "text": "Can I get a recommendation letter from my project guide for a master's application?"}
+{"id": "t72", "category": "careers", "urgent": false, "text": "Placement ke liye resume kaise banaye, koi workshop hai?"}
+{"id": "t73", "category": "careers", "urgent": false, "text": "What was the highest package offered last season?"}
+{"id": "t74", "category": "careers", "urgent": false, "text": "Can I opt out of placements if I want to start a company?"}
+{"id": "t75", "category": "careers", "urgent": false, "text": "Do companies visit for data science roles or only software development?"}
+{"id": "t76", "category": "careers", "urgent": false, "text": "Is there a mock interview session before the recruitment season?"}
+{"id": "t77", "category": "careers", "urgent": true, "text": "Aptitude test for the drive is this afternoon and I never got the registration link"}
+{"id": "t78", "category": "careers", "urgent": false, "text": "Can second-year students apply for paid internships during the semester?"}
+{"id": "t79", "category": "careers", "urgent": false, "text": "How do alumni referrals work for off-campus jobs?"}
+{"id": "t80", "category": "careers", "urgent": false, "text": "Which student committees help with industry connections?"}
+{"id": "t81", "category": "general", "urgent": false, "text": "What is the vision of the Computer Engineering department?"}
+{"id": "t82", "category": "general", "urgent": false, "text": "When was the IT department established?"}
+{"id": "t83", "category": "general", "urgent": false, "text": "How do I get a bonafide certificate for a passport application?"}
+{"id": "t84", "category": "general", "urgent": false, "text": "Is the college accredited by NBA?"}
+{"id": "t85", "category": "general", "urgent": false, "text": "Who is the head of the Computer Engineering department?"}
+{"id": "t86", "category": "general", "urgent": false, "text": "Where is the admissions office and what are its timings?"}
+{"id": "t87", "category": "general", "urgent": true, "text": "I lost my college ID card and the gate won't let me in today, what do I do?"}
+{"id": "t88", "category": "general", "urgent": false, "text": "How can I join the student council?"}
+{"id": "t89", "category": "general", "urgent": false, "text": "College ka mission statement kya hai?"}
+{"id": "t90", "category": "general", "urgent": false, "text": "Can my parents get a copy of the fee receipt for income tax?"}
+{"id": "t91", "category": "general", "urgent": false, "text": "Is there a counselling service for students?"}
+{"id": "t92", "category": "general", "urgent": false, "text": "How many students are admitted to B.Tech Computer Engineering each year?"}
+{"id": "t93", "category": "general", "urgent": false, "text": "Where do I submit lost and found items?"}
+{"id": "t94", "category": "general", "urgent": false, "text": "Does the college have an anti-ragging committee and how do I contact it?"}
+{"id": "t95", "category": "general", "urgent": false, "text": "What scholarships are available for meritorious students?"}
+{"id": "t96", "category": "general", "urgent": false, "text": "How do I update my phone number in college records?"}

@@ -1,0 +1,7 @@
+Demo logins:
+password : demo123
+
+admin@example.com, 
+aditi.rao@example.com (Committee Coordinator), 
+karan.shah@example.com (Faculty), 
+aarav.desai@example.com (Student).

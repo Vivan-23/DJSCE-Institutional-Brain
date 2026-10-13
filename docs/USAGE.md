@@ -221,7 +221,22 @@ and an authenticated ngrok account.
 
 ---
 
-## 7. Testing
+## 7. Evaluation (numbers for the report)
+
+With the stack up and the dataset loaded:
+
+```bash
+docker compose --profile eval run --rm evaluator
+```
+
+It measures help-desk triage (keyword vs LLM vs the optional laya classifier), grounded
+Q&A, student visibility leaks and commitment extraction, and writes
+`publication/01_ipd_report/results/RESULTS.md`. The first run downloads laya's model
+(about 4 minutes, cached afterwards). To try laya in the app itself, install
+`laya==0.3.21` in the backend image and set `TRIAGE_ENGINES=laya,llm,keyword`.
+Details: [`evaluation/README.md`](../evaluation/README.md).
+
+## 8. Testing
 
 ```bash
 cd backend && .venv/Scripts/python -m pytest -q      # no Docker needed
@@ -234,7 +249,7 @@ cd frontend && npx tsc --noEmit && npx eslint src
 
 ---
 
-## 8. Troubleshooting
+## 9. Troubleshooting
 
 | Symptom | Likely cause / fix |
 |---|---|

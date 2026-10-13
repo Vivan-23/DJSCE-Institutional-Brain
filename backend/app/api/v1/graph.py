@@ -57,12 +57,16 @@ def get_graph_stats(current_user: User = Depends(require_staff)):
     try:
         employee_count = neo4j_conn.execute_query("MATCH (e:Employee) RETURN count(e) AS c")[0]["c"]
         project_count = neo4j_conn.execute_query("MATCH (p:Project) RETURN count(p) AS c")[0]["c"]
+        meeting_count = neo4j_conn.execute_query("MATCH (m:Meeting) RETURN count(m) AS c")[0]["c"]
+        document_count = neo4j_conn.execute_query("MATCH (d:Document) RETURN count(d) AS c")[0]["c"]
         rel_count = neo4j_conn.execute_query("MATCH ()-[r]->() RETURN count(r) AS c")[0]["c"]
         return {
             "employees": employee_count,
             "projects": project_count,
+            "meetings": meeting_count,
+            "documents": document_count,
             "relationships": rel_count,
         }
     except Exception as e:
         log.error("Graph stats failed", error=str(e))
-        return {"employees": 0, "projects": 0, "relationships": 0}
+        return {"employees": 0, "projects": 0, "meetings": 0, "documents": 0, "relationships": 0}

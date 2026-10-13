@@ -31,6 +31,17 @@ log = structlog.get_logger()
 # "Alex Chen:" or "[00:12] Alex Chen:" at the start of a line
 _SPEAKER_RE = re.compile(r"^\s*(?:\[[^\]]*\]\s*)?([A-Z][\w.\- ]{1,40}?):\s*(.+)$")
 
+# Header lines share the "Label: text" shape ("Date: …", "Attendees: …",
+# "Academic Council Meeting: …") but are not people speaking.
+_HEADER_LABELS = {"date", "time", "venue", "attendees", "present", "absent", "agenda", "subject",
+                  "minutes", "notice", "decision", "decisions", "action items", "note", "notes"}
+_HEADER_WORDS = {"meeting", "minutes", "agenda", "sync", "review", "audit"}
+
+
+def _is_speaker(label: str) -> bool:
+    low = label.strip().lower()
+    return low not in _HEADER_LABELS and not (_HEADER_WORDS & set(low.split()))
+
 
 class TranscriptService:
     def ingest(
@@ -86,6 +97,7 @@ class TranscriptService:
             "fragments": fragment_count,
             "decisions": extracted.get("decisions") or [],
             "commitments_created": len(commitments),
+            "speakers": sorted({s for s, _ in self._split_utterances(transcript) if s}),
         }
 
     def _store_fragments(
@@ -115,7 +127,7 @@ class TranscriptService:
             if not line.strip():
                 continue
             m = _SPEAKER_RE.match(line)
-            if m:
+            if m and _is_speaker(m.group(1)):
                 matched_any = True
                 utterances.append((m.group(1).strip(), m.group(2).strip()))
             elif utterances and matched_any:

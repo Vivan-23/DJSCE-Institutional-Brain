@@ -82,39 +82,23 @@ def process_document_task(text: str, filename: str, visibility: str = "internal"
             )
     log.info("Document chunks stored as fragments", filename=filename, count=len(chunks))
 
-    # --- 3. NER → Neo4j ---
-    from app.core.institution_config import get_institution_config
+    # --- 3. NER → Neo4j: one Document node with MENTIONS edges ---
+    from app.services.graph_service import graph_entities
 
     entities = ner_service.extract_entities(text)
-    domain = get_institution_config().email_domain
-
-    for person in entities["persons"]:
-        # Derive a deterministic graph key from the extracted name
-        email = person.lower().replace(" ", ".") + "@" + domain
-        try:
-            graph_service.upsert_employee(name=person, email=email)
-        except Exception as e:
-            log.warning("Employee upsert failed", name=person, error=str(e))
-
-    for org in entities["orgs"]:
-        try:
-            graph_service.upsert_project(project_name=org, status="active")
-        except Exception as e:
-            log.warning("Project upsert failed", name=org, error=str(e))
-
-    log.info(
-        "Entities extracted",
-        filename=filename,
-        persons=len(entities["persons"]),
-        orgs=len(entities["orgs"]),
-    )
+    people, bodies = graph_entities(text, entities)
+    try:
+        graph_service.record_document(filename, visibility, people, bodies)
+    except Exception as e:
+        log.warning("Graph write failed", filename=filename, error=str(e))
+    log.info("Entities linked in graph", filename=filename, people=len(people), bodies=len(bodies))
 
     return {
         "filename": filename,
         "chunks_stored": len(chunks),
         "visibility": visibility,
-        "persons_found": entities["persons"],
-        "orgs_found": entities["orgs"],
+        "persons_found": [p["name"] for p in people],
+        "orgs_found": bodies,
     }
 
 
@@ -139,6 +123,18 @@ def process_transcript_task(transcript: str, title: str, source: str = "upload")
         "commitments": result.get("commitments_created"),
         "fragments": result.get("fragments"),
     })
+
+    # Meeting → graph: participants ATTENDED it; bodies it discussed are MENTIONED.
+    from app.services.graph_service import graph_entities, graph_service
+    from app.services.ner_service import ner_service
+
+    try:
+        people, bodies = graph_entities(
+            transcript, ner_service.extract_entities(transcript), known_people=result.get("speakers") or []
+        )
+        graph_service.record_meeting(title, people, bodies)
+    except Exception as e:
+        log.warning("Meeting graph write failed", title=title, error=str(e))
     return result
 
 

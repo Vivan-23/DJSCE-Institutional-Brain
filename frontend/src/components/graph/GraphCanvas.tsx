@@ -21,7 +21,16 @@ interface GraphLink {
 const TYPE_COLOR: Record<string, string> = {
   Employee: '#3b82f6',
   Project: '#10b981',
+  Meeting: '#f59e0b',
+  Document: '#a78bfa',
   Unknown: '#6b7280',
+};
+
+const TYPE_BADGE: Record<string, string> = {
+  Employee: 'Person',
+  Project: 'Body / initiative',
+  Meeting: 'Meeting',
+  Document: 'Document',
 };
 
 const REPULSION = 4000;
@@ -187,7 +196,7 @@ export default function GraphCanvas() {
             ctx.fillText(label, n.x, n.y + radius + 14);
 
             // Type badge
-            const badge = n.type === 'Employee' ? 'Faculty' : n.type === 'Project' ? 'Committee/Dept' : n.type;
+            const badge = TYPE_BADGE[n.type] ?? n.type;
             ctx.fillStyle = color + 'cc';
             ctx.font = '9px Inter, sans-serif';
             ctx.fillText(badge, n.x, n.y + radius + 25);

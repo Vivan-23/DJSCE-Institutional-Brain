@@ -8,6 +8,20 @@ Format: `## YYYY-MM-DD — title` then bullets of what/why.
 
 ---
 
+## 2026-10-13 — Knowledge graph fixed; laya triage engine; evaluation harness
+- **Graph was empty (0 edges):** nothing ever created relationships, and meetings never reached Neo4j. Now
+  `(Document)-[:MENTIONS]->`, `(Employee)-[:ATTENDED]->(Meeting)`, `(Meeting)-[:MENTIONS]->(Project)`; Document and
+  Meeting nodes, colours and counts in the UI. NER cleaned (people need an honorific/roster match; bodies must name an
+  institutional unit), uniqueness constraints stop duplicate nodes from concurrent workers. 0 → 53 edges; 30 noisy
+  "people" → 10 real (synthetic) ones; 125 "entities" → ~20 bodies.
+- Transcript parser treated header lines ("Date:", "Attendees:", "Academic Council Meeting: …") as speakers and
+  created Employees for them — fixed (`_is_speaker`).
+- **laya** added as an optional triage engine (`TRIAGE_ENGINES`), pinned to 0.3.21 (newest release ≥ 2 weeks old;
+  the package first appeared 2026-09-18 with ~45 releases since), installed only in the `evaluator` service.
+- `llm_service` retries provider rate limits (2/4/8 s). `evaluation/` harness + gold sets: triage, grounded Q&A,
+  visibility leaks, commitment extraction → `publication/01_ipd_report/results/`.
+- Public knowledge: added the mini-project's general academic policies (attendance, make-up exams, integrity).
+
 ## 2026-10-13 — Final-submission identity, student role, unified evidence, AI Help Desk
 **Identity / data (breaking — volumes were reset).**
 - `company.yaml` → `institution.yaml` (`institution:`, `helpdesk:`, `members:` keys); loader `core/institution_config.py`,

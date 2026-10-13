@@ -7,6 +7,7 @@ own. Defaults to Groq (see ``settings.LLM_MODEL``); swap the provider here.
 """
 import json
 import re
+import time
 from typing import Any, Optional
 
 import structlog
@@ -14,6 +15,8 @@ import structlog
 from app.core.config import settings
 
 log = structlog.get_logger()
+
+_RATE_LIMIT_RETRIES = 3  # provider 429s back off 2 s, 4 s, 8 s before giving up
 
 
 class LLMService:
@@ -43,16 +46,25 @@ class LLMService:
         """Return the raw text completion. Raises if the LLM is unavailable."""
         if not self.client:
             raise RuntimeError("LLM client not configured (set GROQ_API_KEY).")
-        completion = self.client.chat.completions.create(
-            messages=[
-                {"role": "system", "content": system_prompt},
-                {"role": "user", "content": user_prompt},
-            ],
-            model=self.model,
-            max_tokens=max_tokens,
-            temperature=temperature,
-        )
-        return completion.choices[0].message.content or ""
+        for attempt in range(_RATE_LIMIT_RETRIES + 1):
+            try:
+                completion = self.client.chat.completions.create(
+                    messages=[
+                        {"role": "system", "content": system_prompt},
+                        {"role": "user", "content": user_prompt},
+                    ],
+                    model=self.model,
+                    max_tokens=max_tokens,
+                    temperature=temperature,
+                )
+                return completion.choices[0].message.content or ""
+            except Exception as e:  # noqa: BLE001 - only rate limits are retried
+                if "RateLimit" not in type(e).__name__ or attempt == _RATE_LIMIT_RETRIES:
+                    raise
+                wait = 2 ** (attempt + 1)
+                log.warning("LLM rate-limited; retrying", wait_s=wait, attempt=attempt + 1)
+                time.sleep(wait)
+        raise RuntimeError("unreachable")
 
     def complete_json(
         self,

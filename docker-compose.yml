@@ -159,7 +159,32 @@ services:
     depends_on:
       - backend
 
+  # ── Evaluation harness (opt-in: docker compose --profile eval run --rm evaluator) ──
+  # Same image as the backend; installs the optional laya classifier only here, and keeps
+  # Hugging Face downloads in a volume so laya's checkpoint is fetched once.
+  evaluator:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    profiles: ["eval"]
+    env_file: .env
+    environment:
+      <<: *backend-env
+      EVAL_API: http://backend:8001
+    volumes:
+      - ./institution.yaml:/app/institution.yaml:ro
+      - ./evaluation:/eval:ro
+      - ./publication/01_ipd_report/results:/out
+      - hf-cache:/home/app/.cache/huggingface
+    healthcheck:
+      disable: true
+    entrypoint: ["sh", "-c"]
+    command: ["pip install --user --no-deps -q laya==0.3.21 && python /eval/run_eval.py \"$$@\"", "--"]
+    depends_on:
+      - backend
+
 volumes:
   pgdata:
   neo4jdata:
   chromadata:
+  hf-cache:

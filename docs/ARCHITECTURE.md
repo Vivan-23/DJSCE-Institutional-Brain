@@ -71,9 +71,9 @@ tests/             pytest suite. conftest.py mocks all external services.
 | `audit_service.py` | `audit_service` | Append-only AuditLog for every autonomous action. |
 | `institution_seed.py` | `seed_institution()` | Idempotent seeding from `institution.yaml` on startup: login Users for everyone with a password; staff also get an Employee row + reporting links (students don't). |
 | `active_intel.py` | `active_intel_service` | Org-risk insights (bottlenecks) for the Active Feed. |
-| `graph_service.py` | `graph_service` | Neo4j upserts (employees/projects/edges). |
+| `graph_service.py` | `graph_service` | Neo4j writes. Nodes `:Employee` (person), `:Project` (body: committee/cell/board/department/lab), `:Document`, `:Meeting`; edges `(Document)-[:MENTIONS]->`, `(Employee)-[:ATTENDED]->(Meeting)`, `(Meeting)-[:MENTIONS]->(Project)`. `graph_entities()` cleans NER: people need an honorific or roster match, bodies must name an institutional unit. Uniqueness constraints keep concurrent MERGEs duplicate-free. |
 | `rag_service.py` | `rag_service` | Grounded Q&A via `llm_service`. `retrieve(public_only=)` filters by visibility inside the Chroma query (and re-checks results); `answer()` returns `{answer, sources}`. |
-| `ticket_service.py` | `ticket_service` | Help desk: triage chain (LLM → keyword fallback) → category/priority/`routed_to` from `institution.yaml`; staff-only AI draft reply with sources; human reply; audited. |
+| `ticket_service.py` | `ticket_service` | Help desk: triage chain from `settings.TRIAGE_ENGINES` (default `llm,keyword`; optional `laya`, a non-generative classifier, abstains below 0.5 confidence) → keyword fallback; category/priority/`routed_to` from `institution.yaml`; staff-only AI draft (`rag_service.answer(purpose="ticket_draft")`); human reply; audited. |
 | `connectors/` | registry | Source-connector framework: `base.py` + `slack/db/manual` stubs + `registry.py`. |
 
 ### API routers (`backend/app/api/v1/`) — all under `/api/v1`
@@ -113,6 +113,12 @@ Tasks: `process_document`, `process_transcript`, `run_daily_active_intelligence`
 `run_daily_checkins`, `run_commitment_followups`, `run_skill_extraction`,
 `run_freshness_scan`. Beat schedule is defined in the same file. Task bodies use
 lazy imports so the module loads without external deps.
+
+---
+
+## Evaluation (`evaluation/`)
+
+`run_eval.py` + gold sets in `evaluation/data/`. Run with `docker compose --profile eval run --rm evaluator` (backend image + optional `laya==0.3.21`, HF cache volume `hf-cache`). Writes `publication/01_ipd_report/results/` (`RESULTS.md`, `latest.json`). See `evaluation/README.md`.
 
 ---
 

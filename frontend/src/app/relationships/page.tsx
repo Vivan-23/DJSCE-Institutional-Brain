@@ -6,6 +6,8 @@ import { apiFetch } from '@/lib/api';
 interface GraphStats {
   employees: number;
   projects: number;
+  meetings: number;
+  documents: number;
   relationships: number;
 }
 
@@ -35,9 +37,13 @@ export default function RelationshipsPage() {
         </div>
         {stats && (
           <div className="flex items-center gap-3 bg-slate-900/80 border border-slate-800 rounded px-3 py-1.5 text-xs text-slate-400 shrink-0">
-            <span><strong className="text-blue-400">{stats.employees}</strong> Personnel</span>
+            <span><strong className="text-blue-400">{stats.employees}</strong> People</span>
             <span>·</span>
-            <span><strong className="text-emerald-400">{stats.projects}</strong> Committees/Entities</span>
+            <span><strong className="text-emerald-400">{stats.projects}</strong> Bodies</span>
+            <span>·</span>
+            <span><strong className="text-amber-400">{stats.meetings}</strong> Meetings</span>
+            <span>·</span>
+            <span><strong className="text-violet-400">{stats.documents}</strong> Documents</span>
             <span>·</span>
             <span><strong className="text-slate-200">{stats.relationships}</strong> Edges</span>
           </div>
@@ -52,20 +58,28 @@ export default function RelationshipsPage() {
         <div className="flex flex-wrap items-center gap-6">
           <span className="flex items-center gap-2">
             <span className="w-3 h-3 rounded-full bg-blue-500 inline-block shadow-xs shadow-blue-500/50" />
-            <span className="text-slate-300 font-medium">Faculty &amp; Leadership (Employee)</span>
+            <span className="text-slate-300 font-medium">People</span>
           </span>
           <span className="flex items-center gap-2">
             <span className="w-3 h-3 rounded-full bg-emerald-500 inline-block shadow-xs shadow-emerald-500/50" />
-            <span className="text-slate-300 font-medium">Committees &amp; Academic Initiatives (Project)</span>
+            <span className="text-slate-300 font-medium">Committees, departments &amp; initiatives</span>
+          </span>
+          <span className="flex items-center gap-2">
+            <span className="w-3 h-3 rounded-full bg-amber-500 inline-block" />
+            <span className="text-slate-300 font-medium">Meetings</span>
+          </span>
+          <span className="flex items-center gap-2">
+            <span className="w-3 h-3 rounded-full bg-violet-400 inline-block" />
+            <span className="text-slate-300 font-medium">Documents</span>
           </span>
           <span className="flex items-center gap-2 text-slate-400">
             <span className="w-4 h-0.5 bg-indigo-500 inline-block" />
-            <span>Operational Relationship (WORKS_ON)</span>
+            <span>ATTENDED · MENTIONS</span>
           </span>
         </div>
 
         <p className="text-[11px] text-slate-400 max-w-sm sm:text-right">
-          Entities are extracted from uploaded committee minutes and circulars via spaCy NER into Neo4j.
+          People attend meetings; documents and meetings mention the bodies they concern. Names come from meeting speakers and spaCy NER (people only with a title or roster match).
         </p>
       </div>
     </main>

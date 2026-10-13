@@ -1,0 +1,21 @@
+{
+  "_about": "Hand-labelled commitments (explicit 'I will ...' statements) per synthetic transcript. An extracted commitment matches a gold one when it comes from the same meeting, its assignee contains the gold surname, and its description contains one of the keywords. The SOP transcript (scenario 3) states rules, not commitments, so its gold list is empty.",
+  "meetings": {
+    "Academic Council": [
+      {"assignee": "Shah", "keywords": ["syllabus", "co-po", "mapping"]},
+      {"assignee": "Mehta", "keywords": ["board of studies", "ratification", "schedule"]},
+      {"assignee": "Iyer", "keywords": ["compliance", "checklist", "prerequisite"]}
+    ],
+    "Iqac": [
+      {"assignee": "Verma", "keywords": ["rubric", "grading guidelines"]},
+      {"assignee": "Iyer", "keywords": ["feedback report", "action-taken", "feedback"]},
+      {"assignee": "Mehta", "keywords": ["attainment", "course file"]}
+    ],
+    "Examination Moderation": [],
+    "Lab Readiness": [
+      {"assignee": "Shah", "keywords": ["question paper", "roster", "duty"]},
+      {"assignee": "Verma", "keywords": ["switch", "bandwidth", "network"]},
+      {"assignee": "Mehta", "keywords": ["examiner list", "appointment"]}
+    ]
+  }
+}

@@ -38,6 +38,9 @@ cd frontend && npm run lint && npx tsc --noEmit
 python ingest_institutional.py [--approve]   # transcripts, doc_* (internal), public/ (student-visible)
 
 ./start_public_share.ps1   # ngrok tunnel to :3000 (frontend proxies /api → backend)
+
+# Evaluation (stack up + data loaded): writes publication/01_ipd_report/results/RESULTS.md
+docker compose --profile eval run --rm evaluator
 ```
 Ports: frontend 3000, backend 8001, Chroma **8002** on host (8000 in-network), Neo4j 7474/7687, Postgres 5432, Redis 6379.
 Demo logins come from `institution.yaml` (all `demo123`): `admin@example.com`, `aditi.rao@example.com` (coordinator),
@@ -61,6 +64,9 @@ Demo logins come from `institution.yaml` (all `demo123`): `admin@example.com`, `
 - **LLM**: every caller uses `llm_service` (Groq) and degrades when `is_available` is false.
 - **Help desk** (`ticket_service`, `/helpdesk`): triage chain LLM → keyword fallback (only categories from `institution.yaml`);
   staff-only AI draft + sources; a human sends the reply. Non-staff get 404 for others' tickets and never see `ai_*` fields.
+- **Graph** (`graph_service`): Employee/Project/Document/Meeting nodes, MENTIONS + ATTENDED edges; all NER output goes
+  through `graph_entities()` (evidence-gated people, unit-named bodies). laya is optional (`TRIAGE_ENGINES`), never a
+  required dependency.
 - **People exist twice**: Postgres `Employee` (staff only, via `employee_service` / `institution_seed`) and Neo4j `:Employee`
   (from NER, keyed by synthesized `name@<email_domain>`). They are not linked. Students have a `User` but no `Employee`.
 - **RBAC**: ranks `student < employee < manager < admin` (UI: Student / Faculty / Committee Coordinator / System Administrator,

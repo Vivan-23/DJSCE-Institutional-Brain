@@ -3,8 +3,10 @@ Help-desk ticket service — AI-assisted, human-approved.
 
 A ticket is raised by a student (or staff member). On creation it is:
   1. triaged — category, priority and the owning office (from institution.yaml),
-     by the LLM when available, otherwise by a deterministic keyword classifier
-     (ported from the DJSCE student-chatbot mini-project's category matcher);
+     by a configurable chain of engines (``settings.TRIAGE_ENGINES``): the LLM, the
+     optional laya classifier (fast, non-generative, calibrated probabilities) and a
+     deterministic keyword classifier (ported from the DJSCE student-chatbot
+     mini-project's category matcher) that always answers last;
   2. drafted — the RAG assistant writes a suggested reply grounded in indexed
      knowledge, with its sources, visible to staff only.
 A staff member reviews/edits the draft and sends the reply. The AI never replies
@@ -37,6 +39,22 @@ _TRIAGE_SYSTEM = (
     "list, a priority (low/normal/high — high only for time-critical or access-blocking "
     "issues), and give a one-sentence rationale. Never invent categories."
 )
+
+
+_LAYA_MIN_CONFIDENCE = 0.5  # below this laya abstains and the next engine decides
+_laya_router = None
+
+
+def _laya():
+    """Lazily build laya's Router (downloads its checkpoint on first use). None if not installed."""
+    global _laya_router
+    if _laya_router is None:
+        try:
+            import laya  # optional dependency: pip install laya==0.3.21
+        except ImportError:
+            return None
+        _laya_router = laya.Router()
+    return _laya_router
 
 
 def _categories() -> list[HelpdeskCategory]:
@@ -92,14 +110,66 @@ class TicketService:
             "rationale": str(result.get("rationale") or "").strip() or None,
         }
 
-    def triage(self, text: str) -> dict[str, Any]:
-        """Run the classifier chain: LLM → keyword fallback."""
-        try:
-            result = self.llm_triage(text)
-        except Exception as e:  # noqa: BLE001 - triage must never block ticket creation
-            log.warning("LLM triage failed", error=str(e))
-            result = None
-        return result or self.keyword_triage(text)
+    def laya_triage(self, text: str) -> Optional[dict[str, Any]]:
+        """Non-generative triage with laya: one forward pass, a probability per category.
+
+        Each configured category becomes an option whose criteria are its label and keywords,
+        so the classifier can only ever return a configured key. Abstains (None) when laya is
+        not installed or its confidence is below ``_LAYA_MIN_CONFIDENCE``.
+        """
+        router = _laya()
+        if router is None:
+            return None
+        criteria = {
+            c.key: f"{c.label}" + (f": {', '.join(c.keywords)}" if c.keywords else "")
+            for c in _categories()
+        }
+        questions = {
+            "category": {
+                "type": "choice",
+                "instructions": "Which college office should handle the student query in `message`?",
+                "criteria": criteria,
+            },
+            "is_urgent": {
+                "type": "noul",
+                "instructions": "Is the student in `message` blocked or facing a deadline within a day or two?",
+            },
+        }
+        out = router.predict({"message": text[:4000]}, questions)
+        cat = (out.get("answers") or {}).get("category") or {}
+        key = str(cat.get("choice") or "")
+        prob = float(cat.get("answer_confidence") or 0.0)
+        if key not in criteria or prob < _LAYA_MIN_CONFIDENCE:
+            return None
+        urgent = float(((out.get("answers") or {}).get("is_urgent") or {}).get("noul") or 0.0)
+        return {
+            "category": key,
+            "priority": "high" if urgent >= 0.5 else "normal",
+            "method": "laya",
+            "rationale": f"laya: P({key}) = {prob:.2f}; P(urgent) = {urgent:.2f}.",
+        }
+
+    _ENGINES = {"llm": "llm_triage", "laya": "laya_triage"}
+
+    def triage(self, text: str, engines: Optional[list[str]] = None) -> dict[str, Any]:
+        """Run the configured engine chain; the keyword classifier always answers last."""
+        from app.core.config import settings
+
+        chain = engines if engines is not None else [
+            e.strip() for e in settings.TRIAGE_ENGINES.split(",") if e.strip()
+        ]
+        for name in chain:
+            method = self._ENGINES.get(name)
+            if not method:
+                continue  # "keyword" (or an unknown name) is handled by the final fallback
+            try:
+                result = getattr(self, method)(text)
+            except Exception as e:  # noqa: BLE001 - triage must never block ticket creation
+                log.warning("Triage engine failed", engine=name, error=str(e))
+                result = None
+            if result:
+                return result
+        return self.keyword_triage(text)
 
     def _apply_triage(self, ticket: Ticket) -> None:
         t = self.triage(f"{ticket.subject}\n\n{ticket.description}")

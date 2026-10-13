@@ -116,3 +116,31 @@ class TestTicketFlow:
         token = register(client, "hd-cats@test.com", role="student")
         cats = client.get("/api/v1/helpdesk/categories", headers=_h(token)).json()
         assert any(c["key"] == "examinations" and c["quick_questions"] for c in cats)
+
+
+class TestLayaTriage:
+    def _router(self, choice, prob, urgent):
+        router = MagicMock()
+        router.predict.return_value = {"answers": {
+            "category": {"choice": choice, "answer_confidence": prob},
+            "is_urgent": {"noul": urgent},
+        }}
+        return router
+
+    def test_confident_answer_is_used(self):
+        router = self._router("examinations", 0.9, 0.8)
+        with patch("app.services.ticket_service._laya", return_value=router):
+            t = ticket_service.triage("revaluation please", engines=["laya"])
+        assert (t["category"], t["priority"], t["method"]) == ("examinations", "high", "laya")
+        questions = router.predict.call_args.args[1]
+        assert set(questions["category"]["criteria"]) >= {"examinations", "general"}
+
+    def test_low_confidence_or_unknown_label_abstains(self):
+        for choice, prob in (("examinations", 0.3), ("hostel", 0.99)):
+            with patch("app.services.ticket_service._laya", return_value=self._router(choice, prob, 0.0)):
+                t = ticket_service.triage("Which electives are offered in semester VI?", engines=["laya"])
+            assert t["method"] == "keyword"
+
+    def test_not_installed_falls_through(self):
+        with patch("app.services.ticket_service._laya", return_value=None):
+            assert ticket_service.triage("hello", engines=["laya"])["method"] == "keyword"

@@ -29,6 +29,10 @@ class Settings(BaseSettings):
     # A commitment with no update for this many hours is eligible for a follow-up
     COMMITMENT_FOLLOWUP_HOURS: int = 48
 
+    # Help-desk triage engine chain, tried in order; the keyword classifier always answers last.
+    # Add "laya" (e.g. "laya,llm") only where the optional laya package is installed.
+    TRIAGE_ENGINES: str = "llm,keyword"
+
     # JWT
     ALGORITHM: str = "HS256"
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 60
