@@ -1,6 +1,7 @@
 'use client';
 import React, { useCallback, useEffect, useState } from 'react';
 import { apiFetch } from '@/lib/api';
+import { formatDateTime } from '@/lib/format';
 
 type SubmitStatus = 'idle' | 'submitting' | 'queued' | 'error';
 
@@ -21,18 +22,6 @@ interface QueueResult {
   title: string;
   task_id: string;
   message: string;
-}
-
-function formatDate(iso: string): string {
-  const d = new Date(iso);
-  if (Number.isNaN(d.getTime())) return iso;
-  return d.toLocaleString(undefined, {
-    year: 'numeric',
-    month: 'short',
-    day: 'numeric',
-    hour: '2-digit',
-    minute: '2-digit',
-  });
 }
 
 const SAMPLE_TEMPLATES = [
@@ -308,7 +297,7 @@ export default function MeetingsPage() {
                           {m.title}
                         </p>
                         <p className="text-[11px] text-slate-400 mt-0.5">
-                          Conducted: {formatDate(m.occurred_at)} · Source: {m.source}
+                          Conducted: {formatDateTime(m.occurred_at)} · Source: {m.source}
                         </p>
                         {m.summary && (
                           <p className="text-xs text-slate-300 mt-2 line-clamp-2 leading-relaxed">

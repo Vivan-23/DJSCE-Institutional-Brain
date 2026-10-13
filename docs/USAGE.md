@@ -1,7 +1,7 @@
 # Usage & Operating Procedures
 
-How to set up, run, and actually *use* Company Brain. For the codebase map see
-[ARCHITECTURE.md](ARCHITECTURE.md). Last verified: 2026-06-14.
+How to set up, run, and use DJSCE Institutional Brain. For the codebase map see
+[ARCHITECTURE.md](ARCHITECTURE.md). Last verified: 2026-10-13.
 
 ---
 
@@ -54,7 +54,7 @@ Celery **beat** scheduler, and the frontend. Then open:
 > docker compose exec backend pip freeze > backend/requirements.lock
 > ```
 
-On first boot a demo admin is seeded — **`demo@companybrain.ai` / `demo123`**.
+On first boot the people in `company.yaml` are seeded; the demo admin is **`demo@example.com` / `demo123`**.
 
 ### Option B — Local dev (hot reload)
 
@@ -109,7 +109,7 @@ new users get the `employee` role).
   inline (`open → in_progress → blocked → done → dropped`). Updates persist via
   `PATCH /api/v1/commitments/{id}`.
 
-### C. Company PA  (`/assistant`)
+### C. Institutional Assistant / Faculty Desk  (`/assistant`)
 - **Follow-ups:** open/overdue commitments (older than
   `COMMITMENT_FOLLOWUP_HOURS`, default 48h) show a natural-language nudge. Reply
   in plain text — the PA records a `CommitmentUpdate`, infers a status change, and
@@ -165,41 +165,41 @@ The seeded demo user is `admin`.
 
 ## 6. Loading the demo data
 
-This is the **demo branch** — it bundles sample data so you can show the product
-end-to-end without setting anything up. The org is pre-seeded from
-[`company.yaml`](../company.yaml) (sign in as `demo@companybrain.ai` / `demo123`,
-or as any teammate listed there with `demo123`).
+All bundled data is **synthetic** — it demonstrates the platform and is not an
+official DJSCE record. People are pre-seeded from [`company.yaml`](../company.yaml)
+(sign in as `demo@example.com` / `demo123`, or any listed member with a password).
 
-With the stack running (`docker compose up`) and `GROQ_API_KEY` set, load the
-sample meetings through the real pipeline:
+With the stack running and `GROQ_API_KEY` set, load the dataset in
+[`mock_institutional_data/`](../mock_institutional_data) through the real pipeline:
 
 ```bash
 pip install requests
-python ingest_all.py            # curated scenarios + a sample of generic notes
-python ingest_all.py --all      # load every file in mock_company_data/
-python ingest_all.py --approve  # also auto-approve skills so SKILL.md exports
-python ingest_all.py --quick    # only the curated refund + incident scenarios
+python ingest_institutional.py            # transcripts + reference documents
+python ingest_institutional.py --approve  # also auto-approve extracted procedures
 ```
 
-The loader logs in, posts the transcripts (→ **Meetings** + **Commitments**),
-sends a subset to the document pipeline (→ **Graph Map**), waits for the worker,
-then triggers **skill extraction**. The curated `demo_*` scenarios are written so
-extraction synthesizes clean, citable skills — e.g. *"Handle a refund request"*
-and *"Respond to a production incident"* — the headline capability to demo.
+The loader logs in, posts the committee transcripts (→ **Meetings** +
+**Commitments**), uploads the reference documents (→ Q&A index + **Knowledge
+Graph**), waits for the worker, then triggers procedure extraction.
 
-**Suggested demo path:** Meetings → Commitments → Skills (review & approve) →
-open an approved skill and view its exported `SKILL.md` (the agent-consumable
-deliverable).
+**Suggested demo path:** Governance Overview → Meetings → Commitments →
+Procedures (review, open the Evidence panel) → Institutional Assistant (ask a
+question about a committee decision) → Knowledge Graph.
 
-> Other branches: `template` is the clean, data-free base to fork per company;
-> `main` is the original prototype.
+### Remote demo (ngrok)
+
+`./start_public_share.ps1` (PowerShell) brings the stack up, checks backend
+health, and opens an ngrok tunnel to the frontend on port 3000. The frontend
+proxies `/api/*` to the backend (see `frontend/next.config.ts`), so only one
+public URL is needed and no database port is exposed. Requires `ngrok` on PATH
+and an authenticated ngrok account.
 
 ---
 
 ## 7. Testing
 
 ```bash
-cd backend && .venv/Scripts/python -m pytest -q      # 84 passing, no Docker needed
+cd backend && .venv/Scripts/python -m pytest -q      # no Docker needed
 ```
 
 Frontend checks:

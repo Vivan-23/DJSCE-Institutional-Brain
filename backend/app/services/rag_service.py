@@ -1,6 +1,7 @@
 import json
 import structlog
 from app.core.config import settings
+from app.core.company_config import get_company_config
 from app.core.chroma_db import chroma_conn
 from app.services.embedding import embedding_service
 from app.core.neo4j_db import neo4j_conn
@@ -53,17 +54,17 @@ class RAGService:
                 f"{r['name']} ({r['type']})" for r in res if r.get("name")
             ]
             if entities:
-                graph_context = "Known entities in the org graph: " + ", ".join(entities)
+                graph_context = "Known entities in the institutional graph: " + ", ".join(entities)
         except Exception as e:
             log.warning("Graph context fetch failed", error=str(e))
 
         system_prompt = (
-            "You are Company Brain, an organizational intelligence assistant. "
+            f"You are {get_company_config().name}, an institutional knowledge assistant. "
             "Answer the user's question using ONLY the context provided below. "
             "If the answer is not in the context, say so clearly — do not guess.\n\n"
             "--- Context Documents ---\n"
             + "\n\n".join(f"[{i+1}] {c}" for i, c in enumerate(context_chunks))
-            + ("\n\n--- Org Graph ---\n" + graph_context if graph_context else "")
+            + ("\n\n--- Institutional Graph ---\n" + graph_context if graph_context else "")
         )
 
         try:

@@ -1,4 +1,5 @@
 import React from 'react';
+import { formatDateTime } from '@/lib/format';
 
 export interface Insight {
   id?: string;
@@ -99,13 +100,7 @@ export default function InsightCard({ insight, onDismiss }: Props) {
       {insight.created_at && (
         <p className="text-[11px] text-slate-400 mt-0.5">
           Observed on{' '}
-          {new Date(insight.created_at).toLocaleDateString(undefined, {
-            month: 'short',
-            day: 'numeric',
-            year: 'numeric',
-            hour: '2-digit',
-            minute: '2-digit',
-          })}
+          {formatDateTime(insight.created_at)}
         </p>
       )}
     </article>

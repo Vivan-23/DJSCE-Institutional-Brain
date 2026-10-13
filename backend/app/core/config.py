@@ -4,7 +4,7 @@ from typing import Annotated, List
 
 
 class Settings(BaseSettings):
-    PROJECT_NAME: str = "Company Brain API"
+    PROJECT_NAME: str = "DJSCE Institutional Brain API"
     VERSION: str = "1.0.0"
 
     # Databases

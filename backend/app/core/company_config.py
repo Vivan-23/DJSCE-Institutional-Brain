@@ -35,9 +35,9 @@ class CompanyEmployee:
 
 @dataclass
 class CompanyConfig:
-    name: str = "Company Brain"
+    name: str = "DJSCE Institutional Brain"
     short_code: str = "CB"
-    email_domain: str = "companybrain.ai"
+    email_domain: str = "example.com"
     pa_checkin_hour: int = 17
     commitment_followup_hours: int = 48
     employees: list[CompanyEmployee] = field(default_factory=list)
@@ -95,9 +95,9 @@ def get_company_config() -> CompanyConfig:
         )
 
     cfg = CompanyConfig(
-        name=str(company.get("name") or "Company Brain").strip(),
+        name=str(company.get("name") or "DJSCE Institutional Brain").strip(),
         short_code=str(company.get("short_code") or "CB").strip(),
-        email_domain=str(company.get("email_domain") or "companybrain.ai").strip(),
+        email_domain=str(company.get("email_domain") or "example.com").strip(),
         pa_checkin_hour=int(settings_block.get("pa_checkin_hour", 17)),
         commitment_followup_hours=int(settings_block.get("commitment_followup_hours", 48)),
         employees=employees,

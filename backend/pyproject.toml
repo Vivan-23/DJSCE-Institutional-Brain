@@ -1,7 +1,7 @@
 [tool.poetry]
-name = "company-brain-backend"
+name = "djsce-institutional-brain-backend"
 version = "0.1.0"
-description = "Backend for Company Brain"
+description = "Backend for DJSCE Institutional Brain"
 authors = ["Admin <admin@example.com>"]
 readme = "README.md"
 

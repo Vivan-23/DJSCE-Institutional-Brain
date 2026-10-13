@@ -1,14 +1,14 @@
-# Customizing Company Brain for a company
+# Customizing the institutional profile
 
-Company Brain is built to be **forked per company** from the `template` branch.
+The platform is configured for DJSCE through a single profile file.
 For most customization you edit **one file — [`company.yaml`](../company.yaml)** —
-and the system reconfigures itself on restart. Last verified: 2026-06-15.
+and the system reconfigures itself on restart. Last verified: 2026-10-13.
 
 ---
 
 ## The one file: `company.yaml`
 
-`company.yaml` (repo root) is the single source of truth for a company's profile.
+`company.yaml` (repo root) is the single source of truth for the institution's profile (the filename is kept from the original Company-Brain codebase).
 On startup the backend reads it and:
 
 | Section | Drives | Where it shows up |
@@ -27,32 +27,31 @@ deliberate manual action.
 
 ```yaml
 company:
-  name: "Acme Corp"
-  short_code: "AC"
-  email_domain: "acme.com"
+  name: "DJSCE Institutional Brain"
+  short_code: "DJSCE"
+  email_domain: "example.com"
 
 settings:
   pa_checkin_hour: 17
   commitment_followup_hours: 48
 
 employees:
-  - name: "Dana Lee"
-    email: "dana@acme.com"
+  - name: "Demo Administrator"
+    email: "demo@example.com"
     role: "admin"            # employee | manager | admin
-    title: "VP Engineering"
+    title: "Institutional Platform Administrator"
     manager: null
-    timezone: "America/New_York"
-    password: "changeme123"  # set → this person gets a login
-  - name: "Ravi Patel"
-    email: "ravi@acme.com"
-    role: "manager"
-    manager: "dana@acme.com"
-    timezone: "America/New_York"
-    password: "changeme123"
-  - name: "Maya Chen"        # no password → in the org chart, no login yet
-    email: "maya@acme.com"
+    timezone: "Asia/Kolkata"
+    password: "demo123"      # set → this person gets a login
+  - name: "Dr. Aditi Rao"    # synthetic person
+    email: "aditi.rao@example.com"
+    role: "manager"          # e.g. a committee coordinator
+    manager: "demo@example.com"
+    timezone: "Asia/Kolkata"
+  - name: "Prof. Karan Shah" # no password → appears in the org, no login
+    email: "karan.shah@example.com"
     role: "employee"
-    manager: "ravi@acme.com"
+    manager: "aditi.rao@example.com"
     timezone: "Asia/Kolkata"
 ```
 
@@ -64,20 +63,12 @@ employees:
 
 ---
 
-## The agent-driven workflow
+## Updating the profile
 
-This is designed so you can **describe the company in a prompt** and have the
-agent fill in the profile:
-
-1. **Fork** the `template` branch for the company.
-2. Tell the agent the company details (people, reporting lines, timezones, name,
-   check-in time, any company-specific rules).
-3. The agent rewrites **`company.yaml`** to match — usually nothing else is needed
-   for org + branding customization.
-4. `docker compose up -d --build` (or just restart the backend if only
-   `company.yaml` changed — it's mounted as a live volume, no rebuild needed).
-5. Verify: `GET /api/v1/company` shows the new branding; log in as the seeded
-   admin; the org structure is in place.
+1. Edit **`company.yaml`** — people, reporting lines, roles, name, check-in time.
+2. Restart the backend containers (no rebuild needed — the file is mounted).
+3. Verify: `GET /api/v1/company` shows the branding; log in as the seeded
+   admin; the people are in place.
 
 > Because `company.yaml` is mounted into the containers
 > (`./company.yaml:/app/company.yaml:ro`), editing it + `docker compose restart
@@ -99,8 +90,6 @@ agent fill in the profile:
 | Default skills/playbooks to ship | seed `Skill` rows (extend `company_seed.py`) |
 | LLM model | `LLM_MODEL` in `.env` / `backend/app/core/config.py` |
 
-Keep company-specific code changes on the company's fork; fold any
-**generally useful** improvements back into `main`/`template`.
 
 ---
 

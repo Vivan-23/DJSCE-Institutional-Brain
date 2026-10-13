@@ -8,6 +8,14 @@ Format: `## YYYY-MM-DD — title` then bullets of what/why.
 
 ---
 
+## 2026-10-13 — Rebrand repository as DJSCE Institutional Brain; dedupe cleanup
+- Repo now lives at github.com/Vivan-23/DJSCE-Institutional-Brain; work happens on `main` only (`demo` branch retired).
+- Removed legacy Company-Brain artifacts: `mock_company_data/`, `ingest_all.py`, `generate_mock_data.py`, `COMPANY_BRAIN_OVERVIEW.txt`. `ingest_institutional.py` is the only data loader.
+- Rewrote README and rebranded docs; backend defaults (`PROJECT_NAME`, `company_config` fallbacks, pyproject) and the RAG system prompt now use the institution name from `company.yaml`.
+- **Kept** internal identifiers (`company.yaml`, `company_brain_db`, `cb_*` containers, `company_brain_chunks`, Celery app name) — renaming them would orphan existing Docker volumes.
+- Removed the `demo@companybrain.ai` login fallback from the login page and loader (`demo@example.com` is seeded from `company.yaml`).
+- Sources upload now uses `apiFetch` (consistent auth + 401 handling); added `frontend/src/lib/format.ts` replacing four duplicated date formatters.
+
 ## 2026-06-15 — Per-company customization via `company.yaml`
 Single-file customization so the prototype can be forked and tailored per company
 (see [CUSTOMIZING.md](CUSTOMIZING.md)).

@@ -41,20 +41,6 @@ export default function LoginPage() {
       });
       const data = await res.json();
       if (!res.ok) {
-        // If demo@example.com was attempted and user existed under legacy seed, attempt legacy demo email
-        if (email === 'demo@example.com' && mode === 'login') {
-          const res2 = await fetch(`${API_BASE}${endpoint}`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ email: 'demo@companybrain.ai', password }),
-          });
-          const data2 = await res2.json();
-          if (res2.ok) {
-            setToken(data2.access_token);
-            router.push('/');
-            return;
-          }
-        }
         throw new Error(data.detail ?? 'Authentication failed');
       }
       setToken(data.access_token);

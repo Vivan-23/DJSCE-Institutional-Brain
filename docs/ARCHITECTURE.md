@@ -2,11 +2,15 @@
 
 > **Read this first.** This file is the orientation layer so you don't have to
 > re-read the whole codebase. When you change structure, update this file in the
-> same change. Last verified: 2026-06-14.
+> same change. Last verified: 2026-10-13.
 
-Company Brain turns scattered company knowledge into **executable skills** for AI
-agents, fed by a continuous capture loop (meeting transcripts + a per-employee
-**Company PA**). See [README](../README.md) for the pitch. This file is the *engineering* map.
+DJSCE Institutional Brain turns scattered institutional knowledge (committee
+transcripts, reference documents, faculty check-ins) into decisions, tracked
+commitments and cited **procedures** ("skills" in the code), fed by a continuous
+capture loop (transcripts + a per-member **Institutional Assistant / PA**).
+Internal identifiers keep the original Company-Brain names (`company.yaml`,
+`company_brain_db`, `cb_*` containers, `company_brain_chunks` collection) —
+renaming them would orphan existing Docker volumes. See [README](../README.md) for the pitch. This file is the *engineering* map.
 
 ---
 
@@ -23,7 +27,7 @@ agents, fed by a continuous capture loop (meeting transcripts + a per-employee
 | Graph store | Neo4j (entity/relationship graph) | `backend/app/core/neo4j_db.py` |
 | LLM | Groq (configurable) | `backend/app/services/llm_service.py` |
 
-Ports: **API 8001**, **frontend 3000**, Postgres 5432, Neo4j 7474/7687, Chroma 8000, Redis 6379.
+Ports: **API 8001**, **frontend 3000**, Postgres 5432, Neo4j 7474/7687, Chroma 8002 on host (8000 in-network), Redis 6379.
 
 ---
 
@@ -118,6 +122,7 @@ lazy imports so the module loads without external deps.
 
 ```
 lib/api.ts                 apiFetch() — base URL, JWT header, 401→/login redirect.
+lib/format.ts              formatDate()/formatDateTime() — shared date rendering.
 components/layout/Sidebar.tsx   Nav (NAV array) + auth state via useSyncExternalStore.
 components/graph/GraphCanvas.tsx
 components/dashboard/InsightCard.tsx
@@ -145,7 +150,7 @@ an endpoint with `Depends(require_role("manager"))`. `get_current_user` reads th
 role from the DB, so changing `User.role` takes effect without re-login.
 
 **Auth** — JWT (`sub`=email). `apiFetch` attaches the token; 401 clears it and
-redirects to `/login`. Demo user seeded on first boot: `demo@companybrain.ai` /
+redirects to `/login`. Demo user seeded on first boot: `demo@example.com` /
 `demo123` (admin).
 
 **Graceful LLM degradation** — services check `llm_service.is_available` and fall

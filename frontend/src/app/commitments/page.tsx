@@ -1,6 +1,7 @@
 'use client';
 import React, { useCallback, useEffect, useState } from 'react';
 import { apiFetch } from '@/lib/api';
+import { formatDate } from '@/lib/format';
 
 const STATUSES = ['open', 'in_progress', 'blocked', 'done', 'dropped'] as const;
 type Status = (typeof STATUSES)[number];
@@ -33,17 +34,6 @@ const STATUS_STYLE: Record<Status, string> = {
   done: 'bg-emerald-500/15 border-emerald-500/30 text-emerald-300',
   dropped: 'bg-slate-700/20 border-slate-600/40 text-slate-400',
 };
-
-function formatDate(iso: string | null): string {
-  if (!iso) return 'Not specified';
-  const d = new Date(iso);
-  if (Number.isNaN(d.getTime())) return iso;
-  return d.toLocaleDateString(undefined, {
-    year: 'numeric',
-    month: 'short',
-    day: 'numeric',
-  });
-}
 
 export default function CommitmentsPage() {
   const [commitments, setCommitments] = useState<Commitment[]>([]);

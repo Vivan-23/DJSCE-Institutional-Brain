@@ -1,7 +1,7 @@
 """
 Source connector framework (FR1).
 
-Company Brain ingests from many fragmented sources — Slack, email, tickets,
+The Institutional Brain ingests from many fragmented sources — Slack, email, tickets,
 docs, databases — not just manual uploads. Every connector normalizes its
 source into the shared evidence unit (``Fragment``) so the rest of the pipeline
 (clustering, extraction, freshness) is source-agnostic.

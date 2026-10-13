@@ -37,12 +37,6 @@ def _title_from(filename: str) -> str:
 def login() -> str:
     r = requests.post(f"{API}/api/v1/auth/login", json={"email": EMAIL, "password": PASSWORD})
     if r.status_code != 200:
-        # Fallback to legacy demo email if database was already seeded with companybrain.ai
-        alt_email = "demo@companybrain.ai"
-        r2 = requests.post(f"{API}/api/v1/auth/login", json={"email": alt_email, "password": PASSWORD})
-        if r2.status_code == 200:
-            print(f"[OK] Logged in as {alt_email}")
-            return r2.json()["access_token"]
         sys.exit(f"Login failed ({r.status_code}): {r.text}\nIs backend running and is {EMAIL} seeded in company.yaml?")
     print(f"[OK] Logged in as {EMAIL}")
     return r.json()["access_token"]

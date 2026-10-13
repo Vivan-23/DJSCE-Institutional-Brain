@@ -1,6 +1,6 @@
 'use client';
 import React, { useRef, useState } from 'react';
-import { getToken, API_BASE } from '@/lib/api';
+import { apiFetch } from '@/lib/api';
 
 type UploadStatus = 'idle' | 'uploading' | 'queued' | 'error';
 
@@ -26,13 +26,8 @@ export default function SourcesPage() {
     const form = new FormData();
     form.append('file', file);
 
-    const token = getToken();
     try {
-      const res = await fetch(`${API_BASE}/api/v1/ingest/file`, {
-        method: 'POST',
-        headers: token ? { Authorization: `Bearer ${token}` } : {},
-        body: form,
-      });
+      const res = await apiFetch('/api/v1/ingest/file', { method: 'POST', body: form });
       const data = await res.json();
       if (!res.ok) {
         throw new Error(data.detail ?? `Upload failed (HTTP ${res.status})`);

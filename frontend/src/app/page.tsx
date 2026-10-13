@@ -3,6 +3,7 @@ import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import InsightCard, { type Insight } from '@/components/dashboard/InsightCard';
 import { apiFetch } from '@/lib/api';
+import { formatDate } from '@/lib/format';
 
 interface MetricState {
   totalInsights: number;
@@ -314,11 +315,7 @@ export default function Dashboard() {
                       <p className="text-[11px] text-slate-400 line-clamp-2">{m.summary}</p>
                     )}
                     <p className="text-[10px] text-slate-500 pt-0.5">
-                      {new Date(m.occurred_at).toLocaleDateString(undefined, {
-                        month: 'short',
-                        day: 'numeric',
-                        year: 'numeric',
-                      })}
+                      {formatDate(m.occurred_at)}
                     </p>
                   </div>
                 ))}
