@@ -20,7 +20,7 @@ from uuid import UUID
 import structlog
 from sqlmodel import Session, select
 
-from app.core.institution_config import HelpdeskCategory, get_institution_config
+from app.core.institution_config import ALL_DEPARTMENTS, HelpdeskCategory, get_institution_config
 from app.models.structured import Ticket, User
 from app.services.audit_service import audit_service
 from app.services.llm_service import llm_service
@@ -179,11 +179,15 @@ class TicketService:
         ticket.triage_method = t["method"]
         ticket.triage_rationale = t["rationale"]
 
-    def _apply_draft(self, ticket: Ticket) -> None:
-        """Staff-only suggested reply grounded in all knowledge (staff review before sending)."""
+    def _apply_draft(self, db: Session, ticket: Ticket) -> None:
+        """Staff-only suggested reply (staff review before sending), grounded in internal and
+        public knowledge of the requester's department plus institution-wide material."""
+        requester = db.get(User, ticket.raised_by_user_id)
+        departments = [requester.department, ALL_DEPARTMENTS] if requester and requester.department else None
         try:
             result = rag_service.answer(
-                f"{ticket.subject}\n{ticket.description}", public_only=False, purpose="ticket_draft"
+                f"{ticket.subject}\n{ticket.description}", public_only=False,
+                departments=departments, purpose="ticket_draft",
             )
             ticket.ai_draft_reply = result["answer"]
             ticket.ai_sources = json.dumps(result["sources"])
@@ -194,7 +198,7 @@ class TicketService:
     def create(self, db: Session, user: User, subject: str, description: str) -> Ticket:
         ticket = Ticket(raised_by_user_id=user.id, subject=subject, description=description)
         self._apply_triage(ticket)
-        self._apply_draft(ticket)
+        self._apply_draft(db, ticket)
         db.add(ticket)
         db.commit()
         db.refresh(ticket)
@@ -206,7 +210,7 @@ class TicketService:
 
     def retriage(self, db: Session, ticket: Ticket, actor: str) -> Ticket:
         self._apply_triage(ticket)
-        self._apply_draft(ticket)
+        self._apply_draft(db, ticket)
         return self._save(db, ticket, actor, "ticket_retriage", {"category": ticket.category})
 
     def reply(self, db: Session, ticket: Ticket, staff: User, text: str, *, close: bool = False) -> Ticket:

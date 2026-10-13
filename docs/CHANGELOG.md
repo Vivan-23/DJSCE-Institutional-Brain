@@ -8,6 +8,20 @@ Format: `## YYYY-MM-DD — title` then bullets of what/why.
 
 ---
 
+## 2026-10-14 — Per-department access; graph rendering; procedure extraction; demo tickets
+- **Per-department access**: `departments:` in `institution.yaml`; `department` on `User`, `Fragment`, `Meeting` and
+  Chroma metadata (`all` = institution-wide). Students and faculty retrieve own department + `all`; coordinators/admins
+  are unrestricted (`auth.department_scope`). Filtered in the vector query and re-checked; faculty cannot list or open
+  another department's meetings (404). `/ingest/file` and `/transcripts` accept `department`; registration asks for it.
+  **Schema change**: new columns, so rebuild the database (`docker compose down -v`).
+- Evaluation: IT questions are asked by the IT student; new `departments` part (10 cross-department probes).
+- **Graph page drew nothing**: the canvas mounted only after data arrived, so the draw loop found no canvas. Fetch and
+  draw are now separate effects.
+- **Procedure extraction produced one skill**: greedy keyword clustering let the first cluster's keyword set absorb
+  almost every fragment. Sourced fragments now cluster per meeting/document (one candidate each); max 10 per run.
+- Data: 3 synthetic SOPs (revaluation, lab requisition, event approval); `ingest_institutional.py` raises 7 sample
+  tickets as the demo students and staff answer/close 4 (open/answered/closed examples; `--no-demo-tickets` skips).
+
 ## 2026-10-13 — Authentic public website knowledge base
 - Added `djsce_public_data/kb/` (26 files: admissions, 9 departments, exam-manual rules, placements,
   facilities, governance) from https://www.djsce.ac.in, retrieved 2026-10-13. Each file/Q&A cites its URL;

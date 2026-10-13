@@ -38,6 +38,16 @@ class InstitutionMember:
 
 
 @dataclass
+class Department:
+    code: str  # short code stored on users, fragments and meetings, e.g. "CE"
+    name: str
+
+
+#: Department code meaning "institution-wide": visible to every department.
+ALL_DEPARTMENTS = "all"
+
+
+@dataclass
 class HelpdeskCategory:
     key: str
     label: str
@@ -56,6 +66,17 @@ class InstitutionConfig:
     commitment_followup_hours: int = 48
     helpdesk_categories: list[HelpdeskCategory] = field(default_factory=list)
     members: list[InstitutionMember] = field(default_factory=list)
+    departments: list[Department] = field(default_factory=list)
+
+    def department_code(self, value: Optional[str]) -> Optional[str]:
+        """Resolve a department code or full name (case-insensitive) to its code, else None."""
+        if not value:
+            return None
+        v = value.strip().lower()
+        for d in self.departments:
+            if v in (d.code.lower(), d.name.lower()):
+                return d.code
+        return None
 
 
 def _candidate_paths() -> list[str]:
@@ -118,6 +139,12 @@ def get_institution_config() -> InstitutionConfig:
             )
         )
 
+    departments = [
+        Department(code=str(d["code"]).strip(), name=str(d.get("name") or d["code"]).strip())
+        for d in raw.get("departments") or []
+        if isinstance(d, dict) and d.get("code")
+    ]
+
     categories: list[HelpdeskCategory] = []
     for c in (raw.get("helpdesk") or {}).get("categories") or []:
         if not isinstance(c, dict) or not c.get("key"):
@@ -141,6 +168,15 @@ def get_institution_config() -> InstitutionConfig:
         commitment_followup_hours=int(settings_block.get("commitment_followup_hours", 48)),
         helpdesk_categories=categories,
         members=members,
+        departments=departments,
     )
+    # Members may name a department by code or full name; store the code. A profile with
+    # no `departments:` list keeps the free-text value (department scoping then unused).
+    for m in cfg.members:
+        if m.department and cfg.departments:
+            code = cfg.department_code(m.department)
+            if not code:
+                log.warning("Unknown department in institution.yaml", email=m.email, department=m.department)
+            m.department = code
     log.info("Institution profile loaded", path=path, institution=cfg.name, members=len(cfg.members))
     return cfg

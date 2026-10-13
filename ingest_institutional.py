@@ -33,6 +33,26 @@ WEBSITE_KB_FOLDER = os.path.join(os.path.dirname(os.path.abspath(__file__)), "dj
 
 PROCESS_WAIT_SECONDS = 180
 
+# Owning department (code from institution.yaml) per file; anything not listed is
+# institution-wide ("all"). CE students/faculty see CE + "all"; IT see IT + "all".
+DEPARTMENT_OF = {
+    "scenario_1_academic_council_curriculum_review.txt": "CE",  # CE elective
+    "scenario_4_departmental_lab_readiness_sync.txt": "CE",
+    "doc_Departmental_Research_and_Lab_Upgrades.txt": "CE",
+    "doc_Elective_Proposal_AIML_Autonomous_Curriculum.txt": "CE",
+    "kb_computer_engineering_faq.txt": "CE",
+    "kb_information_technology_overview.txt": "IT",
+    "kb_dept_computer_engineering.txt": "CE",
+    "kb_dept_information_technology.txt": "IT",
+    "kb_dept_ai_and_data_science.txt": "AIDS",
+    "kb_dept_ai_and_machine_learning.txt": "AIML",
+    "kb_dept_cse_data_science.txt": "CSDS",
+    "kb_dept_cse_iot_cyber_security.txt": "IOTCS",
+    "kb_dept_electronics_telecom.txt": "EXTC",
+    "kb_dept_mechanical_engineering.txt": "MECH",
+    "kb_dept_basic_sciences_humanities.txt": "BSH",
+}
+
 
 def _title_from(filename: str) -> str:
     base = os.path.splitext(filename)[0].replace("_", " ").strip()
@@ -62,7 +82,8 @@ def post_transcripts(token: str) -> int:
             text = fh.read()
         r = requests.post(
             f"{API}/api/v1/transcripts",
-            json={"title": _title_from(filename), "transcript": text, "source": "demo_institutional"},
+            json={"title": _title_from(filename), "transcript": text, "source": "demo_institutional",
+                  "department": DEPARTMENT_OF.get(filename, "all")},
             headers=headers,
         )
         if r.status_code == 202:
@@ -95,12 +116,12 @@ def post_documents(token: str) -> int:
                 r = requests.post(
                     f"{API}/api/v1/ingest/file",
                     files={"file": (filename, fh, "text/plain")},
-                    data={"visibility": visibility},
+                    data={"visibility": visibility, "department": DEPARTMENT_OF.get(filename, "all")},
                     headers=headers,
                 )
             if r.status_code in (200, 202):
                 sent += 1
-                print(f"  [OK] Queued {visibility} document: {filename}")
+                print(f"  [OK] Queued {visibility} document ({DEPARTMENT_OF.get(filename, 'all')}): {filename}")
             else:
                 print(f"  [!] Document upload failed: {filename} ({r.status_code}) {r.text[:120]}")
     print(f"[OK] Queued {sent} document(s) for the knowledge index and graph")

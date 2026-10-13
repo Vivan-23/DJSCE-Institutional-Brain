@@ -21,6 +21,7 @@ export default function LoginPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [fullName, setFullName] = useState('');
+  const [department, setDepartment] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
@@ -40,7 +41,7 @@ export default function LoginPage() {
     const body =
       mode === 'login'
         ? { email, password }
-        : { email, password, full_name: fullName };
+        : { email, password, full_name: fullName, department: department || undefined };
 
     try {
       const res = await fetch(`${API_BASE}${endpoint}`, {
@@ -108,6 +109,22 @@ export default function LoginPage() {
               aria-label="Full name"
               className="w-full bg-slate-900 border border-slate-700/80 rounded-md px-3.5 py-2 text-xs sm:text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:border-blue-500 transition-colors"
             />
+          )}
+          {mode === 'register' && institution.departments.length > 0 && (
+            <select
+              value={department}
+              onChange={(e) => setDepartment(e.target.value)}
+              required
+              aria-label="Department"
+              className="w-full bg-slate-900 border border-slate-700/80 rounded-md px-3.5 py-2 text-xs sm:text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:border-blue-500 transition-colors"
+            >
+              <option value="">Your department…</option>
+              {institution.departments.map((d) => (
+                <option key={d.code} value={d.code}>
+                  {d.name}
+                </option>
+              ))}
+            </select>
           )}
           <input
             type="email"

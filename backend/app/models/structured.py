@@ -7,6 +7,7 @@ class UserBase(SQLModel):
     email: str = Field(unique=True, index=True)
     full_name: Optional[str] = None
     role: str = Field(default="student")  # student | employee | manager | admin
+    department: Optional[str] = None  # department code (institution.yaml); scopes what they retrieve
 
 class User(UserBase, table=True):
     id: UUID = Field(default_factory=uuid4, primary_key=True)
@@ -70,6 +71,7 @@ class Meeting(SQLModel, table=True):
     participants: str = Field(default="[]")  # JSON list of participant names
     source: str = Field(default="upload")  # upload / zoom / otter / fireflies / ...
     raw_transcript: Optional[str] = None
+    department: str = Field(default="all", index=True)  # owning department code, or "all"
     created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
 
 
@@ -80,6 +82,8 @@ class Fragment(SQLModel, table=True):
     source_ref: Optional[str] = None  # permalink / external id / filename
     # Who may retrieve this evidence: "internal" (staff only) or "public" (students too).
     visibility: str = Field(default="internal", index=True)
+    # Owning department code, or "all" (institution-wide). Scopes retrieval for students/faculty.
+    department: str = Field(default="all", index=True)
     author_employee_id: Optional[UUID] = Field(default=None, foreign_key="employee.id")
     meeting_id: Optional[UUID] = Field(default=None, foreign_key="meeting.id", index=True)
     content: str

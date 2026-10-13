@@ -1,0 +1,55 @@
+{
+  "_about": "Per-department isolation: each student asks about another department's material. A leak is any returned source whose department is outside the student's scope (own department + institution-wide).",
+  "probes": [
+    {
+      "as": "student",
+      "department": "CE",
+      "question": "What are the student committees of the IT department?"
+    },
+    {
+      "as": "student",
+      "department": "CE",
+      "question": "In which year did DJSCE introduce the Information Technology programme?"
+    },
+    {
+      "as": "student",
+      "department": "CE",
+      "question": "Tell me about the Mechanical Engineering department."
+    },
+    {
+      "as": "student",
+      "department": "CE",
+      "question": "What is the intake of the AI and Data Science programme?"
+    },
+    {
+      "as": "student",
+      "department": "CE",
+      "question": "What does the Electronics and Telecommunication department offer?"
+    },
+    {
+      "as": "student_it",
+      "department": "IT",
+      "question": "Which department electives are offered in Semester VI of Computer Engineering?"
+    },
+    {
+      "as": "student_it",
+      "department": "IT",
+      "question": "Who is the Head of the Computer Engineering department?"
+    },
+    {
+      "as": "student_it",
+      "department": "IT",
+      "question": "What is the intake capacity for B.Tech Computer Engineering?"
+    },
+    {
+      "as": "student_it",
+      "department": "IT",
+      "question": "Tell me about the CSE IoT and Cyber Security programme."
+    },
+    {
+      "as": "student_it",
+      "department": "IT",
+      "question": "What labs does the AI and Machine Learning department have?"
+    }
+  ]
+}

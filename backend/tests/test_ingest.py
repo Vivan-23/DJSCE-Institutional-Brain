@@ -75,7 +75,7 @@ class TestDocumentVisibility:
             )
         assert res.status_code == 202
         assert res.json()["visibility"] == "public"
-        assert mock_task.call_args.args == ("Public FAQ", "faq.txt", "public")
+        assert mock_task.call_args.args == ("Public FAQ", "faq.txt", "public", "all")
 
     def test_rejects_unknown_visibility(self, client):
         token = _get_token(client)

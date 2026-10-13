@@ -48,7 +48,7 @@ celery_app.conf.update(
 
 
 @celery_app.task(name="app.core.celery.process_document")
-def process_document_task(text: str, filename: str, visibility: str = "internal") -> dict:
+def process_document_task(text: str, filename: str, visibility: str = "internal", department: str = "all") -> dict:
     """
     Background ingestion pipeline:
       1. Persist a Document row to Postgres
@@ -79,6 +79,7 @@ def process_document_task(text: str, filename: str, visibility: str = "internal"
                 source_ref=filename,
                 content=chunk,
                 visibility=visibility,
+                department=department,
             )
     log.info("Document chunks stored as fragments", filename=filename, count=len(chunks))
 
@@ -97,13 +98,14 @@ def process_document_task(text: str, filename: str, visibility: str = "internal"
         "filename": filename,
         "chunks_stored": len(chunks),
         "visibility": visibility,
+        "department": department,
         "persons_found": [p["name"] for p in people],
         "orgs_found": bodies,
     }
 
 
 @celery_app.task(name="app.core.celery.process_transcript")
-def process_transcript_task(transcript: str, title: str, source: str = "upload") -> dict:
+def process_transcript_task(transcript: str, title: str, source: str = "upload", department: str = "all") -> dict:
     """
     Background transcript pipeline:
       1. LLM extraction → summary, decisions, commitments
@@ -117,7 +119,7 @@ def process_transcript_task(transcript: str, title: str, source: str = "upload")
     log.info("Starting transcript processing", title=title)
     with Session(engine) as session:
         result = transcript_service.ingest(
-            session, transcript=transcript, title=title, source=source
+            session, transcript=transcript, title=title, source=source, department=department
         )
     log.info("Transcript processing complete", title=title, **{
         "commitments": result.get("commitments_created"),

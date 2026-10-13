@@ -192,7 +192,7 @@ def eval_qa(api, users, pause):
     qs = json.loads((DATA / "qa_set.json").read_text(encoding="utf-8"))["questions"]
     rows = []
     for q in qs:
-        email = users[q["role"]]
+        email = users[q.get("as", q["role"])]
         body, dt = api.chat(email, q["question"])
         ans, srcs = body.get("response") or "", body.get("sources") or []
         refs = [(s.get("source_ref") or "").lower() for s in srcs]
@@ -254,6 +254,22 @@ def eval_visibility(api, student, pause):
         "all_scoped_public": all(r["scope"] == "public" for r in rows),
         "items": rows,
     }
+
+
+# ── 3b. department isolation ─────────────────────────────────────────────────
+def eval_departments(api, users, pause):
+    spec = json.loads((DATA / "department_set.json").read_text(encoding="utf-8"))
+    rows = []
+    for p in spec["probes"]:
+        body, dt = api.chat(users[p["as"]], p["question"])
+        allowed = set(body.get("departments") or [p["department"], "all"])
+        srcs = body.get("sources") or []
+        foreign = [f"{s.get('source_ref')} ({s.get('department')})" for s in srcs if s.get("department") not in allowed]
+        rows.append({"as": p["as"], "question": p["question"], "scope": body.get("departments"),
+                     "sources": len(srcs), "foreign_sources": foreign, "leak": bool(foreign), "latency_s": round(dt, 3)})
+        if pause:
+            time.sleep(pause)
+    return {"n": len(rows), "leaks": sum(r["leak"] for r in rows), "items": rows}
 
 
 # ── 4. commitment extraction ─────────────────────────────────────────────────
@@ -328,6 +344,11 @@ def to_markdown(res):
         lines += ["## 3. Visibility (adversarial student queries)", "",
                   f"**{v['leaks']} leaks in {v['n']} queries** — {v['internal_source_leaks']} returned an internal source, "
                   f"{v['forbidden_fact_leaks']} stated an internal-only fact; every query scoped to public: {v['all_scoped_public']}.", ""]
+    dp = res.get("departments")
+    if dp:
+        lines += ["## 3b. Department isolation (students asking about other departments)", "",
+                  f"**{dp['leaks']} leaks in {dp['n']} queries** — a leak is any source from a department outside "
+                  "the student's own department plus institution-wide material.", ""]
     c = res.get("commitments")
     if c:
         lines += ["## 4. Commitment extraction (4 transcripts, hand-labelled)", "",
@@ -338,7 +359,7 @@ def to_markdown(res):
 
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument("--parts", default="triage,qa,visibility,commitments")
+    ap.add_argument("--parts", default="triage,qa,visibility,departments,commitments")
     ap.add_argument("--engines", default="keyword,llm,laya")
     ap.add_argument("--api", default=os.environ.get("EVAL_API", "http://backend:8001"))
     ap.add_argument("--out", default="/out")
@@ -357,7 +378,9 @@ def main():
 
     res = {"run_at": datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M UTC"),
            "env": {"llm_model": settings.LLM_MODEL, "laya": laya_version}}
-    users = {"student": "aarav.desai@example.com", "staff": "karan.shah@example.com"}
+    # CE student, IT student, CE faculty (institution.yaml); department scoping applies to all three.
+    users = {"student": "aarav.desai@example.com", "student_it": "isha.kulkarni@example.com",
+             "staff": "karan.shah@example.com"}
     api = Api(args.api)
 
     if "triage" in parts:
@@ -367,6 +390,8 @@ def main():
         res["qa"] = eval_qa(api, users, args.pause)
     if "visibility" in parts:
         res["visibility"] = eval_visibility(api, users["student"], args.pause)
+    if "departments" in parts:
+        res["departments"] = eval_departments(api, users, args.pause)
     if "commitments" in parts:
         res["commitments"] = eval_commitments(api, users["staff"])
 

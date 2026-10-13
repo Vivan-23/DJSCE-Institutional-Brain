@@ -4,11 +4,13 @@ from pydantic import BaseModel
 from sqlmodel import Session, select
 from passlib.context import CryptContext
 from datetime import datetime, timedelta, timezone
+from typing import Optional
 from uuid import UUID
 import jwt
 
 from app.core.config import settings
 from app.core.db import get_session
+from app.core.institution_config import ALL_DEPARTMENTS, get_institution_config
 from app.models.structured import User
 
 router = APIRouter()
@@ -25,6 +27,7 @@ class RegisterRequest(BaseModel):
     email: str
     full_name: str
     password: str
+    department: Optional[str] = None  # code or name from institution.yaml
 
 
 def hash_password(password: str) -> str:
@@ -97,10 +100,35 @@ def is_staff(user: User) -> bool:
     return _ROLE_RANK.get(user.role, -1) >= _ROLE_RANK["employee"]
 
 
+def department_scope(user: User) -> Optional[list[str]]:
+    """Departments whose material ``user`` may retrieve; None = unrestricted.
+
+    Coordinators and administrators work across departments. Students and faculty see
+    their own department's material plus institution-wide ("all") material; with no
+    department on record they see institution-wide material only (fail closed).
+    """
+    if _ROLE_RANK.get(user.role, -1) >= _ROLE_RANK["manager"]:
+        return None
+    return [user.department, ALL_DEPARTMENTS] if user.department else [ALL_DEPARTMENTS]
+
+
+def parse_department(value: Optional[str]) -> str:
+    """An ingestion request's department: a known code/name, or "all" when omitted. 400 otherwise."""
+    if not value or value.strip().lower() == ALL_DEPARTMENTS:
+        return ALL_DEPARTMENTS
+    code = get_institution_config().department_code(value)
+    if not code:
+        raise HTTPException(status_code=400, detail=f"Unknown department '{value}'")
+    return code
+
+
 @router.post("/register", status_code=201)
 def register(req: RegisterRequest, db: Session = Depends(get_session)):
     if db.exec(select(User).where(User.email == req.email)).first():
         raise HTTPException(status_code=400, detail="Email already registered")
+    department = get_institution_config().department_code(req.department)
+    if req.department and not department:
+        raise HTTPException(status_code=400, detail=f"Unknown department '{req.department}'")
     user = User(
         email=req.email,
         full_name=req.full_name,
@@ -108,6 +136,7 @@ def register(req: RegisterRequest, db: Session = Depends(get_session)):
         # Least privilege: self-registration creates a student account. Staff roles
         # come from institution.yaml or an administrator.
         role="student",
+        department=department,
     )
     db.add(user)
     db.commit()
@@ -132,4 +161,5 @@ def get_me(current_user: User = Depends(get_current_user)):
         "email": current_user.email,
         "full_name": current_user.full_name,
         "role": current_user.role,
+        "department": current_user.department,
     }

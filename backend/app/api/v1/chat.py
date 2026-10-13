@@ -2,7 +2,7 @@ import structlog
 from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel
 
-from app.api.v1.auth import get_current_user, is_staff
+from app.api.v1.auth import department_scope, get_current_user, is_staff
 from app.models.structured import User
 from app.services.rag_service import rag_service
 
@@ -37,7 +37,9 @@ def chat_endpoint(
     log.info("Chat query received", user=current_user.email, public_only=public_only, query_len=len(user_query))
 
     try:
-        result = rag_service.answer(user_query, public_only=public_only)
+        result = rag_service.answer(
+            user_query, public_only=public_only, departments=department_scope(current_user)
+        )
     except Exception as e:
         log.error("RAG query failed", user=current_user.email, error=str(e))
         raise HTTPException(
@@ -45,4 +47,5 @@ def chat_endpoint(
             detail="The knowledge assistant is temporarily unavailable. Please try again.",
         )
 
-    return {"response": result["answer"], "sources": result["sources"], "scope": "public" if public_only else "all"}
+    return {"response": result["answer"], "sources": result["sources"], "scope": "public" if public_only else "all",
+            "departments": department_scope(current_user)}

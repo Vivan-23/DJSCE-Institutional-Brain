@@ -7,7 +7,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel
 from sqlmodel import Session, select
 
-from app.api.v1.auth import require_staff
+from app.api.v1.auth import department_scope, parse_department, require_staff
 from app.core.db import get_session
 from app.models.structured import Meeting, User
 
@@ -22,6 +22,7 @@ class TranscriptRequest(BaseModel):
     transcript: str
     source: str = "upload"
     occurred_at: Optional[datetime] = None
+    department: Optional[str] = None  # owning department code; omitted = institution-wide
 
 
 @router.post("", status_code=202)
@@ -40,8 +41,9 @@ def ingest_transcript(
     if not req.title.strip():
         raise HTTPException(status_code=400, detail="Title is required")
 
+    department = parse_department(req.department)
     from app.core.celery import process_transcript_task
-    task = process_transcript_task.delay(text, req.title.strip(), req.source)
+    task = process_transcript_task.delay(text, req.title.strip(), req.source, department)
 
     log.info("Transcript queued", title=req.title, user=current_user.email, task_id=task.id)
     return {
@@ -57,7 +59,11 @@ def list_meetings(
     current_user: User = Depends(require_staff),
     db: Session = Depends(get_session),
 ):
-    meetings = db.exec(select(Meeting).order_by(Meeting.occurred_at.desc())).all()
+    stmt = select(Meeting).order_by(Meeting.occurred_at.desc())
+    scope = department_scope(current_user)
+    if scope is not None:  # faculty: their department's meetings + institution-wide ones
+        stmt = stmt.where(Meeting.department.in_(scope))
+    meetings = db.exec(stmt).all()
     return [
         {
             "id": str(m.id),
@@ -65,6 +71,7 @@ def list_meetings(
             "occurred_at": m.occurred_at.isoformat(),
             "summary": m.summary,
             "source": m.source,
+            "department": m.department,
         }
         for m in meetings
     ]
@@ -82,7 +89,8 @@ def get_meeting(
     except ValueError:
         raise HTTPException(status_code=400, detail="Invalid meeting id")
     meeting = db.get(Meeting, mid)
-    if not meeting:
+    scope = department_scope(current_user)
+    if not meeting or (scope is not None and meeting.department not in scope):
         raise HTTPException(status_code=404, detail="Meeting not found")
     import json
     return {
@@ -91,6 +99,7 @@ def get_meeting(
         "occurred_at": meeting.occurred_at.isoformat(),
         "summary": meeting.summary,
         "source": meeting.source,
+        "department": meeting.department,
         "participants": json.loads(meeting.participants or "[]"),
         "raw_transcript": meeting.raw_transcript,
     }

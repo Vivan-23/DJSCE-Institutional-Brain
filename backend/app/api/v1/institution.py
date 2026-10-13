@@ -10,4 +10,9 @@ router = APIRouter()
 def get_institution():
     """Public branding pulled from institution.yaml. No auth (login page reads it too)."""
     cfg = get_institution_config()
-    return {"name": cfg.name, "short_code": cfg.short_code, "full_name": cfg.full_name}
+    return {
+        "name": cfg.name,
+        "short_code": cfg.short_code,
+        "full_name": cfg.full_name,
+        "departments": [{"code": d.code, "name": d.name} for d in cfg.departments],
+    }

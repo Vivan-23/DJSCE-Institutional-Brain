@@ -72,7 +72,9 @@ Demo logins come from `institution.yaml` (all `demo123`): `admin@example.com`, `
   (from NER, keyed by synthesized `name@<email_domain>`). They are not linked. Students have a `User` but no `Employee`.
 - **RBAC**: ranks `student < employee < manager < admin` (UI: Student / Faculty / Committee Coordinator / System Administrator,
   `frontend/src/lib/roles.ts`). Internal routers use `Depends(require_staff)`; elevated actions `require_role("manager")`.
-  Self-registration creates students. Tests get a role via `tests/helpers.py:register(client, email, role=...)`.
+  Self-registration creates students. Tests get a role via `tests/helpers.py:register(client, email, role=..., department=...)`.
+- **Department scope**: `department` on User/Fragment/Meeting (`all` = institution-wide). Students/faculty retrieve own +
+  `all` (`auth.department_scope`, filtered in the Chroma query and re-checked); coordinators/admins unrestricted.
 - **Frontend** Next.js 16 / React 19 (`frontend/src`), non-standard version with stricter lint — read `frontend/AGENTS.md`
   (e.g. no synchronous `setState` in effects). All calls should go through `lib/api.ts:apiFetch`; `next.config.ts` rewrites
   `/api/*` to the backend, so `NEXT_PUBLIC_API_URL` is empty in Docker.

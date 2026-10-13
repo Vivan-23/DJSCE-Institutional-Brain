@@ -56,7 +56,10 @@ def client(test_engine):
     """FastAPI TestClient with mocked external dependencies."""
     mock_chroma = MagicMock()
     mock_chroma.collection = MagicMock()
-    mock_chroma.collection.query.return_value = {"documents": [["mock context chunk"]]}
+    mock_chroma.collection.query.return_value = {
+        "documents": [["mock context chunk"]],
+        "metadatas": [[{"visibility": "public", "department": "all"}]],
+    }
 
     mock_neo4j = MagicMock()
     mock_neo4j.execute_query.return_value = []

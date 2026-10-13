@@ -50,13 +50,15 @@ def seed_institution(db: Session) -> dict:
                 full_name=m.name,
                 hashed_password=hash_password(m.password),
                 role=m.role,
+                department=m.department,
             )
             db.add(user)
             db.commit()
             db.refresh(user)
             users_created += 1
-        elif user and user.role != m.role:
-            user.role = m.role  # keep role in sync with the profile
+        elif user and (user.role != m.role or user.department != m.department):
+            user.role = m.role  # keep role and department in sync with the profile
+            user.department = m.department
             db.add(user)
             db.commit()
 

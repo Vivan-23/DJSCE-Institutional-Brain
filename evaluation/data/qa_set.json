@@ -1,5 +1,5 @@
 {
-  "_about": "Grounded Q&A gold set. role = who asks (student → public knowledge only). A question passes retrieval when any retrieved source_ref contains one of expected_sources; it passes the answer check when the answer contains any of must_include (and every item of must_include_all). Gold values are copied verbatim from the synthetic dataset files. Student exam/attendance questions use the authentic public website data in djsce_public_data/kb/ (source URLs in each file).",
+  "_about": "Grounded Q&A gold set. role = who asks (student → public knowledge only). A question passes retrieval when any retrieved source_ref contains one of expected_sources; it passes the answer check when the answer contains any of must_include (and every item of must_include_all). Gold values are copied verbatim from the synthetic dataset files. Student exam/attendance questions use the authentic public website data in djsce_public_data/kb/ (source URLs in each file). Questions with \"as\": \"student_it\" are asked by the IT student (per-department access).",
   "questions": [
     {
       "id": "q01",
@@ -79,7 +79,8 @@
       ],
       "must_include": [
         "1999"
-      ]
+      ],
+      "as": "student_it"
     },
     {
       "id": "q08",
@@ -91,7 +92,8 @@
       "must_include": [
         "CSI",
         "INIT"
-      ]
+      ],
+      "as": "student_it"
     },
     {
       "id": "q09",

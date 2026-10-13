@@ -3,7 +3,7 @@ from pathlib import Path
 import structlog
 from fastapi import APIRouter, Depends, File, Form, HTTPException, UploadFile
 
-from app.api.v1.auth import require_staff
+from app.api.v1.auth import parse_department, require_staff
 from app.models.structured import User
 from app.services.fragment_service import VISIBILITIES
 from app.services.parser import parse_pdf, parse_docx
@@ -19,11 +19,13 @@ ALLOWED_EXTENSIONS = {".txt", ".pdf", ".docx"}
 async def ingest_file(
     file: UploadFile = File(...),
     visibility: str = Form("internal"),
+    department: str = Form("all"),
     current_user: User = Depends(require_staff),
 ):
     """Queue a document for indexing. ``visibility="public"`` makes it answerable for students."""
     if visibility not in VISIBILITIES:
         raise HTTPException(status_code=400, detail=f"visibility must be one of {sorted(VISIBILITIES)}")
+    department = parse_department(department)
     ext = Path(file.filename or "").suffix.lower()
     if ext not in ALLOWED_EXTENSIONS:
         raise HTTPException(
@@ -50,13 +52,15 @@ async def ingest_file(
 
     # Enqueue background processing — returns immediately (202 Accepted)
     from app.core.celery import process_document_task
-    task = process_document_task.delay(text, file.filename, visibility)
+    task = process_document_task.delay(text, file.filename, visibility, department)
 
-    log.info("Document queued for processing", filename=file.filename, visibility=visibility, task_id=task.id)
+    log.info("Document queued for processing", filename=file.filename, visibility=visibility,
+             department=department, task_id=task.id)
     return {
         "filename": file.filename,
         "status": "queued",
         "visibility": visibility,
+        "department": department,
         "task_id": task.id,
         "message": "Document is being processed in the background. Graph and embeddings will update shortly.",
     }

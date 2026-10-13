@@ -2,16 +2,23 @@
 import { useEffect, useState } from 'react';
 import { API_BASE } from '@/lib/api';
 
+export interface Department {
+  code: string;
+  name: string;
+}
+
 export interface Institution {
   name: string;
   short_code: string;
   full_name: string;
+  departments: Department[];
 }
 
 const DEFAULT: Institution = {
   name: 'DJSCE Institutional Brain',
   short_code: 'DJSCE',
   full_name: 'Dwarkadas J. Sanghvi College of Engineering',
+  departments: [],
 };
 
 /** Public branding from institution.yaml (served unauthenticated, so plain fetch). */

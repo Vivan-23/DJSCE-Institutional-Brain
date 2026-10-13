@@ -24,15 +24,25 @@ _EXCERPT_CHARS = 500
 
 
 class RAGService:
-    def retrieve(self, question: str, *, public_only: bool, k: int = _TOP_K) -> list[dict[str, Any]]:
-        """Top-k evidence excerpts for ``question``, restricted to public evidence if asked."""
+    def retrieve(
+        self, question: str, *, public_only: bool, departments: Optional[list[str]] = None, k: int = _TOP_K
+    ) -> list[dict[str, Any]]:
+        """Top-k evidence excerpts for ``question``, restricted to public evidence if asked and
+        to ``departments`` (codes, incl. "all") when given; None means every department."""
         emb = embedding_mod.embedding_service
         collection = getattr(chroma_mod.chroma_conn, "collection", None)
         if not collection or not getattr(emb, "is_available", False):
             return []
         try:
             vector = emb.embed_texts([question])[0]
-            where: Optional[dict] = {"visibility": "public"} if public_only else None
+            clauses: list[dict] = []
+            if public_only:
+                clauses.append({"visibility": "public"})
+            if departments is not None:
+                clauses.append({"department": {"$in": list(departments)}})
+            where: Optional[dict] = (
+                None if not clauses else clauses[0] if len(clauses) == 1 else {"$and": clauses}
+            )
             res = collection.query(query_embeddings=[vector], n_results=k, where=where)
         except Exception as e:
             log.warning("Vector retrieval failed", error=str(e))
@@ -47,6 +57,8 @@ class RAGService:
                 continue
             if public_only and meta.get("visibility") != "public":
                 continue  # defence in depth: never trust the store's filter alone
+            if departments is not None and meta.get("department") not in departments:
+                continue
             seen.add(doc)
             sources.append(
                 {
@@ -54,6 +66,7 @@ class RAGService:
                     "source_type": meta.get("source_type") or None,
                     "source_ref": meta.get("source_ref") or None,
                     "visibility": meta.get("visibility") or "internal",
+                    "department": meta.get("department") or None,
                     "speaker": meta.get("speaker") or None,
                     "excerpt": doc[:_EXCERPT_CHARS],
                 }
@@ -71,13 +84,20 @@ class RAGService:
             log.warning("Graph context fetch failed", error=str(e))
             return ""
 
-    def answer(self, question: str, *, public_only: bool, purpose: str = "answer") -> dict[str, Any]:
+    def answer(
+        self,
+        question: str,
+        *,
+        public_only: bool,
+        departments: Optional[list[str]] = None,
+        purpose: str = "answer",
+    ) -> dict[str, Any]:
         """Return ``{"answer": str, "sources": [...]}`` grounded in retrieved evidence.
 
         ``purpose="ticket_draft"`` writes a reply for a staff member to review and send,
         marking gaps in [brackets] instead of telling the reader to raise a ticket.
         """
-        sources = self.retrieve(question, public_only=public_only)
+        sources = self.retrieve(question, public_only=public_only, departments=departments)
         if not llm_service.is_available:
             return {"answer": "The language model is not configured (set GROQ_API_KEY).", "sources": sources}
 

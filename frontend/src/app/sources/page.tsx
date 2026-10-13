@@ -1,6 +1,7 @@
 'use client';
 import React, { useRef, useState } from 'react';
 import { apiFetch } from '@/lib/api';
+import { useInstitution } from '@/lib/useInstitution';
 
 type UploadStatus = 'idle' | 'uploading' | 'queued' | 'error';
 
@@ -17,6 +18,8 @@ export default function SourcesPage() {
   const [result, setResult] = useState<UploadResult | null>(null);
   const [errorMsg, setErrorMsg] = useState('');
   const [visibility, setVisibility] = useState<'internal' | 'public'>('internal');
+  const [department, setDepartment] = useState('all');
+  const { departments } = useInstitution();
 
   const handleUpload = async () => {
     if (!file) return;
@@ -27,6 +30,7 @@ export default function SourcesPage() {
     const form = new FormData();
     form.append('file', file);
     form.append('visibility', visibility);
+    form.append('department', department);
 
     try {
       const res = await apiFetch('/api/v1/ingest/file', { method: 'POST', body: form });
@@ -132,6 +136,24 @@ export default function SourcesPage() {
               Public — students can get answers from it
             </label>
           </fieldset>
+
+          {departments.length > 0 && (
+            <label className="flex items-center gap-2 text-xs text-slate-300">
+              Department
+              <select
+                value={department}
+                onChange={(e) => setDepartment(e.target.value)}
+                className="flex-1 bg-slate-900 border border-slate-700/80 rounded-md px-2.5 py-1.5 text-xs text-slate-100 focus:outline-none focus:border-blue-500"
+              >
+                <option value="all">Institution-wide (every department)</option>
+                {departments.map((d) => (
+                  <option key={d.code} value={d.code}>
+                    {d.name} only
+                  </option>
+                ))}
+              </select>
+            </label>
+          )}
 
           <button
             onClick={handleUpload}

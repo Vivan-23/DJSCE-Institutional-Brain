@@ -52,6 +52,7 @@ class TranscriptService:
         title: str,
         occurred_at: Optional[datetime] = None,
         source: str = "upload",
+        department: str = "all",
     ) -> dict:
         """
         Full pipeline: create Meeting -> extract -> store summary + Fragments +
@@ -70,13 +71,14 @@ class TranscriptService:
             participants=json.dumps(extracted.get("participants") or []),
             source=source,
             raw_transcript=transcript[:50_000],
+            department=department,
         )
         db.add(meeting)
         db.commit()
         db.refresh(meeting)
 
         # 3. Split into speaker-attributed fragments and index them
-        fragment_count = self._store_fragments(db, transcript, meeting.id, occurred_at, title)
+        fragment_count = self._store_fragments(db, transcript, meeting.id, occurred_at, title, department)
 
         # 4. Create commitments from the extraction
         commitments = commitment_service.create_from_meeting(
@@ -101,7 +103,8 @@ class TranscriptService:
         }
 
     def _store_fragments(
-        self, db: Session, transcript: str, meeting_id: UUID, occurred_at: datetime, title: str
+        self, db: Session, transcript: str, meeting_id: UUID, occurred_at: datetime, title: str,
+        department: str = "all",
     ) -> int:
         count = 0
         for speaker, utterance in self._split_utterances(transcript):
@@ -115,6 +118,7 @@ class TranscriptService:
                 author_employee_id=author.id if author else None,
                 meeting_id=meeting_id,
                 occurred_at=occurred_at,
+                department=department,
             )
             count += 1
         return count

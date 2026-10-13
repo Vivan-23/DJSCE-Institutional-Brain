@@ -2,7 +2,7 @@
 
 Branding, settings, help-desk routing and the people roster all live in **one
 file — [`institution.yaml`](../institution.yaml)** at the repo root. On startup the
-backend reads it and reconfigures itself. Last verified: 2026-10-13.
+backend reads it and reconfigures itself. Last verified: 2026-10-14.
 
 ---
 
@@ -15,6 +15,7 @@ backend reads it and reconfigures itself. Last verified: 2026-10-13.
 | `settings.pa_checkin_hour` | Faculty Desk end-of-day check-in time | Celery beat schedule |
 | `settings.commitment_followup_hours` | when a commitment counts as stale | follow-up scans |
 | `helpdesk.categories[]` | ticket categories, owning office, keyword fallback, quick questions | `/helpdesk`, ticket triage |
+| `departments[]` | department codes and names; scopes what students/faculty retrieve | registration form, upload form, retrieval |
 | `members[]` | people, roles, departments, reporting lines | seeded into the DB |
 
 Seeding is **idempotent** (matched by email): edit, restart, and the DB matches.
@@ -28,7 +29,7 @@ members:
     email: "aditi.rao@example.com"
     role: "manager"                # student | employee | manager | admin
     title: "Academic Coordinator, Academic Council"
-    department: "Computer Engineering"
+    department: "CE"               # code (or full name) from `departments:`
     manager: "admin@example.com"   # reporting coordinator's email
     timezone: "Asia/Kolkata"       # default
     password: "demo123"            # set → this person gets a login
@@ -42,6 +43,20 @@ members:
 | `admin` | System Administrator | everything |
 
 Unknown roles are skipped with a warning (never silently granted access).
+
+### Departments
+
+```yaml
+departments:
+  - { code: "CE", name: "Computer Engineering" }
+  - { code: "IT", name: "Information Technology" }
+```
+
+Students and faculty retrieve their own department's material plus institution-wide (`all`)
+material; coordinators and administrators see every department. Tag material when ingesting
+(the upload form's *Department* menu, or `department` in the API); untagged material is
+institution-wide. A student or faculty member with no department sees only institution-wide
+material. Leave `departments:` out to disable scoping.
 
 ### Help-desk categories
 

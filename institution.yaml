@@ -19,6 +19,21 @@ settings:
   pa_checkin_hour: 17            # Local hour (0-23) for the Faculty Desk end-of-day check-in
   commitment_followup_hours: 48  # A commitment idle this long gets a follow-up nudge
 
+# ── Departments ──────────────────────────────────────────────────────────────
+# Codes are stored on users, documents and meetings. Students and faculty retrieve
+# their own department's material plus institution-wide ("all") material;
+# coordinators and administrators see every department.
+departments:
+  - { code: "CE",    name: "Computer Engineering" }
+  - { code: "IT",    name: "Information Technology" }
+  - { code: "AIDS",  name: "Artificial Intelligence and Data Science" }
+  - { code: "AIML",  name: "Artificial Intelligence and Machine Learning" }
+  - { code: "CSDS",  name: "Computer Science and Engineering (Data Science)" }
+  - { code: "IOTCS", name: "Computer Science and Engineering (IoT and Cyber Security with Blockchain Technology)" }
+  - { code: "EXTC",  name: "Electronics and Telecommunication Engineering" }
+  - { code: "MECH",  name: "Mechanical Engineering" }
+  - { code: "BSH",   name: "Basic Sciences and Humanities" }
+
 # ── Student Help Desk ────────────────────────────────────────────────────────
 # Tickets are triaged into one of these categories and routed to its owner.
 # `keywords` drive the offline fallback classifier; `quick_questions` appear as
@@ -82,7 +97,7 @@ members:
     email: "aditi.rao@example.com"
     role: "manager"
     title: "Academic Coordinator, Academic Council"
-    department: "Computer Engineering"
+    department: "CE"
     manager: "admin@example.com"
     password: "demo123"
 
@@ -90,7 +105,7 @@ members:
     email: "neha.iyer@example.com"
     role: "manager"
     title: "IQAC Coordinator"
-    department: "Information Technology"
+    department: "IT"
     manager: "admin@example.com"
     password: "demo123"
 
@@ -98,7 +113,7 @@ members:
     email: "rohan.mehta@example.com"
     role: "employee"
     title: "Associate Professor"
-    department: "Computer Engineering"
+    department: "CE"
     manager: "aditi.rao@example.com"
     password: "demo123"
 
@@ -106,7 +121,7 @@ members:
     email: "karan.shah@example.com"
     role: "employee"
     title: "Assistant Professor, Examination In-charge"
-    department: "Computer Engineering"
+    department: "CE"
     manager: "aditi.rao@example.com"
     password: "demo123"
 
@@ -114,7 +129,7 @@ members:
     email: "pooja.verma@example.com"
     role: "employee"
     title: "Assistant Professor, Laboratory In-charge"
-    department: "Information Technology"
+    department: "IT"
     manager: "neha.iyer@example.com"
     password: "demo123"
 
@@ -122,12 +137,12 @@ members:
     email: "aarav.desai@example.com"
     role: "student"
     title: "B.Tech Computer Engineering, Third Year"
-    department: "Computer Engineering"
+    department: "CE"
     password: "demo123"
 
   - name: "Isha Kulkarni"
     email: "isha.kulkarni@example.com"
     role: "student"
     title: "B.Tech Information Technology, Second Year"
-    department: "Information Technology"
+    department: "IT"
     password: "demo123"

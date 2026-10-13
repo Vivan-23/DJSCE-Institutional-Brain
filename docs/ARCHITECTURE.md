@@ -2,7 +2,7 @@
 
 > **Read this first.** This file is the orientation layer so you don't have to
 > re-read the whole codebase. When you change structure, update this file in the
-> same change. Last verified: 2026-10-13.
+> same change. Last verified: 2026-10-14.
 
 DJSCE Institutional Brain turns scattered institutional knowledge (committee
 transcripts, reference documents, faculty check-ins) into decisions, tracked
@@ -81,7 +81,7 @@ tests/             pytest suite. conftest.py mocks all external services.
 | Router | Prefix | Notes |
 |---|---|---|
 | `auth.py` | `/auth` | register (creates a **student**)/login/me. **`require_role()`, `require_staff`, `is_staff()` live here.** |
-| `ingest.py` | `/ingest` | 👥 Document upload (`visibility` form field) → `process_document` task. |
+| `ingest.py` | `/ingest` | 👥 Document upload (`visibility` and `department` form fields) → `process_document` task. |
 | `insights.py` | `/insights` | 👥 Active Feed insights (list/dismiss). |
 | `chat.py` | `/chat` | Grounded Q&A with `sources`; students get `public_only` retrieval. |
 | `graph.py` | `/graph` | 👥 Graph data for the relationship map. |
@@ -170,6 +170,15 @@ Hiding a nav item is cosmetic — the backend dependency is the control.
 `visibility`. Students' chat retrieval passes `where={"visibility": "public"}` and
 drops any non-public hit. Uploads default to `internal`. `get_current_user` reads the
 role from the DB, so changing `User.role` takes effect without re-login.
+
+**Department scope** — Fragments, Meetings and Chroma metadata also carry `department`
+(a code from `institution.yaml`, or `all` = institution-wide); `User.department` comes from the
+profile or registration. `auth.department_scope(user)` → `None` for coordinators/admins, else
+`[own, "all"]` (`["all"]` with no department: fail closed). `rag_service.retrieve(departments=)`
+filters inside the Chroma query (`$and` with visibility) and re-checks hits; meeting list/detail
+filter the same way (other departments' meetings are 404). Ingestion takes a `department`
+field (`/ingest/file` form, `/transcripts` body; `parse_department` rejects unknown codes).
+Ticket drafts use the requester's department scope.
 
 **Auth** — JWT (`sub`=email). `apiFetch` attaches the token; 401 clears it and
 redirects to `/login`. Demo users are seeded from `institution.yaml`
