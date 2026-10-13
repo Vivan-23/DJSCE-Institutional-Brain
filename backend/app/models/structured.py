@@ -189,3 +189,14 @@ class Ticket(SQLModel, table=True):
     replied_at: Optional[datetime] = None
     created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
     updated_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+
+
+class QueryLog(SQLModel, table=True):
+    """One assistant question, kept for analytics (most-asked questions, knowledge gaps).
+    Deliberately has no user id: only the asker's role and department."""
+    id: UUID = Field(default_factory=uuid4, primary_key=True)
+    question: str
+    role: str = Field(index=True)
+    department: Optional[str] = None
+    source_count: int = 0  # 0 = nothing relevant was retrieved (a knowledge gap)
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc), index=True)

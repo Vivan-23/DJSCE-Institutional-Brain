@@ -8,6 +8,12 @@ Format: `## YYYY-MM-DD — title` then bullets of what/why.
 
 ---
 
+## 2026-10-14 — Analytics dashboard
+- `GET /api/v1/analytics` + `/analytics` page (Coordinator+, sidebar `coordinator` flag): open/overdue commitments per
+  meeting, tickets by status/category, median/mean hours to first reply, tickets open > 48 h, most-asked questions,
+  knowledge gaps (questions that retrieved nothing), questions by topic and role, indexed knowledge by department.
+- **Schema**: new `QueryLog` table, written by `/chat`. No user id is stored, only role and department.
+
 ## 2026-10-14 — Meeting minutes export
 - `GET /api/v1/transcripts/{id}/minutes?format=docx|pdf` (Coordinator+, department scoped, audited as
   `minutes_export`). Built from stored extraction only; every file carries a "draft, verify before circulating" notice.

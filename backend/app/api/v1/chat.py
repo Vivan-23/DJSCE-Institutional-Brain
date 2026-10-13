@@ -1,9 +1,11 @@
 import structlog
 from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel
+from sqlmodel import Session
 
 from app.api.v1.auth import department_scope, get_current_user, is_staff
-from app.models.structured import User
+from app.core.db import get_session
+from app.models.structured import QueryLog, User
 from app.services.rag_service import rag_service
 
 log = structlog.get_logger()
@@ -24,6 +26,7 @@ class ChatRequest(BaseModel):
 def chat_endpoint(
     request: ChatRequest,
     current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_session),
 ):
     """Grounded Q&A. Students are answered from public knowledge only."""
     if not request.messages:
@@ -47,5 +50,8 @@ def chat_endpoint(
             detail="The knowledge assistant is temporarily unavailable. Please try again.",
         )
 
+    db.add(QueryLog(question=user_query[:500], role=current_user.role, department=current_user.department,
+                    source_count=len(result["sources"])))
+    db.commit()
     return {"response": result["answer"], "sources": result["sources"], "scope": "public" if public_only else "all",
             "departments": department_scope(current_user)}

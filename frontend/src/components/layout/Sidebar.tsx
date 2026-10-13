@@ -4,10 +4,11 @@ import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { clearToken, getToken } from '@/lib/api';
 import { useInstitution } from '@/lib/useInstitution';
-import { clearMe, isStaffRole, ROLE_LABEL, useMe } from '@/lib/roles';
+import { clearMe, isCoordinatorRole, isStaffRole, ROLE_LABEL, useMe } from '@/lib/roles';
 
-// `staff: true` items are hidden from students (the backend also refuses them).
-const NAV = [
+// `staff: true` items are hidden from students; `coordinator: true` items need Committee
+// Coordinator or above. Cosmetic only: the backend refuses these requests anyway.
+const NAV: { href: string; label: string; staff: boolean; coordinator?: boolean }[] = [
   { href: '/', label: 'Governance Overview', staff: true },
   { href: '/helpdesk', label: 'Student Help Desk', staff: false },
   { href: '/chat', label: 'Institutional Assistant', staff: false },
@@ -19,6 +20,7 @@ const NAV = [
   { href: '/assistant', label: 'Faculty Desk (PA)', staff: true },
   { href: '/skills', label: 'Institutional Procedures', staff: true },
   { href: '/sources', label: 'Document Repositories', staff: true },
+  { href: '/analytics', label: 'Analytics', staff: true, coordinator: true },
 ];
 
 const subscribe = (cb: () => void) => {
@@ -38,7 +40,8 @@ export default function Sidebar() {
   );
   const me = useMe(loggedIn);
   const staff = isStaffRole(me?.role);
-  const nav = NAV.filter((item) => !item.staff || staff);
+  const coordinator = isCoordinatorRole(me?.role);
+  const nav = NAV.filter((item) => (!item.staff || staff) && (!item.coordinator || coordinator));
   const initials = (me?.full_name || me?.email || '?')
     .split(/[\s@.]+/)
     .filter(Boolean)
