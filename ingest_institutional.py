@@ -13,7 +13,7 @@ through the application pipeline:
 Usage:
   python ingest_institutional.py              # Ingests all 4 scenarios & reference documents
   python ingest_institutional.py --approve    # Also auto-approves extracted procedures
-  python ingest_institutional.py --no-demo-tickets   # Skip the sample help-desk tickets
+  python ingest_institutional.py --no-demo-tickets   # Skip the sample help-desk tickets and notices
 
 Sample tickets are raised by the demo students through the real help-desk API (so AI triage and
 drafts run as normal); staff then answer or close some, giving open / answered / closed examples.
@@ -268,6 +268,42 @@ def seed_demo_tickets() -> None:
     print(f"[OK] Sample tickets: {counts['open']} open, {counts['answered']} answered, {counts['closed']} closed")
 
 
+# (sender, title, body, priority, audience) — synthetic notices addressed by department / year / division.
+DEMO_NOTICES = [
+    ("admin@example.com", "End-semester examination timetable published",
+     "The end-semester theory examination timetable (25 Nov - 11 Dec) is on the examination portal. "
+     "Check your hall-ticket details and report errors to the Examination Cell before 10 November.",
+     "urgent", {"roles": ["student"]}),
+    ("aditi.rao@example.com", "Elective IV registration closes 26 October",
+     "Third-year Computer Engineering students: register for Elective IV on the academic portal by 26 October. "
+     "Seats in Applied Generative AI and Machine Learning are capped at 60 per batch.",
+     "normal", {"departments": ["CE"], "years": [3]}),
+    ("pooja.verma@example.com", "Lab 2 closed on Friday for network maintenance",
+     "Information Technology students: Lab 2 is closed this Friday while the network switch is replaced. "
+     "Practical sessions move to Lab 4.",
+     "normal", {"departments": ["IT"]}),
+]
+
+
+def seed_demo_notices() -> None:
+    """Send the sample notices as their staff authors. Skips titles that were already sent."""
+    print("Sending sample notices…")
+    sent = 0
+    for sender, title, body, priority, audience in DEMO_NOTICES:
+        headers = {"Authorization": f"Bearer {login(sender, PASSWORD)}"}
+        mine = requests.get(f"{API}/api/v1/notices/sent", headers=headers)
+        if mine.status_code == 200 and any(n["title"] == title for n in mine.json()):
+            continue
+        r = requests.post(f"{API}/api/v1/notices", headers=headers,
+                          json={"title": title, "body": body, "priority": priority, "audience": audience})
+        if r.status_code == 201:
+            sent += 1
+            print(f"  [OK] {title} -> {r.json()['recipients']} recipient(s)")
+        else:
+            print(f"  [!] Notice not sent: {title} ({r.status_code}) {r.text[:120]}")
+    print(f"[OK] Sent {sent} sample notice(s)")
+
+
 def print_summary(token: str) -> None:
     headers = {"Authorization": f"Bearer {token}"}
     def count_res(path):
@@ -300,6 +336,7 @@ def main() -> None:
     extract_skills(token, approve=approve)
     if "--no-demo-tickets" not in sys.argv:
         seed_demo_tickets()
+        seed_demo_notices()
     print_summary(token)
 
 

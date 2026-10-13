@@ -17,7 +17,7 @@ def init_db() -> None:
     from app.models.structured import (  # noqa: F401
         User, Document, ProgressReport, ActiveInsight,
         Employee, Meeting, Fragment, Commitment, CommitmentUpdate,
-        CheckIn, Skill, SkillCitation, AuditLog, Ticket, QueryLog,
+        CheckIn, Skill, SkillCitation, AuditLog, Ticket, QueryLog, Notice, NoticeRecipient,
     )
     SQLModel.metadata.create_all(engine)
 

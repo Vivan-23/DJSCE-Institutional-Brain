@@ -206,3 +206,25 @@ class QueryLog(SQLModel, table=True):
     department: Optional[str] = None
     source_count: int = 0  # 0 = nothing relevant was retrieved (a knowledge gap)
     created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc), index=True)
+
+
+class Notice(SQLModel, table=True):
+    """A message from staff to an audience of users chosen by filters."""
+    id: UUID = Field(default_factory=uuid4, primary_key=True)
+    sender_user_id: UUID = Field(foreign_key="user.id", index=True)
+    title: str
+    body: str
+    priority: str = Field(default="normal")  # normal / urgent
+    # Filters as sent (JSON): {"roles": [...], "departments": [...], "years": [...], "semesters": [...], "divisions": [...]}
+    audience: str = Field(default="{}")
+    expires_at: Optional[datetime] = None
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc), index=True)
+
+
+class NoticeRecipient(SQLModel, table=True):
+    """Who a notice was addressed to, fixed at send time; read_at tracks reading."""
+    id: UUID = Field(default_factory=uuid4, primary_key=True)
+    notice_id: UUID = Field(foreign_key="notice.id", index=True)
+    user_id: UUID = Field(foreign_key="user.id", index=True)
+    read_at: Optional[datetime] = None
+

@@ -73,6 +73,7 @@ tests/             pytest suite. conftest.py mocks all external services.
 | `active_intel.py` | `active_intel_service` | Org-risk insights (bottlenecks) for the Active Feed. |
 | `graph_service.py` | `graph_service` | Neo4j writes. Nodes `:Employee` (person), `:Project` (body: committee/cell/board/department/lab), `:Document`, `:Meeting`; edges `(Document)-[:MENTIONS]->`, `(Employee)-[:ATTENDED]->(Meeting)`, `(Meeting)-[:MENTIONS]->(Project)`. `graph_entities()` cleans NER: people need an honorific or roster match, bodies must name an institutional unit. Uniqueness constraints keep concurrent MERGEs duplicate-free. |
 | `rag_service.py` | `rag_service` | Grounded Q&A via `llm_service`. `retrieve(public_only=)` filters by visibility inside the Chroma query (and re-checks results); `answer()` returns `{answer, sources}`. |
+| `notice_service.py` | `notice_service` | Audience filters (roles, departments, years, semesters, divisions; AND across kinds, OR within). Faculty forced to own department. Recipients resolved and stored at send time (`NoticeRecipient`); expiry hides; audited. |
 | `user_service.py` | `user_service` | User management rules: validation, cohort check (semester 2y-1/2y), no self-demotion, last active admin kept, Employee profile for staff, audited. |
 | `analytics_service.py` | `analytics_service` | Computed on read from Commitment/Meeting, Ticket, QueryLog, Fragment, Skill. Questions are grouped by normalized text; topic = offline keyword triage category. |
 | `calendar_service.py` | `calendar_service` | Merges `academic_calendar:` (institution.yaml) with commitment due dates; `post_reminders()` writes `deadline` ActiveInsights (idempotent) for items due within 3 days. |
@@ -96,6 +97,7 @@ tests/             pytest suite. conftest.py mocks all external services.
 | `sources.py` | `/sources` | 👥 list connectors / sync🔒. |
 | `audit.py` | `/audit` | audit trail🔒. |
 | `institution.py` | `/institution` | public branding (name, short code, full name) from `institution.yaml`. |
+| `notices.py` | `/notices` | Staff: `POST /preview` (reach count), `POST` (send), `GET /sent` (read counts; coordinators see all). Everyone: `GET /mine`, `GET /unread-count`, `POST /{id}/read`. |
 | `admin.py` | `/admin` | Admin only: `GET/POST /users`, `PATCH /users/{id}` (role, department, year, semester, division, active), `POST /users/{id}/reset-password`, `POST /users/import` (CSV), `GET /roles` (fixed permission table). |
 | `analytics.py` | `/analytics` | Coordinator+: `GET ?days=` → commitments per meeting (open/overdue/done), ticket status/category/median reply hours, most-asked questions + knowledge gaps, indexed knowledge by department. |
 | `calendar.py` | `/calendar` | Everyone: `GET ?days=` → academic dates (audience + department scoped) and, for staff, own open commitments with due dates; each with `days_left` + `urgency`. |
@@ -153,6 +155,7 @@ app/
   calendar/          Academic calendar + deadline reminders (all roles)
   analytics/         Coordinator dashboard (commitments, tickets, questions, knowledge)
   admin/users/       Admin user management + read-only role permission table
+  notices/           Notices inbox (all roles) + compose with audience filters and sent/read counts (staff)
   tickets/           Staff Help Desk queue: triage, AI draft + sources, reply
   login/             Auth
   relationships/     Graph map

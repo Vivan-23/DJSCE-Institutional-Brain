@@ -2,7 +2,7 @@
 import React, { useCallback, useEffect, useState, useSyncExternalStore } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
-import { clearToken, getToken } from '@/lib/api';
+import { apiFetch, clearToken, getToken } from '@/lib/api';
 import { useInstitution } from '@/lib/useInstitution';
 import { clearMe, isCoordinatorRole, isStaffRole, ROLE_LABEL, useMe } from '@/lib/roles';
 
@@ -12,6 +12,7 @@ const NAV: { href: string; label: string; staff: boolean; coordinator?: boolean;
   { href: '/', label: 'Governance Overview', staff: true },
   { href: '/helpdesk', label: 'Student Help Desk', staff: false },
   { href: '/chat', label: 'Institutional Assistant', staff: false },
+  { href: '/notices', label: 'Notices', staff: false },
   { href: '/calendar', label: 'Calendar & Deadlines', staff: false },
   { href: '/tickets', label: 'Help Desk Queue', staff: true },
   { href: '/meetings', label: 'Meetings & Minutes', staff: true },
@@ -51,6 +52,20 @@ export default function Sidebar() {
     .slice(0, 2)
     .map((w) => w[0]?.toUpperCase())
     .join('');
+
+  // Unread notices badge: refreshed on navigation and when the Notices page marks one read.
+  const [unread, setUnread] = useState(0);
+  useEffect(() => {
+    if (!loggedIn) return;
+    const refresh = () =>
+      apiFetch('/api/v1/notices/unread-count')
+        .then((res) => (res.ok ? res.json() : { unread: 0 }))
+        .then((d: { unread: number }) => setUnread(d.unread))
+        .catch(() => {});
+    refresh();
+    window.addEventListener('notices-changed', refresh);
+    return () => window.removeEventListener('notices-changed', refresh);
+  }, [loggedIn, pathname]);
 
   // Close mobile drawer on route change
   const [prevPathname, setPrevPathname] = useState(pathname);
@@ -112,6 +127,11 @@ export default function Sidebar() {
               aria-current={active ? 'page' : undefined}
             >
               {label}
+              {href === '/notices' && unread > 0 && (
+                <span className="ml-auto text-[10px] min-w-5 text-center px-1.5 py-px rounded-full bg-blue-600 text-white" aria-label={`${unread} unread`}>
+                  {unread}
+                </span>
+              )}
             </Link>
           );
         })}

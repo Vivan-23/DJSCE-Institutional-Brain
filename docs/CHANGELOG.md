@@ -8,6 +8,15 @@ Format: `## YYYY-MM-DD — title` then bullets of what/why.
 
 ---
 
+## 2026-10-14 — Notices to students
+- `/api/v1/notices` + `/notices` page: staff send a notice (title, message, urgent flag, optional "show until" date)
+  to an audience chosen by role, department, year, semester and division, with a live "reaches N people" count.
+  Faculty can only address their own department (enforced server-side); coordinators and admins any.
+- **Schema**: `Notice` and `NoticeRecipient` (recipients fixed at send time → exact read counts). Inbox orders unread
+  and urgent first; sidebar shows the unread count. Sends are audited.
+- In-app only (decision: no email yet). Not yet: attachments, answering questions from notices in chat.
+- Demo loader sends 3 sample notices (all students / CE third year / IT).
+
 ## 2026-10-14 — Admin user management
 - `/api/v1/admin/*` (admin only, audited) + `/admin/users` page: create (temporary password shown once), edit role,
   department, year, semester, division; deactivate/reactivate; reset password; CSV import; read-only role table.
