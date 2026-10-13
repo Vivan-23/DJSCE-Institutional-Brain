@@ -110,6 +110,7 @@ class TranscriptService:
                 db,
                 source_type="transcript",
                 source_ref=title,  # provenance: which meeting this utterance came from
+                speaker=speaker,
                 content=utterance,
                 author_employee_id=author.id if author else None,
                 meeting_id=meeting_id,

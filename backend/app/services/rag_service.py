@@ -54,6 +54,7 @@ class RAGService:
                     "source_type": meta.get("source_type") or None,
                     "source_ref": meta.get("source_ref") or None,
                     "visibility": meta.get("visibility") or "internal",
+                    "speaker": meta.get("speaker") or None,
                     "excerpt": doc[:_EXCERPT_CHARS],
                 }
             )
@@ -84,7 +85,9 @@ class RAGService:
         # Label each excerpt with where it came from (meeting title / document name) so the
         # model can connect "the Academic Council meeting" to an utterance that never names it.
         context = "\n\n".join(
-            f"[{s['ref']}] ({s.get('source_type') or 'source'}: {s.get('source_ref') or 'untitled'}) {s['excerpt']}"
+            f"[{s['ref']}] ({s.get('source_type') or 'source'}: {s.get('source_ref') or 'untitled'}"
+            + (f"; speaker: {s['speaker']}" if s.get("speaker") else "")
+            + f") {s['excerpt']}"
             for s in sources
         ) or "(no matching documents)"
         graph = "" if public_only else self._graph_context()

@@ -37,13 +37,19 @@ class FragmentService:
         meeting_id: Optional[UUID] = None,
         occurred_at: Optional[datetime] = None,
         visibility: str = "internal",
+        speaker: Optional[str] = None,
     ) -> Fragment:
         """Persist a fragment and best-effort index its embedding in ChromaDB."""
         if visibility not in VISIBILITIES:
             raise ValueError(f"Invalid visibility '{visibility}'. Allowed: {sorted(VISIBILITIES)}")
         embedding_id = self._index_embedding(
             content,
-            metadata={"source_type": source_type, "source_ref": source_ref or "", "visibility": visibility},
+            metadata={
+                "source_type": source_type,
+                "source_ref": source_ref or "",
+                "visibility": visibility,
+                "speaker": speaker or "",  # who said it (transcripts), for provenance in answers
+            },
         )
         fragment = Fragment(
             source_type=source_type,

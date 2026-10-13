@@ -50,3 +50,20 @@ class TestChunkDocument:
         chunks = chunk_document(text, chunk_size=len(para1) + 10, overlap=0)
         # At least one chunk should start with "Second"
         assert any("Second" in c for c in chunks)
+
+
+class TestParagraphAwareChunking:
+    def test_qa_pairs_are_never_split(self):
+        pairs = [f"Q: Question number {i}?\nA: The answer to question {i} is here." for i in range(40)]
+        text = "Department FAQ\n\n" + "\n\n".join(pairs)
+        for chunk in chunk_document(text, chunk_size=300):
+            for line in chunk.splitlines():
+                if line.startswith("Q: "):
+                    n = line.split()[3].rstrip("?")
+                    assert f"A: The answer to question {n} is here." in chunk
+
+    def test_later_chunks_carry_the_document_title(self):
+        text = "[BANNER LINE]\nComputer Engineering FAQ\n\n" + "\n\n".join(f"Paragraph {i} " * 20 for i in range(10))
+        chunks = chunk_document(text, chunk_size=400)
+        assert len(chunks) > 1
+        assert all(c.startswith("Computer Engineering FAQ") for c in chunks[1:])
