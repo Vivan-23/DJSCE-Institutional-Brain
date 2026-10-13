@@ -38,14 +38,16 @@ helpdesk:
       routed_to: "Examination Cell"
       keywords: [exam, test, result, marks, grade, revaluation, re-evaluation, moderation, hall ticket, backlog, kt]
       quick_questions:
-        - "How does laboratory examination moderation work?"
         - "What is the process for applying for re-evaluation?"
+        - "When is a change of marks accepted after re-evaluation?"
+        - "How are SGPA and CGPA calculated?"
     - key: "attendance"
       label: "Attendance & Policies"
       routed_to: "Academic Coordinator"
       keywords: [attendance, policy, leave, defaulter, rule, integrity, plagiarism, absence]
       quick_questions:
         - "What is the minimum attendance requirement?"
+        - "What CGPA is needed for an Honours or Minor degree?"
     - key: "facilities"
       label: "Labs & Facilities"
       routed_to: "Laboratory In-charge"

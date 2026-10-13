@@ -1,0 +1,37 @@
+url,page_title,section,retrieved_at,http_status,output_file
+https://www.djsce.ac.in/,Dwarkadas J. Sanghvi College of Engineering - Home,institution,2026-10-13T04:55:00Z,200,kb/kb_institution_contact_directory.txt
+https://www.djsce.ac.in/djsce-overview,DJSCE Overview & Autonomous Status,institution,2026-10-13T04:55:00Z,200,kb/kb_institution_overview.txt
+https://www.djsce.ac.in/svkm-overview,SVKM Trust Overview,institution,2026-10-13T04:55:00Z,200,kb/kb_institution_svkm_governance.txt
+https://www.djsce.ac.in/organization-governance,Organization & Governance Structure,institution,2026-10-13T04:55:00Z,200,kb/kb_institution_svkm_governance.txt
+https://www.djsce.ac.in/iqac,Internal Quality Assurance Cell (IQAC),institution,2026-10-13T04:55:00Z,200,kb/kb_institution_svkm_governance.txt
+https://www.djsce.ac.in/core-values,Core Values of DJSCE,institution,2026-10-13T04:55:00Z,200,kb/kb_institution_core_values_ethics.txt
+https://www.djsce.ac.in/highlights,DJSCE Institutional Highlights,institution,2026-10-13T04:55:00Z,200,kb/kb_institution_overview.txt
+https://www.djsce.ac.in/research-policy,Research Policy of DJSCE,institution,2026-10-13T04:55:00Z,200,kb/kb_institution_core_values_ethics.txt
+https://www.djsce.ac.in/research-code-of-ethics,Research Code of Ethics,institution,2026-10-13T04:55:00Z,200,kb/kb_institution_core_values_ethics.txt
+https://www.djsce.ac.in/autonomous,Autonomous Status and Letters,institution,2026-10-13T04:55:00Z,200,kb/kb_institution_overview.txt
+https://www.djsce.ac.in/admissions-1st-year-btech,Admissions 1st Year B.Tech Intake,admissions,2026-10-13T04:55:00Z,200,kb/kb_admissions_btech_overview.txt
+https://www.djsce.ac.in/admissions-2nd-year-direct,Admissions Direct Second Year B.Tech,admissions,2026-10-13T04:55:00Z,200,kb/kb_admissions_btech_overview.txt
+https://www.djsce.ac.in/admission-notices-2025,Admission Notices 2025-26,admissions,2026-10-13T04:55:00Z,200,kb/kb_admissions_btech_overview.txt
+https://www.djsce.ac.in/admissions-1st-year-mtech,Admissions 1st Year M.Tech,admissions,2026-10-13T04:55:00Z,200,kb/kb_admissions_postgraduate_phd.txt
+https://www.djsce.ac.in/admissions-1st-year-phd,Admissions Ph.D Research Center,admissions,2026-10-13T04:55:00Z,200,kb/kb_admissions_postgraduate_phd.txt
+https://www.djsce.ac.in/ug-computer-engineering,Department of Computer Engineering,academics,2026-10-13T04:55:00Z,200,kb/kb_dept_computer_engineering.txt
+https://www.djsce.ac.in/ug-information-technology,Department of Information Technology,academics,2026-10-13T04:55:00Z,200,kb/kb_dept_information_technology.txt
+https://www.djsce.ac.in/ug-artificial-intelligence-ai-data-science,Department of AI and Data Science,academics,2026-10-13T04:55:00Z,200,kb/kb_dept_ai_and_data_science.txt
+https://www.djsce.ac.in/ug-artificial-intelligence-machine-learning,Department of AI and Machine Learning,academics,2026-10-13T04:55:00Z,200,kb/kb_dept_ai_and_machine_learning.txt
+https://www.djsce.ac.in/ug-computer-science-engineering-data-science,Department of CSE (Data Science),academics,2026-10-13T04:55:00Z,200,kb/kb_dept_cse_data_science.txt
+https://www.djsce.ac.in/ug-computer-science-engineering-iot-cyber-security-with-block-chain-technology,Department of CSE (IoT and Cyber Security),academics,2026-10-13T04:55:00Z,200,kb/kb_dept_cse_iot_cyber_security.txt
+https://www.djsce.ac.in/ug-electronics-telecommunication-engg,Department of Electronics & Telecom Engg,academics,2026-10-13T04:55:00Z,200,kb/kb_dept_electronics_telecom.txt
+https://www.djsce.ac.in/ug-mechanical-engineering,Department of Mechanical Engineering,academics,2026-10-13T04:55:00Z,200,kb/kb_dept_mechanical_engineering.txt
+https://www.djsce.ac.in/science-humanities,Department of Basic Sciences & Humanities,academics,2026-10-13T04:55:00Z,200,kb/kb_dept_basic_sciences_humanities.txt
+https://www.djsce.ac.in/pg-computer-engineering,M.Tech in Computer Engineering,academics,2026-10-13T04:55:00Z,200,kb/kb_admissions_postgraduate_phd.txt
+https://www.djsce.ac.in/docs/exams/Exam%20Manual%20with%20sign.pdf,Regulations for Examination and Evaluation (Manual),examinations,2026-10-13T04:55:00Z,200,kb/kb_exams_attendance_policy.txt; kb/kb_exams_grading_cgpa_system.txt; kb/kb_exams_reevaluation_grievance.txt; kb/kb_exams_conduct_unfair_means.txt; kb/kb_exams_honours_minors_policy.txt
+https://www.djsce.ac.in/exam-timetables,Examination Timetables & Notices,examinations,2026-10-13T04:55:00Z,200,kb/kb_exams_conduct_unfair_means.txt
+https://www.djsce.ac.in/exam-transcripts,Examination Transcripts Service,examinations,2026-10-13T04:55:00Z,200,kb/kb_exams_reevaluation_grievance.txt
+https://www.djsce.ac.in/placements-hs,Placements and Higher Studies Portal,careers,2026-10-13T04:55:00Z,200,kb/kb_placements_overview_and_cell.txt; kb/kb_placements_statistics_recruiters.txt
+https://www.djsce.ac.in/soft-skill-training,Soft Skill & Pre-Placement Training Program,careers,2026-10-13T04:55:00Z,200,kb/kb_placements_overview_and_cell.txt
+https://www.djsce.ac.in/idealab,AICTE IDEA Lab Overview,facilities,2026-10-13T04:55:00Z,200,kb/kb_facilities_aicte_idea_lab.txt
+https://www.djsce.ac.in/idealab-mission-vision,AICTE IDEA Lab Vision & Mission,facilities,2026-10-13T04:55:00Z,200,kb/kb_facilities_aicte_idea_lab.txt
+https://www.djsce.ac.in/idealab-tools-equipment,AICTE IDEA Lab Equipment Inventory,facilities,2026-10-13T04:55:00Z,200,kb/kb_facilities_aicte_idea_lab.txt
+https://www.djsce.ac.in/counselling,Student Counselling Support Facility,facilities,2026-10-13T04:55:00Z,200,kb/kb_facilities_student_support_welfare.txt
+https://www.djsce.ac.in/grievance-cell,Student Grievance Redressal Cell,facilities,2026-10-13T04:55:00Z,200,kb/kb_facilities_student_support_welfare.txt
+https://www.djsce.ac.in/divyangjan,Facilities for Divyangjan Students,facilities,2026-10-13T04:55:00Z,200,kb/kb_facilities_student_support_welfare.txt

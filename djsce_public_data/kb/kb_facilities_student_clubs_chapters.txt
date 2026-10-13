@@ -1,0 +1,28 @@
+[PUBLIC DJSCE INFORMATION · Source: https://www.djsce.ac.in/ · Retrieved: 2026-10-13 · Verify against the official DJSCE website for updates.]
+Professional Student Chapters, Technical Clubs, and Cultural Teams
+
+Q: Which professional student chapters operate at DJSCE?
+A: Active technical chapters include:
+- DJS ACM & ACM SIGAI (Association for Computing Machinery)
+- DJS CSI (Computer Society of India)
+- DJS IEEE (Institute of Electrical and Electronics Engineers)
+- DJS IETE (Institution of Electronics and Telecommunication Engineers)
+- DJS ISHRAE (Indian Society of Heating Refrigeration and Air Conditioning Engineers)
+- DJS ISME (Indian Society of Manufacturing Engineers)
+- DJS SAE (Society of Automotive Engineers)
+- DJS S4DS (Society for Data Science)
+- DJS ISACA (Information Systems Audit and Control Association)
+(Source: https://www.djsce.ac.in/)
+
+Q: Which technical and coding teams represent the college?
+A: Special interest technical teams include:
+- DJS Unicode (Coding & Web/Mobile Development)
+- DJS Codestars (Competitive Programming)
+- DJS DJinit.ai & DJS Synapse (AI & Machine Learning)
+- DJS Antariksh (Martian Rover Team)
+- DJS Racing, DJS Karting, DJS Kronos, and DJS Helios (Automotive teams)
+- DJS Robocon (Robotics)
+(Source: https://www.djsce.ac.in/)
+
+Q: Which cultural and literary societies are active?
+A: Creative and social clubs include DJS Trinity (Annual Socio-Cultural-Sports Festival), DJS Beats (Music), DJS Dhadak (Dance), DJS Aura (Drama), DJS LIT (Literature), DJS Express (Debate), DJS MUNSOC (Model United Nations), and DJS N.S.S. (National Service Scheme). (Source: https://www.djsce.ac.in/)

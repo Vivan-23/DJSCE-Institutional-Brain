@@ -1,0 +1,11 @@
+[PUBLIC DJSCE INFORMATION · Source: https://www.djsce.ac.in/ug-computer-science-engineering-iot-cyber-security-with-block-chain-technology · Retrieved: 2026-10-13 · Verify against the official DJSCE website for updates.]
+Department of CSE (IoT and Cyber Security with Block Chain Technology)
+
+Q: When was the CSE (IoT and Cyber Security with Block Chain Technology) programme established?
+A: The Department was established in the academic year 2021. (Source: https://www.djsce.ac.in/ug-computer-science-engineering-iot-cyber-security-with-block-chain-technology)
+
+Q: What is the sanctioned intake and degree awarded?
+A: The programme has a sanctioned intake of 60 seats, awarding the B.Tech in Computer Science and Engineering (IoT and Cyber Security with Block Chain Technology) degree. (Source: https://www.djsce.ac.in/ug-computer-science-engineering-iot-cyber-security-with-block-chain-technology)
+
+Q: What specialized domains are covered in this programme?
+A: The curriculum covers Embedded Systems, Internet of Things (IoT) protocols and architecture, Cryptography, Network and Cyber Security, Ethical Hacking, Blockchain Consensus mechanisms, and Smart Contracts. (Source: https://www.djsce.ac.in/ug-computer-science-engineering-iot-cyber-security-with-block-chain-technology)

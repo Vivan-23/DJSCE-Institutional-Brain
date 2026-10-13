@@ -1,0 +1,24 @@
+[PUBLIC DJSCE INFORMATION · Source: https://www.djsce.ac.in/docs/exams/Exam%20Manual%20with%20sign.pdf · Retrieved: 2026-10-13 · Verify against the official DJSCE website for updates.]
+10-Point Grading Scheme, SGPA, and CGPA Calculation Norms
+
+Q: What grading system is used at DJSCE?
+A: A 10-point letter grading system is followed for all Under Graduate and Post Graduate programmes under autonomy. (Source: https://www.djsce.ac.in/docs/exams/Exam%20Manual%20with%20sign.pdf)
+
+Q: What are the letter grades and corresponding grade points (AY 2024-25 onwards)?
+A: The grading scale is:
+- Marks 90 to 100%: Grade Point 10 | Letter Grade: O (Outstanding)
+- Marks 80 to 89.99%: Grade Point 9 | Letter Grade: A+ (Excellent)
+- Marks 70 to 79.99%: Grade Point 8 | Letter Grade: A (Very Good)
+- Marks 60 to 69.99%: Grade Point 7 | Letter Grade: B+ (Good)
+- Marks 55 to 59.99%: Grade Point 6 | Letter Grade: B (Above Average)
+- Marks 50 to 54.99%: Grade Point 5 | Letter Grade: C (Average)
+- Marks 40 to 49.99%: Grade Point 4 | Letter Grade: P (Pass)
+- Marks Less than 40%: Grade Point 0 | Letter Grade: F (Fail)
+- Absent: Grade Point -- | Letter Grade: AB (Fail)
+(Source: https://www.djsce.ac.in/docs/exams/Exam%20Manual%20with%20sign.pdf)
+
+Q: How is the SGPA (Semester Grade Point Average) calculated?
+A: SGPA = (Sum of Product of Grade Point and Credit for each course) / (Sum of Credits for all courses in that semester). (Source: https://www.djsce.ac.in/docs/exams/Exam%20Manual%20with%20sign.pdf)
+
+Q: How is the CGPA (Cumulative Grade Point Average) calculated?
+A: CGPA = (Sum of Product of Grade Point and Credit for each course across all semesters) / (Sum of Credits assigned across all semesters taken together). (Source: https://www.djsce.ac.in/docs/exams/Exam%20Manual%20with%20sign.pdf)

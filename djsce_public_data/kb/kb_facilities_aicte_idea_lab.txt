@@ -1,0 +1,11 @@
+[PUBLIC DJSCE INFORMATION · Source: https://www.djsce.ac.in/idealab; https://www.djsce.ac.in/idealab-mission-vision; https://www.djsce.ac.in/idealab-tools-equipment · Retrieved: 2026-10-13 · Verify against the official DJSCE website for updates.]
+AICTE IDEA Lab Facilities, Equipment, and Purpose
+
+Q: What is the AICTE IDEA Lab at DJSCE?
+A: The AICTE IDEA (Idea Development, Evaluation & Application) Lab is a specialized state-of-the-art facility established to encourage students to apply STEM fundamentals through hands-on experience, learning by doing, and product visualization. (Source: https://www.djsce.ac.in/idealab)
+
+Q: What skills does the IDEA Lab promote?
+A: The lab equips students with 21st-century engineering skills including design thinking, rapid prototyping, problem solving, collaboration, and multidisciplinary project incubation. (Source: https://www.djsce.ac.in/idealab-mission-vision)
+
+Q: What tools and equipment are available in the IDEA Lab?
+A: The lab is equipped with modern prototyping machinery including 3D Printers (FDM and SLA), Laser Cutting and Engraving machines, CNC Router, PCB Prototyping machines, electronic testing workstations, IoT development boards, and mechanical fabrication tools. (Source: https://www.djsce.ac.in/idealab-tools-equipment)

@@ -1,0 +1,11 @@
+[PUBLIC DJSCE INFORMATION · Source: https://www.djsce.ac.in/ug-artificial-intelligence-ai-data-science · Retrieved: 2026-10-13 · Verify against the official DJSCE website for updates.]
+Department of Artificial Intelligence and Data Science (AI&DS)
+
+Q: When was the Department of Artificial Intelligence and Data Science established?
+A: The Department of Artificial Intelligence and Data Science was established in the academic year 2021-22. (Source: https://www.djsce.ac.in/ug-artificial-intelligence-ai-data-science)
+
+Q: What is the duration, intake, and degree awarded?
+A: The programme is a 4-year undergraduate course with an intake of 60 seats, awarding the B.Tech in Artificial Intelligence (AI) and Data Science degree. (Source: https://www.djsce.ac.in/ug-artificial-intelligence-ai-data-science)
+
+Q: What skills and focus areas are emphasized in AI & DS?
+A: The curriculum emphasizes mathematical foundations of AI, Machine Learning, Deep Learning, Big Data Analytics, Statistical Modeling, Natural Language Processing, and Computer Vision. (Source: https://www.djsce.ac.in/ug-artificial-intelligence-ai-data-science)

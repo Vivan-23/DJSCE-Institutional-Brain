@@ -1,0 +1,11 @@
+[PUBLIC DJSCE INFORMATION · Source: https://www.djsce.ac.in/ug-artificial-intelligence-machine-learning · Retrieved: 2026-10-13 · Verify against the official DJSCE website for updates.]
+Department of Artificial Intelligence and Machine Learning (AIML)
+
+Q: When was the Department of Artificial Intelligence and Machine Learning established?
+A: The Department was established from the academic year 2021-2022 with an initial intake of 60 seats, subsequently expanded to 120 seats. (Source: https://www.djsce.ac.in/ug-artificial-intelligence-machine-learning)
+
+Q: What is the intake and degree awarded?
+A: The programme has a sanctioned intake of 120 seats, awarding the B.Tech in Artificial Intelligence and Machine Learning degree. (Source: https://www.djsce.ac.in/ug-artificial-intelligence-machine-learning)
+
+Q: What are the core topics taught in AIML?
+A: Students study Data Structures, Algorithms, Probability & Statistics, Deep Learning architectures, Reinforcement Learning, Cognitive Computing, NLP, Robotics integration, and AI system design. (Source: https://www.djsce.ac.in/ug-artificial-intelligence-machine-learning)

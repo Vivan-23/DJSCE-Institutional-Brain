@@ -1,0 +1,17 @@
+[PUBLIC DJSCE INFORMATION · Source: https://www.djsce.ac.in/ug-computer-engineering · Retrieved: 2026-10-13 · Verify against the official DJSCE website for updates.]
+Department of Computer Engineering
+
+Q: When was the Department of Computer Engineering established?
+A: The Department of Computer Engineering was established in 2001. Initially started with 30 seats, intake was increased to 60 in 2002-03, and subsequently increased to 180 seats. (Source: https://www.djsce.ac.in/ug-computer-engineering)
+
+Q: What is the duration, intake, and degree offered?
+A: The programme is a 4-year undergraduate course with an intake of 180 seats, awarding the B.Tech in Computer Engineering degree. (Source: https://www.djsce.ac.in/ug-computer-engineering)
+
+Q: What is the accreditation status of the Computer Engineering department?
+A: The B.Tech Computer Engineering programme is accredited by the National Board of Accreditation (NBA). (Source: https://www.djsce.ac.in/ug-computer-engineering)
+
+Q: What core subjects are included in the autonomous curriculum?
+A: The curriculum covers Engineering Mathematics, Data Structures, Discrete Structures, Database Management Systems, Operating Systems, Analysis of Algorithms, Computer Networks, Software Engineering, Artificial Intelligence, and Distributed Computing. (Source: https://www.djsce.ac.in/ug-computer-engineering)
+
+Q: Are departmental electives and honors/minors offered?
+A: Yes, departmental electives include Machine Learning, Deep Learning, Big Data Infrastructure, Internet of Things, Natural Language Processing, Blockchain Technology, and Advanced Operating Systems, alongside honors specializations. (Source: https://www.djsce.ac.in/ug-computer-engineering)

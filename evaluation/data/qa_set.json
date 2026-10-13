@@ -1,29 +1,313 @@
 {
-  "_about": "Grounded Q&A gold set. role = who asks (student → public knowledge only). A question passes retrieval when any retrieved source_ref contains one of expected_sources; it passes the answer check when the answer contains any of must_include (and every item of must_include_all). Gold values are copied verbatim from the synthetic dataset files.",
+  "_about": "Grounded Q&A gold set. role = who asks (student → public knowledge only). A question passes retrieval when any retrieved source_ref contains one of expected_sources; it passes the answer check when the answer contains any of must_include (and every item of must_include_all). Gold values are copied verbatim from the synthetic dataset files. Student exam/attendance questions use the authentic public website data in djsce_public_data/kb/ (source URLs in each file).",
   "questions": [
-    {"id": "q01", "role": "student", "question": "Which department electives are offered in Semester VI of Computer Engineering?", "expected_sources": ["kb_computer_engineering_faq"], "must_include": ["Internet of Things", "Compiler Design"]},
-    {"id": "q02", "role": "student", "question": "When was the Computer Engineering department established?", "expected_sources": ["kb_computer_engineering_faq"], "must_include": ["2001"]},
-    {"id": "q03", "role": "student", "question": "What is the intake capacity for B.Tech Computer Engineering?", "expected_sources": ["kb_computer_engineering_faq"], "must_include": ["180"]},
-    {"id": "q04", "role": "student", "question": "In which academic year was the Computer Engineering programme accredited by NBA?", "expected_sources": ["kb_computer_engineering_faq"], "must_include": ["2012"]},
-    {"id": "q05", "role": "student", "question": "Who is the current Head of the Computer Engineering department?", "expected_sources": ["kb_computer_engineering_faq"], "must_include": ["Narvekar"]},
-    {"id": "q06", "role": "student", "question": "What courses are taught in Semester IV of Computer Engineering?", "expected_sources": ["kb_computer_engineering_faq"], "must_include": ["Operating System", "Computer Networks", "Automata"]},
-    {"id": "q07", "role": "student", "question": "In which year did DJSCE introduce the Information Technology discipline?", "expected_sources": ["kb_information_technology_overview"], "must_include": ["1999"]},
-    {"id": "q08", "role": "student", "question": "What are the student committees of the IT department?", "expected_sources": ["kb_information_technology_overview"], "must_include": ["CSI", "INIT"]},
-    {"id": "q09", "role": "student", "question": "What is the minimum attendance requirement?", "expected_sources": ["kb_general_academic_policies"], "must_include": ["75"]},
-    {"id": "q10", "role": "student", "question": "When am I allowed to take a make-up exam?", "expected_sources": ["kb_general_academic_policies"], "must_include": ["illness", "emergenc"]},
-    {"id": "q11", "role": "student", "question": "Which companies recruit from the Computer Engineering department?", "expected_sources": ["kb_computer_engineering_faq"], "must_include": ["Microsoft", "Google", "Morgan"]},
-    {"id": "q12", "role": "student", "question": "What is the add/drop deadline for courses?", "expected_sources": ["kb_general_academic_policies"], "must_include": ["two weeks", "2 weeks"]},
-    {"id": "q13", "role": "staff", "question": "What cloud compute budget did the Academic Council approve for the generative AI elective?", "expected_sources": ["Academic Council", "doc_Departmental_Research"], "must_include": ["75,000", "75000"]},
-    {"id": "q14", "role": "staff", "question": "What student cap per batch was set when the elective was cleared for Board of Studies review?", "expected_sources": ["Academic Council", "doc_Elective_Proposal"], "must_include": ["60"]},
-    {"id": "q15", "role": "staff", "question": "Who is compiling the CO-PO mapping matrix for the elective, and by when?", "expected_sources": ["Academic Council"], "must_include_all": ["Karan Shah", "Friday"]},
-    {"id": "q16", "role": "staff", "question": "Within how many working days must laboratory continuous evaluation marks be posted?", "expected_sources": ["Iqac", "doc_IQAC"], "must_include": ["7", "seven"]},
-    {"id": "q17", "role": "staff", "question": "What was the average course satisfaction index in the IQAC mid-semester audit?", "expected_sources": ["Iqac"], "must_include": ["87"]},
-    {"id": "q18", "role": "staff", "question": "How many faculty course files were fully compliant in the IQAC course file audit?", "expected_sources": ["Iqac"], "must_include": ["14", "fourteen"]},
-    {"id": "q19", "role": "staff", "question": "What must examiners do if internal and external practical marks differ by more than 15%?", "expected_sources": ["Examination Moderation"], "must_include": ["24 hours", "consensus", "reconcil"]},
-    {"id": "q20", "role": "staff", "question": "Who should be contacted if examiners do not appear for a practical exam?", "expected_sources": ["Examination Moderation"], "must_include": ["Karan Shah", "Rohan Mehta"]},
-    {"id": "q21", "role": "staff", "question": "By what date must question paper moderation for laboratory practicals be completed?", "expected_sources": ["Lab Readiness"], "must_include": ["October 14", "14 October", "Oct 14"]},
-    {"id": "q22", "role": "staff", "question": "What fix was decided for the network bottleneck in Lab 4?", "expected_sources": ["Lab Readiness", "doc_Departmental_Research"], "must_include": ["Gigabit", "1 Gbps", "switch"]},
-    {"id": "q23", "role": "staff", "question": "How many GPU workstations does Laboratory 302 have?", "expected_sources": ["doc_Departmental_Research", "Lab Readiness", "Academic Council"], "must_include": ["30"]},
-    {"id": "q24", "role": "staff", "question": "What weight does Execution & Results carry in the laboratory grading rubric?", "expected_sources": ["doc_IQAC"], "must_include": ["50"]}
+    {
+      "id": "q01",
+      "role": "student",
+      "question": "Which department electives are offered in Semester VI of Computer Engineering?",
+      "expected_sources": [
+        "kb_computer_engineering_faq"
+      ],
+      "must_include": [
+        "Internet of Things",
+        "Compiler Design"
+      ]
+    },
+    {
+      "id": "q02",
+      "role": "student",
+      "question": "When was the Computer Engineering department established?",
+      "expected_sources": [
+        "kb_computer_engineering_faq"
+      ],
+      "must_include": [
+        "2001"
+      ]
+    },
+    {
+      "id": "q03",
+      "role": "student",
+      "question": "What is the intake capacity for B.Tech Computer Engineering?",
+      "expected_sources": [
+        "kb_computer_engineering_faq"
+      ],
+      "must_include": [
+        "180"
+      ]
+    },
+    {
+      "id": "q04",
+      "role": "student",
+      "question": "In which academic year was the Computer Engineering programme accredited by NBA?",
+      "expected_sources": [
+        "kb_computer_engineering_faq"
+      ],
+      "must_include": [
+        "2012"
+      ]
+    },
+    {
+      "id": "q05",
+      "role": "student",
+      "question": "Who is the current Head of the Computer Engineering department?",
+      "expected_sources": [
+        "kb_computer_engineering_faq"
+      ],
+      "must_include": [
+        "Narvekar"
+      ]
+    },
+    {
+      "id": "q06",
+      "role": "student",
+      "question": "What courses are taught in Semester IV of Computer Engineering?",
+      "expected_sources": [
+        "kb_computer_engineering_faq"
+      ],
+      "must_include": [
+        "Operating System",
+        "Computer Networks",
+        "Automata"
+      ]
+    },
+    {
+      "id": "q07",
+      "role": "student",
+      "question": "In which year did DJSCE introduce the Information Technology discipline?",
+      "expected_sources": [
+        "kb_information_technology_overview"
+      ],
+      "must_include": [
+        "1999"
+      ]
+    },
+    {
+      "id": "q08",
+      "role": "student",
+      "question": "What are the student committees of the IT department?",
+      "expected_sources": [
+        "kb_information_technology_overview"
+      ],
+      "must_include": [
+        "CSI",
+        "INIT"
+      ]
+    },
+    {
+      "id": "q09",
+      "role": "student",
+      "question": "What is the minimum attendance requirement to appear for the semester end exams?",
+      "expected_sources": [
+        "kb_exams_attendance_policy"
+      ],
+      "must_include_all": [
+        "75",
+        "70"
+      ]
+    },
+    {
+      "id": "q10",
+      "role": "student",
+      "question": "Can I apply for re-evaluation of a practical or viva exam?",
+      "expected_sources": [
+        "kb_exams_reevaluation_grievance"
+      ],
+      "must_include": [
+        "does not apply",
+        "doesn't apply",
+        "not apply",
+        "only to semester end",
+        "only applies",
+        "exclusively",
+        "only for semester end",
+        "cannot"
+      ]
+    },
+    {
+      "id": "q11",
+      "role": "student",
+      "question": "Which companies recruit from the Computer Engineering department?",
+      "expected_sources": [
+        "kb_computer_engineering_faq"
+      ],
+      "must_include": [
+        "Microsoft",
+        "Google",
+        "Morgan"
+      ]
+    },
+    {
+      "id": "q12",
+      "role": "student",
+      "question": "What CGPA do I need to be eligible for an Honours or Minor degree?",
+      "expected_sources": [
+        "kb_exams_honours_minors_policy"
+      ],
+      "must_include": [
+        "7.5"
+      ]
+    },
+    {
+      "id": "q12b",
+      "role": "student",
+      "question": "When is a change of marks accepted after re-evaluation?",
+      "expected_sources": [
+        "kb_exams_reevaluation_grievance"
+      ],
+      "must_include": [
+        "10%",
+        "10 %",
+        "ten percent"
+      ]
+    },
+    {
+      "id": "q13",
+      "role": "staff",
+      "question": "What cloud compute budget did the Academic Council approve for the generative AI elective?",
+      "expected_sources": [
+        "Academic Council",
+        "doc_Departmental_Research"
+      ],
+      "must_include": [
+        "75,000",
+        "75000"
+      ]
+    },
+    {
+      "id": "q14",
+      "role": "staff",
+      "question": "What student cap per batch was set when the elective was cleared for Board of Studies review?",
+      "expected_sources": [
+        "Academic Council",
+        "doc_Elective_Proposal"
+      ],
+      "must_include": [
+        "60"
+      ]
+    },
+    {
+      "id": "q15",
+      "role": "staff",
+      "question": "Who is compiling the CO-PO mapping matrix for the elective, and by when?",
+      "expected_sources": [
+        "Academic Council"
+      ],
+      "must_include_all": [
+        "Karan Shah",
+        "Friday"
+      ]
+    },
+    {
+      "id": "q16",
+      "role": "staff",
+      "question": "Within how many working days must laboratory continuous evaluation marks be posted?",
+      "expected_sources": [
+        "Iqac",
+        "doc_IQAC"
+      ],
+      "must_include": [
+        "7",
+        "seven"
+      ]
+    },
+    {
+      "id": "q17",
+      "role": "staff",
+      "question": "What was the average course satisfaction index in the IQAC mid-semester audit?",
+      "expected_sources": [
+        "Iqac"
+      ],
+      "must_include": [
+        "87"
+      ]
+    },
+    {
+      "id": "q18",
+      "role": "staff",
+      "question": "How many faculty course files were fully compliant in the IQAC course file audit?",
+      "expected_sources": [
+        "Iqac"
+      ],
+      "must_include": [
+        "14",
+        "fourteen"
+      ]
+    },
+    {
+      "id": "q19",
+      "role": "staff",
+      "question": "What must examiners do if internal and external practical marks differ by more than 15%?",
+      "expected_sources": [
+        "Examination Moderation"
+      ],
+      "must_include": [
+        "24 hours",
+        "consensus",
+        "reconcil"
+      ]
+    },
+    {
+      "id": "q20",
+      "role": "staff",
+      "question": "Who should be contacted if examiners do not appear for a practical exam?",
+      "expected_sources": [
+        "Examination Moderation"
+      ],
+      "must_include": [
+        "Karan Shah",
+        "Rohan Mehta"
+      ]
+    },
+    {
+      "id": "q21",
+      "role": "staff",
+      "question": "By what date must question paper moderation for laboratory practicals be completed?",
+      "expected_sources": [
+        "Lab Readiness"
+      ],
+      "must_include": [
+        "October 14",
+        "14 October",
+        "Oct 14"
+      ]
+    },
+    {
+      "id": "q22",
+      "role": "staff",
+      "question": "What fix was decided for the network bottleneck in Lab 4?",
+      "expected_sources": [
+        "Lab Readiness",
+        "doc_Departmental_Research"
+      ],
+      "must_include": [
+        "Gigabit",
+        "1 Gbps",
+        "switch"
+      ]
+    },
+    {
+      "id": "q23",
+      "role": "staff",
+      "question": "How many GPU workstations does Laboratory 302 have?",
+      "expected_sources": [
+        "doc_Departmental_Research",
+        "Lab Readiness",
+        "Academic Council"
+      ],
+      "must_include": [
+        "30"
+      ]
+    },
+    {
+      "id": "q24",
+      "role": "staff",
+      "question": "What weight does Execution & Results carry in the laboratory grading rubric?",
+      "expected_sources": [
+        "doc_IQAC"
+      ],
+      "must_include": [
+        "50"
+      ]
+    }
   ]
 }

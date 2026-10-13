@@ -24,6 +24,8 @@ EMAIL = os.environ.get("DEMO_EMAIL", "admin@example.com")
 PASSWORD = os.environ.get("DEMO_PASSWORD", "demo123")
 FOLDER = os.path.join(os.path.dirname(os.path.abspath(__file__)), "mock_institutional_data")
 PUBLIC_FOLDER = os.path.join(FOLDER, "public")
+# Authentic public website content (djsce.ac.in), each file citing its source URL + retrieval date.
+WEBSITE_KB_FOLDER = os.path.join(os.path.dirname(os.path.abspath(__file__)), "djsce_public_data", "kb")
 
 PROCESS_WAIT_SECONDS = 180
 
@@ -72,13 +74,15 @@ def post_documents(token: str) -> int:
     """Upload reference documents through /api/v1/ingest/file (vector index + graph).
 
     ``doc_*.txt`` are internal staff documents; everything in ``public/`` is
-    student-visible knowledge (department FAQs, curriculum, outcomes).
+    student-visible knowledge (department FAQs, curriculum, outcomes), and
+    ``djsce_public_data/kb/`` is authentic public website content, also public.
     Meeting transcripts are NOT re-uploaded here — they go through /transcripts.
     """
     headers = {"Authorization": f"Bearer {token}"}
     batches = [
         (FOLDER, [f for f in sorted(os.listdir(FOLDER)) if f.startswith("doc_") and f.endswith(".txt")], "internal"),
         (PUBLIC_FOLDER, sorted(f for f in os.listdir(PUBLIC_FOLDER) if f.endswith(".txt")) if os.path.isdir(PUBLIC_FOLDER) else [], "public"),
+        (WEBSITE_KB_FOLDER, sorted(f for f in os.listdir(WEBSITE_KB_FOLDER) if f.endswith(".txt")) if os.path.isdir(WEBSITE_KB_FOLDER) else [], "public"),
     ]
     sent = 0
     for folder, files, visibility in batches:

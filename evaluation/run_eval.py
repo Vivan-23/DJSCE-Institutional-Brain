@@ -308,7 +308,7 @@ def to_markdown(res):
              "Regenerate with `evaluation/run_eval.ps1`; numbers vary slightly between runs because LLM outputs vary.", ""]
     t = res.get("triage")
     if t:
-        lines += ["## 1. Help-desk triage (96 labelled queries, 6 categories)", "",
+        lines += [f"## 1. Help-desk triage ({next(iter(t['engines'].values()))['n']} labelled queries, {len(t['labels'])} categories)", "",
                   "| Engine | Coverage | Accuracy | Macro-F1 | Urgency F1 | p50 latency (s) | p95 latency (s) |",
                   "|---|---|---|---|---|---|---|"]
         for name, s in list(t["engines"].items()) + list(t["chains"].items()):
@@ -316,7 +316,7 @@ def to_markdown(res):
         lines += ["", "Engines alone count an abstention as wrong; chains fall back to the keyword classifier.", ""]
     q = res.get("qa")
     if q:
-        lines += ["## 2. Grounded question answering (24 questions)", "",
+        lines += [f"## 2. Grounded question answering ({q['overall']['n']} questions)", "",
                   "| Asked as | n | Retrieval hit@5 | Answer correct | Cited | Abstained | p50 (s) | p95 (s) |",
                   "|---|---|---|---|---|---|---|---|"]
         for k in ("student", "staff", "overall"):

@@ -1,0 +1,11 @@
+[PUBLIC DJSCE INFORMATION · Source: https://www.djsce.ac.in/ug-computer-science-engineering-data-science · Retrieved: 2026-10-13 · Verify against the official DJSCE website for updates.]
+Department of Computer Science and Engineering (Data Science)
+
+Q: When was the Computer Science and Engineering (Data Science) department established?
+A: The Department was established in the academic year 2020. (Source: https://www.djsce.ac.in/ug-computer-science-engineering-data-science)
+
+Q: What is the duration, intake, and degree offered?
+A: The programme is a 4-year undergraduate course with a sanctioned intake of 180 seats, awarding the B.Tech in Computer Science and Engineering (Data Science) degree. (Source: https://www.djsce.ac.in/ug-computer-science-engineering-data-science)
+
+Q: What is the focus of CSE (Data Science)?
+A: The branch combines core computer science fundamentals with specialized training in Data Warehousing, Big Data Frameworks, Predictive Analytics, Machine Learning, and Data Visualization. (Source: https://www.djsce.ac.in/ug-computer-science-engineering-data-science)
