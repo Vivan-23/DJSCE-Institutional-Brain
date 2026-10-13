@@ -6,7 +6,7 @@ import html
 from collections import Counter
 from pathlib import Path
 
-AS_OF = "13 Oct 2026"
+AS_OF = "14 Oct 2026"
 
 STATUS = {
     "V": ("Working · verified", "Checked end-to-end on the running system or measured by the evaluation."),
@@ -27,7 +27,10 @@ FEATURES = [
     ("Access & identity", "Role-aware navigation and landing page", "U", "All", "sidebar",
      "Sidebar shows only the pages a role may use and the user's role name. Students land on the Help Desk; staff on the governance overview.", ""),
     ("Access & identity", "Institution profile", "V", "Admin", "institution.yaml",
-     "One file sets branding, check-in time, help-desk categories (with owning office, keywords, quick questions) and the people roster. Seeded on every start; idempotent.", ""),
+     "One file sets branding, check-in time, departments, the academic calendar, help-desk categories (with owning office, keywords, quick questions) and the people roster. Seeded on every start; idempotent.", ""),
+    ("Access & identity", "Per-department access", "V", "Student / Faculty", "every search, /meetings",
+     "Every excerpt and meeting carries a department (or 'all'). Students and faculty retrieve only their own department plus institution-wide material; coordinators and admins see everything. Filtered inside the search and re-checked; another department's meeting returns 'not found'. Registration and upload forms ask for the department.",
+     "Checked live: IT faculty see 2 of 4 meetings; a CE student never gets IT sources. Public website pages stay institution-wide."),
 
     ("Knowledge capture", "Meeting transcript intelligence", "V", "Faculty+", "/meetings",
      "Paste a committee transcript. The LLM extracts a summary, participants, decisions and commitments with owners and due dates ('by Friday' becomes a date). Each spoken line is stored as citable evidence with its speaker and meeting.",
@@ -35,8 +38,11 @@ FEATURES = [
     ("Knowledge capture", "Document upload with visibility", "V", "Faculty+", "/sources",
      "Upload .txt/.pdf/.docx and mark it Internal (staff only) or Public (students can get answers from it). It is split into paragraph-sized chunks that become citable evidence and feed the graph.", ""),
     ("Knowledge capture", "Authentic DJSCE website knowledge base", "V", "Students see it", "djsce_public_data/kb",
-     "26 files crawled from djsce.ac.in (admissions, 9 departments, exam manual rules, placements, facilities, governance), each citing its source URL and retrieval date. Loaded as public knowledge.",
-     "Independent fact-check: 22 facts, no wrong values; gaps fixed."),
+     "26 files crawled from djsce.ac.in (admissions, 9 departments, exam manual rules, placements, facilities, governance), each citing its source URL and retrieval date. Loaded as public knowledge; answers show an 'Official page' link to the exact djsce.ac.in page.",
+     "Independent fact-check: 22 facts, no wrong values. Checked live: answers carry the official links."),
+    ("Knowledge capture", "Demo dataset", "V", "Team", "ingest_institutional.py",
+     "One command loads 4 synthetic committee meetings, 6 internal documents (3 of them SOPs), the public FAQs and website pages, extracts and approves procedures, and raises 7 sample tickets as the demo students (3 open, 2 answered, 2 closed).",
+     "Checked live after a fresh rebuild: 4 meetings, 9 commitments, 10 procedures, 7 tickets."),
     ("Knowledge capture", "Single evidence pipeline", "V", "System", "backend",
      "Transcripts, documents, check-ins and follow-ups all become 'fragments' in one store (PostgreSQL + ChromaDB), each labelled internal or public, so citations, search and procedures work the same way for every source.",
      "Chunking and speaker fixes landed after eval run 1; run 3 will measure them."),
@@ -48,7 +54,7 @@ FEATURES = [
 
     ("Procedures", "Procedure synthesis with citations", "V", "Coordinator+", "/skills",
      "Related internal evidence is clustered and turned into a structured procedure: trigger, steps, decision rules, guardrails, escalation. Every procedure links to the excerpts it came from.",
-     "Created live from the synthetic meetings."),
+     "Checked live: 10 procedures, one per meeting or SOP (it used to merge everything into 1)."),
     ("Procedures", "Review, approve, export", "T", "Coordinator+", "/skills",
      "A coordinator approves or rejects each draft (shown as 'Approved in Review', never 'ratified'). Approved procedures export as a SKILL.md file.", ""),
     ("Procedures", "Evidence panel", "U", "Faculty+", "/skills",
@@ -78,7 +84,16 @@ FEATURES = [
 
     ("Knowledge graph & insights", "Knowledge graph", "V", "Faculty+", "/relationships",
      "People ATTEND meetings; meetings and documents MENTION committees, cells, boards, departments and labs. Entity extraction is filtered (people need a title or roster match; bodies must name an institutional unit).",
-     "Checked live: 108 links (was 0), no duplicates."),
+     "Checked live: 121 links, all 4 meetings. The page now draws the graph (it showed an empty canvas before)."),
+    ("Commitments & Faculty Desk", "Academic calendar and deadline reminders", "U", "All", "/calendar",
+     "Published academic dates (term, exams, holidays, deadlines) filtered by audience and department, merged for faculty with their own commitment due dates. Each item is marked overdue / today / soon / upcoming; a daily job posts reminders for staff deadlines to the Active Feed.",
+     "API checked live for a student and a faculty member. Dates are synthetic placeholders until the official calendar is added."),
+    ("Commitments & Faculty Desk", "Meeting minutes export", "V", "Coordinator+", "/meetings",
+     "Formal draft minutes (attendees, summary, decisions, action items with owner, due date, status) as DOCX or PDF, built from what was already extracted, marked as a draft to verify, and audited.",
+     "Checked live: DOCX and PDF downloaded and read. Buttons on the page not yet clicked."),
+    ("Knowledge graph & insights", "Analytics dashboard", "U", "Coordinator+", "/analytics",
+     "Open and overdue commitments per committee meeting, tickets by status and category, median time to reply, tickets waiting over 48 h, most-asked questions, questions that found nothing (knowledge gaps), knowledge by department.",
+     "API checked live; faculty get 403. Questions are logged without user ids."),
     ("Knowledge graph & insights", "Active Feed insights", "P", "Faculty+", "/ (overview)",
      "Overview shows open commitments, meetings, procedures and AI insights; insights can be dismissed.",
      "Gap: 'bottleneck' alerts never fire because nothing records who works on which project; only freshness alerts appear."),
@@ -86,7 +101,7 @@ FEATURES = [
     ("Platform", "Audit trail", "T", "Coordinator+", "API /audit",
      "Every AI action and every human decision (extraction, approval, check-ins, tickets, replies) is logged with actor and time.", "No UI page; API only."),
     ("Platform", "Scheduled background jobs", "T", "System", "Celery beat",
-     "Five jobs: daily insights, daily check-in prep, hourly commitment follow-ups, nightly procedure extraction, nightly freshness scan.", ""),
+     "Six jobs: daily insights, daily check-in prep, hourly commitment follow-ups, nightly procedure extraction, nightly freshness scan, morning deadline reminders.", ""),
     ("Platform", "Docker deployment", "V", "Admin", "docker compose",
      "Eight services (frontend, backend, worker, scheduler, PostgreSQL, ChromaDB, Neo4j, Redis) start with one command; safe on a fresh database.", ""),
     ("Platform", "Source connectors", "P", "Coordinator+", "API /sources",
@@ -94,18 +109,13 @@ FEATURES = [
     ("Platform", "Remote demo over the internet", "P", "Admin", "start_public_share.ps1",
      "Script starts the stack and an ngrok tunnel to the frontend; the frontend proxies the API, so one public URL is enough.", "Gap: access from outside the machine not yet confirmed."),
     ("Platform", "Evaluation harness", "V", "Team", "evaluation/",
-     "One command measures triage, answer quality, visibility leaks and commitment extraction and writes results for the report.", "Run 1 done; final run 3 pending."),
+     "One command measures triage, answer quality (33 questions), visibility leaks, department isolation and commitment extraction, and writes results for the report.", "Run 1 done; final run 3 pending."),
     ("Platform", "Automated tests", "V", "Team", "backend/tests",
-     "136 backend tests (access rules, help desk, visibility, graph cleaning, chunking, extraction, procedures); frontend type-check and lint clean.", ""),
+     "168 backend tests (access and department rules, help desk, visibility, calendar, minutes, analytics, graph cleaning, chunking, extraction, procedures); frontend type-check and lint clean.", ""),
 
-    ("Planned", "Per-department access", "N", "Student / Faculty", "",
-     "CE students would see CE material only; faculty limited to their department's meetings.", "Awaiting your go-ahead."),
     ("Planned", "Notices and circulars feed", "N", "All", "", "AI summaries of uploaded circulars, with 'what this means for you' per role.", ""),
-    ("Planned", "Academic calendar and deadline reminders", "N", "All", "", "Reminders built from due dates and published academic dates.", ""),
     ("Planned", "NBA/NAAC evidence tracker", "N", "Coordinator+", "", "Link decisions, documents and CO-PO mappings to accreditation criteria.", ""),
     ("Planned", "Answer feedback (thumbs up/down)", "N", "All", "", "Shows which questions the knowledge base can't answer yet.", ""),
-    ("Planned", "Meeting minutes export", "N", "Coordinator+", "", "Formal minutes (PDF/DOCX) generated from an extracted meeting.", ""),
-    ("Planned", "Analytics dashboard", "N", "Coordinator+", "", "Open commitments per committee, ticket resolution times, most-asked questions.", ""),
     ("Planned", "Jira sync (stretch)", "N", "Admin", "", "Optional two-way ticket sync through the connector framework.", ""),
 ]
 
@@ -113,14 +123,17 @@ ROLES = ["Student", "Faculty", "Committee Coordinator", "System Administrator"]
 # what each role can do, page by page (✓ full · R read-only/limited · — no access)
 ROLE_MATRIX = [
     ("Help Desk: ask, raise and track own tickets", "✓", "✓", "✓", "✓"),
-    ("Assistant (Q&A)", "public only", "✓ all", "✓ all", "✓ all"),
+    ("Assistant (Q&A)", "public, own dept + all", "own dept + all", "✓ every dept", "✓ every dept"),
+    ("Calendar and deadline reminders", "✓", "✓ + own commitments", "✓ + own commitments", "✓"),
     ("Help Desk Queue: triage, AI draft, reply", "—", "✓", "✓", "✓"),
-    ("Meetings: upload transcripts, view extraction", "—", "✓", "✓", "✓"),
+    ("Meetings: upload transcripts, view extraction", "—", "own dept + all", "✓", "✓"),
+    ("Meeting minutes export (DOCX/PDF)", "—", "—", "✓", "✓"),
     ("Commitments and Faculty Desk PA", "—", "✓", "✓", "✓"),
     ("Procedures: view, evidence panel", "—", "✓", "✓", "✓"),
     ("Procedures: run extraction, approve, reject", "—", "—", "✓", "✓"),
     ("Knowledge graph", "—", "✓", "✓", "✓"),
     ("Document upload (internal/public)", "—", "✓", "✓", "✓"),
+    ("Analytics dashboard", "—", "—", "✓", "✓"),
     ("Source connector sync, audit log", "—", "—", "✓", "✓"),
 ]
 

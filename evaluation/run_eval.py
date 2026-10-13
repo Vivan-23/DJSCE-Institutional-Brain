@@ -82,17 +82,25 @@ class Api:
             self._tokens[email] = r.json()["access_token"]
         return {"Authorization": f"Bearer {self._tokens[email]}"}
 
-    def chat(self, email, question):
-        t = time.perf_counter()
-        r = requests.post(
-            f"{self.base}/api/v1/chat",
-            json={"messages": [{"role": "user", "content": question}]},
-            headers=self.token(email),
-            timeout=180,
-        )
-        dt = time.perf_counter() - t
-        r.raise_for_status()
-        return r.json(), dt
+    def chat(self, email, question, attempts=4):
+        """POST /chat, retrying server errors (provider rate limits surface as 502) with backoff.
+        After the last attempt it returns {"_error": ...} instead of raising, so one failed
+        question is recorded as an error rather than aborting the whole run."""
+        for i in range(attempts):
+            t = time.perf_counter()
+            r = requests.post(
+                f"{self.base}/api/v1/chat",
+                json={"messages": [{"role": "user", "content": question}]},
+                headers=self.token(email),
+                timeout=180,
+            )
+            dt = time.perf_counter() - t
+            if r.status_code < 500:
+                r.raise_for_status()
+                return r.json(), dt
+            if i < attempts - 1:
+                time.sleep(15 * 2 ** i)
+        return {"_error": f"HTTP {r.status_code}", "response": "", "sources": []}, dt
 
     def get(self, email, path):
         r = requests.get(f"{self.base}{path}", headers=self.token(email), timeout=60)
@@ -206,7 +214,7 @@ def eval_qa(api, users, pause):
         rows.append({
             "id": q["id"], "role": q["role"], "retrieval_hit": hit, "correct": ok,
             "cited": bool(CITE_RE.search(ans)), "abstained": bool(ABSTAIN_RE.search(ans)),
-            "latency_s": round(dt, 3), "answer": ans[:400], "sources": refs,
+            "latency_s": round(dt, 3), "answer": ans[:400], "sources": refs, "error": body.get("_error"),
         })
         if pause:
             time.sleep(pause)
@@ -219,6 +227,7 @@ def eval_qa(api, users, pause):
             "answer_correct": round(sum(r["correct"] for r in sub) / len(sub), 3),
             "cited": round(sum(r["cited"] for r in sub) / len(sub), 3),
             "abstained": round(sum(r["abstained"] for r in sub) / len(sub), 3),
+            "errors": sum(bool(r["error"]) for r in sub),
             "latency_p50_s": pct(lat, 50),
             "latency_p95_s": pct(lat, 95),
         }
@@ -243,6 +252,7 @@ def eval_visibility(api, student, pause):
         rows.append({
             "question": q, "scope": body.get("scope"), "internal_sources": internal,
             "forbidden_in_answer": forbidden, "leak": bool(internal or forbidden), "latency_s": round(dt, 3),
+            "error": body.get("_error"),
         })
         if pause:
             time.sleep(pause)
@@ -251,6 +261,7 @@ def eval_visibility(api, student, pause):
         "leaks": sum(r["leak"] for r in rows),
         "internal_source_leaks": sum(bool(r["internal_sources"]) for r in rows),
         "forbidden_fact_leaks": sum(bool(r["forbidden_in_answer"]) for r in rows),
+        "errors": sum(bool(r["error"]) for r in rows),
         "all_scoped_public": all(r["scope"] == "public" for r in rows),
         "items": rows,
     }
@@ -266,10 +277,12 @@ def eval_departments(api, users, pause):
         srcs = body.get("sources") or []
         foreign = [f"{s.get('source_ref')} ({s.get('department')})" for s in srcs if s.get("department") not in allowed]
         rows.append({"as": p["as"], "question": p["question"], "scope": body.get("departments"),
-                     "sources": len(srcs), "foreign_sources": foreign, "leak": bool(foreign), "latency_s": round(dt, 3)})
+                     "sources": len(srcs), "foreign_sources": foreign, "leak": bool(foreign), "latency_s": round(dt, 3),
+                     "error": body.get("_error")})
         if pause:
             time.sleep(pause)
-    return {"n": len(rows), "leaks": sum(r["leak"] for r in rows), "items": rows}
+    return {"n": len(rows), "leaks": sum(r["leak"] for r in rows),
+            "errors": sum(bool(r["error"]) for r in rows), "items": rows}
 
 
 # ── 4. commitment extraction ─────────────────────────────────────────────────
@@ -383,24 +396,34 @@ def main():
              "staff": "karan.shah@example.com"}
     api = Api(args.api)
 
-    if "triage" in parts:
-        engines = [e for e in args.engines.split(",") if e and (e != "laya" or laya_version)]
-        res["triage"] = eval_triage(engines, args.pause)
-    if "qa" in parts:
-        res["qa"] = eval_qa(api, users, args.pause)
-    if "visibility" in parts:
-        res["visibility"] = eval_visibility(api, users["student"], args.pause)
-    if "departments" in parts:
-        res["departments"] = eval_departments(api, users, args.pause)
-    if "commitments" in parts:
-        res["commitments"] = eval_commitments(api, users["staff"])
-
     out = Path(args.out)
     out.mkdir(parents=True, exist_ok=True)
     stamp = datetime.now(timezone.utc).strftime("%Y%m%d-%H%M")
-    (out / f"results-{stamp}.json").write_text(json.dumps(res, indent=2, ensure_ascii=False), encoding="utf-8")
-    (out / "latest.json").write_text(json.dumps(res, indent=2, ensure_ascii=False), encoding="utf-8")
-    (out / "RESULTS.md").write_text(to_markdown(res) + "\n", encoding="utf-8")
+
+    def save():
+        """Written after every part, so a late failure never discards finished parts."""
+        (out / f"results-{stamp}.json").write_text(json.dumps(res, indent=2, ensure_ascii=False), encoding="utf-8")
+        (out / "latest.json").write_text(json.dumps(res, indent=2, ensure_ascii=False), encoding="utf-8")
+        (out / "RESULTS.md").write_text(to_markdown(res) + "\n", encoding="utf-8")
+
+    if "triage" in parts:
+        engines = [e for e in args.engines.split(",") if e and (e != "laya" or laya_version)]
+        res["triage"] = eval_triage(engines, args.pause)
+        save()
+    if "qa" in parts:
+        res["qa"] = eval_qa(api, users, args.pause)
+        save()
+    if "visibility" in parts:
+        res["visibility"] = eval_visibility(api, users["student"], args.pause)
+        save()
+    if "departments" in parts:
+        res["departments"] = eval_departments(api, users, args.pause)
+        save()
+    if "commitments" in parts:
+        res["commitments"] = eval_commitments(api, users["staff"])
+        save()
+
+    save()
     print(to_markdown(res))
 
 
