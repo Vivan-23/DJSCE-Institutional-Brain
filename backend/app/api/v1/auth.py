@@ -28,6 +28,9 @@ class RegisterRequest(BaseModel):
     full_name: str
     password: str
     department: Optional[str] = None  # code or name from institution.yaml
+    year: Optional[int] = None  # 1-4
+    semester: Optional[int] = None  # 1-8
+    division: Optional[str] = None
 
 
 def hash_password(password: str) -> str:
@@ -63,7 +66,7 @@ def get_current_user(
         raise credentials_exc
 
     user = db.exec(select(User).where(User.email == email)).first()
-    if not user:
+    if not user or not user.is_active:  # deactivation takes effect on the next request
         raise credentials_exc
     return user
 
@@ -129,6 +132,10 @@ def register(req: RegisterRequest, db: Session = Depends(get_session)):
     department = get_institution_config().department_code(req.department)
     if req.department and not department:
         raise HTTPException(status_code=400, detail=f"Unknown department '{req.department}'")
+    if req.year is not None and not 1 <= req.year <= 4:
+        raise HTTPException(status_code=400, detail="year must be between 1 and 4")
+    if req.semester is not None and not 1 <= req.semester <= 8:
+        raise HTTPException(status_code=400, detail="semester must be between 1 and 8")
     user = User(
         email=req.email,
         full_name=req.full_name,
@@ -137,6 +144,9 @@ def register(req: RegisterRequest, db: Session = Depends(get_session)):
         # come from institution.yaml or an administrator.
         role="student",
         department=department,
+        year=req.year,
+        semester=req.semester,
+        division=(req.division or "").strip().upper() or None,
     )
     db.add(user)
     db.commit()
@@ -150,6 +160,8 @@ def login(req: LoginRequest, db: Session = Depends(get_session)):
     user = db.exec(select(User).where(User.email == req.email)).first()
     if not user or not verify_password(req.password, user.hashed_password):
         raise HTTPException(status_code=401, detail="Invalid credentials")
+    if not user.is_active:
+        raise HTTPException(status_code=403, detail="This account has been deactivated")
     token = create_access_token({"sub": user.email, "role": user.role})
     return {"access_token": token, "token_type": "bearer"}
 
@@ -162,4 +174,7 @@ def get_me(current_user: User = Depends(get_current_user)):
         "full_name": current_user.full_name,
         "role": current_user.role,
         "department": current_user.department,
+        "year": current_user.year,
+        "semester": current_user.semester,
+        "division": current_user.division,
     }

@@ -27,6 +27,9 @@ export interface Me {
   full_name: string | null;
   role: Role;
   department: string | null;
+  year?: number | null;
+  semester?: number | null;
+  division?: string | null;
 }
 
 let cached: { token: string; me: Me } | null = null;

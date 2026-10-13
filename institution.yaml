@@ -110,6 +110,9 @@ helpdesk:
 #   role:     student | employee (Faculty) | manager (Committee Coordinator) | admin (System Administrator)
 #   manager:  email of this person's reporting coordinator, or null
 #   password: set → this person gets a login (all demo logins use demo123)
+#   year / semester / division: students only (year 1-4, semester 1-8), used to address notices
+#   This file only CREATES people who do not exist yet; after that, roles and departments
+#   are managed on the admin Users page (a restart never reverts those changes).
 members:
   - name: "Demo Administrator"
     email: "admin@example.com"
@@ -162,6 +165,9 @@ members:
     role: "student"
     title: "B.Tech Computer Engineering, Third Year"
     department: "CE"
+    year: 3
+    semester: 5
+    division: "A"
     password: "demo123"
 
   - name: "Isha Kulkarni"
@@ -169,4 +175,48 @@ members:
     role: "student"
     title: "B.Tech Information Technology, Second Year"
     department: "IT"
+    year: 2
+    semester: 3
+    division: "B"
+    password: "demo123"
+
+  # More synthetic students, so notices can be addressed by department / year / division.
+  - name: "Kabir Joshi"
+    email: "kabir.joshi@example.com"
+    role: "student"
+    title: "B.Tech Computer Engineering, Third Year"
+    department: "CE"
+    year: 3
+    semester: 5
+    division: "B"
+    password: "demo123"
+
+  - name: "Meera Nair"
+    email: "meera.nair@example.com"
+    role: "student"
+    title: "B.Tech Computer Engineering, First Year"
+    department: "CE"
+    year: 1
+    semester: 1
+    division: "A"
+    password: "demo123"
+
+  - name: "Riya Sawant"
+    email: "riya.sawant@example.com"
+    role: "student"
+    title: "B.Tech Information Technology, Fourth Year"
+    department: "IT"
+    year: 4
+    semester: 7
+    division: "A"
+    password: "demo123"
+
+  - name: "Dev Malhotra"
+    email: "dev.malhotra@example.com"
+    role: "student"
+    title: "B.Tech Information Technology, Second Year"
+    department: "IT"
+    year: 2
+    semester: 3
+    division: "A"
     password: "demo123"

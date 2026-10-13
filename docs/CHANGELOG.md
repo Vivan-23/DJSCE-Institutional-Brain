@@ -8,6 +8,16 @@ Format: `## YYYY-MM-DD — title` then bullets of what/why.
 
 ---
 
+## 2026-10-14 — Admin user management
+- `/api/v1/admin/*` (admin only, audited) + `/admin/users` page: create (temporary password shown once), edit role,
+  department, year, semester, division; deactivate/reactivate; reset password; CSV import; read-only role table.
+  Permissions stay fixed per role (decision: assign roles, don't edit permissions).
+- **Schema**: `User.year`, `User.semester`, `User.division`, `User.is_active`. Deactivated users can't log in and
+  their existing tokens stop working on the next request.
+- **Behaviour change**: `institution.yaml` now only creates missing users; it no longer re-applies roles/departments
+  on restart, so admin edits stick. 4 more synthetic students for cohort-addressed notices.
+- Guardrails: no self-demotion/deactivation; the last active admin can't be removed.
+
 ## 2026-10-14 — Website data: official links in answers; more evaluation questions
 - Chunks of djsce.ac.in content carry `source_url` (the Q&A's inline `(Source: …)` citation, else the file header);
   stored on `Fragment` and in Chroma metadata, returned in `sources`, shown as "Official page" links in `SourceList`.

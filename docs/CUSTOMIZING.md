@@ -18,8 +18,9 @@ backend reads it and reconfigures itself. Last verified: 2026-10-14.
 | `departments[]` | department codes and names; scopes what students/faculty retrieve | registration form, upload form, retrieval |
 | `members[]` | people, roles, departments, reporting lines | seeded into the DB |
 
-Seeding is **idempotent** (matched by email): edit, restart, and the DB matches.
-Removing a person does **not** delete them — that stays a deliberate manual action.
+Seeding **creates** people who don't exist yet (matched by email). After that, the admin
+**Users** page owns their role, department, cohort and status: a restart never reverts it, and
+editing an existing person here has no effect. Removing a person does **not** delete them.
 
 ### Members
 

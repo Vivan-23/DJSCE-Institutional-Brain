@@ -8,6 +8,11 @@ class UserBase(SQLModel):
     full_name: Optional[str] = None
     role: str = Field(default="student")  # student | employee | manager | admin
     department: Optional[str] = None  # department code (institution.yaml); scopes what they retrieve
+    # Student cohort (used to address notices): year of study 1-4 (FE/SE/TE/BE), semester 1-8, division.
+    year: Optional[int] = None
+    semester: Optional[int] = None
+    division: Optional[str] = None
+    is_active: bool = Field(default=True)  # deactivated users cannot sign in; history is kept
 
 class User(UserBase, table=True):
     id: UUID = Field(default_factory=uuid4, primary_key=True)

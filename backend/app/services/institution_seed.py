@@ -1,8 +1,9 @@
 """
 Seed the institution's people from institution.yaml on startup.
 
-Idempotent and matched by email: editing institution.yaml and restarting updates
-the DB to match. Members with a ``password`` get a login User (with their
+Idempotent and matched by email. The file only *creates* missing login Users: once a
+user exists, the admin Users page is the source of truth for role, department and
+status, so a restart never reverts an administrator's change. Members with a ``password`` get a login User (with their
 ``role``). Staff (everyone except students) also become an Employee row — the
 person the Faculty Desk PA serves and commitments are assigned to — and their
 reporting links are resolved in a second pass. Students only get a login.
@@ -51,16 +52,14 @@ def seed_institution(db: Session) -> dict:
                 hashed_password=hash_password(m.password),
                 role=m.role,
                 department=m.department,
+                year=m.year,
+                semester=m.semester,
+                division=m.division,
             )
             db.add(user)
             db.commit()
             db.refresh(user)
             users_created += 1
-        elif user and (user.role != m.role or user.department != m.department):
-            user.role = m.role  # keep role and department in sync with the profile
-            user.department = m.department
-            db.add(user)
-            db.commit()
 
         if m.role == "student":
             continue

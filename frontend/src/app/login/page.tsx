@@ -22,6 +22,8 @@ export default function LoginPage() {
   const [password, setPassword] = useState('');
   const [fullName, setFullName] = useState('');
   const [department, setDepartment] = useState('');
+  const [semester, setSemester] = useState('');
+  const [division, setDivision] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
@@ -41,7 +43,16 @@ export default function LoginPage() {
     const body =
       mode === 'login'
         ? { email, password }
-        : { email, password, full_name: fullName, department: department || undefined };
+        : {
+            email,
+            password,
+            full_name: fullName,
+            department: department || undefined,
+            // Year of study follows from the semester (1-2 → year 1, … 7-8 → year 4).
+            semester: semester ? Number(semester) : undefined,
+            year: semester ? Math.ceil(Number(semester) / 2) : undefined,
+            division: division || undefined,
+          };
 
     try {
       const res = await fetch(`${API_BASE}${endpoint}`, {
@@ -125,6 +136,33 @@ export default function LoginPage() {
                 </option>
               ))}
             </select>
+          )}
+          {mode === 'register' && (
+            <div className="flex gap-2">
+              <select
+                value={semester}
+                onChange={(e) => setSemester(e.target.value)}
+                required
+                aria-label="Current semester"
+                className="w-full bg-slate-900 border border-slate-700/80 rounded-md px-3.5 py-2 text-xs sm:text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:border-blue-500 transition-colors"
+              >
+                <option value="">Current semester…</option>
+                {[1, 2, 3, 4, 5, 6, 7, 8].map((n) => (
+                  <option key={n} value={n}>
+                    Semester {n} (year {Math.ceil(n / 2)})
+                  </option>
+                ))}
+              </select>
+              <input
+                type="text"
+                placeholder="Division (e.g. A)"
+                value={division}
+                onChange={(e) => setDivision(e.target.value)}
+                maxLength={3}
+                aria-label="Division"
+                className="w-full bg-slate-900 border border-slate-700/80 rounded-md px-3.5 py-2 text-xs sm:text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:border-blue-500 transition-colors"
+              />
+            </div>
           )}
           <input
             type="email"

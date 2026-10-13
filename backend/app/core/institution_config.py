@@ -36,6 +36,9 @@ class InstitutionMember:
     manager: Optional[str] = None  # reporting coordinator's email
     timezone: str = "Asia/Kolkata"
     password: Optional[str] = None  # set → a login User is created with `role`
+    year: Optional[int] = None  # students: year of study 1-4
+    semester: Optional[int] = None  # students: semester 1-8
+    division: Optional[str] = None  # students: division, e.g. "A"
 
 
 @dataclass
@@ -153,6 +156,9 @@ def get_institution_config() -> InstitutionConfig:
                 manager=(str(m["manager"]).strip().lower() if m.get("manager") else None),
                 timezone=str(m.get("timezone") or "Asia/Kolkata").strip(),
                 password=(str(m["password"]) if m.get("password") else None),
+                year=(int(m["year"]) if m.get("year") else None),
+                semester=(int(m["semester"]) if m.get("semester") else None),
+                division=(str(m["division"]).strip().upper() if m.get("division") else None),
             )
         )
 
