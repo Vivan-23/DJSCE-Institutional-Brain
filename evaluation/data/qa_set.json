@@ -310,6 +310,103 @@
       "must_include": [
         "50"
       ]
+    },
+    {
+      "id": "q26",
+      "role": "student",
+      "question": "How are First Year B.Tech admissions conducted at DJSCE?",
+      "expected_sources": [
+        "kb_admissions_btech_overview"
+      ],
+      "must_include": [
+        "CAP",
+        "Centralized Admission"
+      ]
+    },
+    {
+      "id": "q27",
+      "role": "student",
+      "question": "Who determines the fee structure for courses at DJSCE?",
+      "expected_sources": [
+        "kb_admissions_fees_cancellation_scholarships"
+      ],
+      "must_include": [
+        "Fee Regulating Authority",
+        "FRA"
+      ]
+    },
+    {
+      "id": "q28",
+      "role": "student",
+      "question": "What equipment is available in the AICTE IDEA Lab?",
+      "expected_sources": [
+        "kb_facilities_aicte_idea_lab"
+      ],
+      "must_include": [
+        "3D Print",
+        "Laser"
+      ]
+    },
+    {
+      "id": "q29",
+      "role": "student",
+      "question": "In which year was SVKM established?",
+      "expected_sources": [
+        "kb_institution_svkm_governance"
+      ],
+      "must_include": [
+        "1934"
+      ]
+    },
+    {
+      "id": "q30",
+      "role": "student",
+      "question": "What grading system does DJSCE follow?",
+      "expected_sources": [
+        "kb_exams_grading_cgpa_system"
+      ],
+      "must_include": [
+        "10-point",
+        "10 point",
+        "ten-point",
+        "ten point"
+      ]
+    },
+    {
+      "id": "q31",
+      "role": "student",
+      "question": "Can a student with a disability get a scribe in the examination?",
+      "expected_sources": [
+        "kb_exams_conduct_unfair_means",
+        "kb_facilities_student_support_welfare"
+      ],
+      "must_include": [
+        "scribe"
+      ]
+    },
+    {
+      "id": "q32",
+      "role": "student",
+      "question": "Which statutory committees govern DJSCE as an autonomous institution?",
+      "expected_sources": [
+        "kb_institution_svkm_governance"
+      ],
+      "must_include": [
+        "Governing Body",
+        "Finance Committee"
+      ]
+    },
+    {
+      "id": "q33",
+      "role": "student",
+      "question": "Is counselling available for students on campus?",
+      "expected_sources": [
+        "kb_facilities_student_support_welfare"
+      ],
+      "must_include": [
+        "counsel"
+      ],
+      "as": "student_it"
     }
   ]
 }

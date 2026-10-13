@@ -192,7 +192,8 @@ ALGORITHM TriageTicket(subject, description)
 | Public knowledge (mini-project) | CE department FAQs + IT department overview | 2 documents |
 | Public website knowledge base | authentic information from https://www.djsce.ac.in (admissions, departments, exam manual, placements, facilities, governance), each file and Q&A cited by URL, retrieved 2026-10-13 | 26 files, 6 sections |
 | Triage evaluation set | labelled student queries | 96 queries |
-| Q&A evaluation set | questions with known source passages | 25 (13 student + 12 staff) |
+| Q&A evaluation set | questions with known source passages | 33 (21 student + 12 staff) |
+| Department isolation set | cross-department student questions | 10 |
 | Adversarial visibility set | student questions targeting internal content | 20 |
 | Commitments gold set | expected commitments from transcripts | 9 across 4 transcripts |
 

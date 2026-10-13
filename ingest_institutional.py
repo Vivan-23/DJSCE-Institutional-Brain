@@ -35,6 +35,9 @@ PROCESS_WAIT_SECONDS = 180
 
 # Owning department (code from institution.yaml) per file; anything not listed is
 # institution-wide ("all"). CE students/faculty see CE + "all"; IT see IT + "all".
+# The djsce.ac.in pages (djsce_public_data/kb) stay institution-wide even when they describe
+# one department: they are public on the website, so hiding them from other students
+# would protect nothing. Scoping applies to department-specific and internal material.
 DEPARTMENT_OF = {
     "scenario_1_academic_council_curriculum_review.txt": "CE",  # CE elective
     "scenario_4_departmental_lab_readiness_sync.txt": "CE",
@@ -42,15 +45,6 @@ DEPARTMENT_OF = {
     "doc_Elective_Proposal_AIML_Autonomous_Curriculum.txt": "CE",
     "kb_computer_engineering_faq.txt": "CE",
     "kb_information_technology_overview.txt": "IT",
-    "kb_dept_computer_engineering.txt": "CE",
-    "kb_dept_information_technology.txt": "IT",
-    "kb_dept_ai_and_data_science.txt": "AIDS",
-    "kb_dept_ai_and_machine_learning.txt": "AIML",
-    "kb_dept_cse_data_science.txt": "CSDS",
-    "kb_dept_cse_iot_cyber_security.txt": "IOTCS",
-    "kb_dept_electronics_telecom.txt": "EXTC",
-    "kb_dept_mechanical_engineering.txt": "MECH",
-    "kb_dept_basic_sciences_humanities.txt": "BSH",
 }
 
 

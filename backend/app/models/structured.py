@@ -81,6 +81,7 @@ class Fragment(SQLModel, table=True):
     id: UUID = Field(default_factory=uuid4, primary_key=True)
     source_type: str = Field(index=True)  # transcript/document/checkin/followup/ticket/<connector>
     source_ref: Optional[str] = None  # permalink / external id / filename
+    source_url: Optional[str] = None  # public web page the content was taken from (cited to students)
     # Who may retrieve this evidence: "internal" (staff only) or "public" (students too).
     visibility: str = Field(default="internal", index=True)
     # Owning department code, or "all" (institution-wide). Scopes retrieval for students/faculty.

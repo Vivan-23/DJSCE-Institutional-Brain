@@ -8,6 +8,22 @@ export interface Source {
   source_ref: string | null;
   visibility: 'public' | 'internal' | string;
   excerpt: string;
+  /** Public web page the excerpt was taken from (official website content). */
+  source_url?: string | null;
+  speaker?: string | null;
+}
+
+/** Only link to http(s) pages; anything else is shown as plain text. */
+function safeUrl(url: string | null | undefined): string | null {
+  return url && /^https?:\/\//i.test(url) ? url : null;
+}
+
+function readable(url: string): string {
+  try {
+    return decodeURI(url);
+  } catch {
+    return url;
+  }
 }
 
 const TYPE_LABEL: Record<string, string> = {
@@ -63,6 +79,16 @@ export default function SourceList({ sources, warnInternal = false }: { sources:
                 </span>
               </div>
               <p className="text-[11px] text-slate-300 leading-relaxed whitespace-pre-wrap">{s.excerpt}</p>
+              {safeUrl(s.source_url) && (
+                <a
+                  href={safeUrl(s.source_url)!}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="mt-1 inline-block text-[10px] text-blue-400 hover:underline break-all"
+                >
+                  Official page: {readable(s.source_url!)}
+                </a>
+              )}
             </li>
           ))}
         </ol>

@@ -40,6 +40,7 @@ class FragmentService:
         visibility: str = "internal",
         speaker: Optional[str] = None,
         department: str = ALL_DEPARTMENTS,
+        source_url: Optional[str] = None,
     ) -> Fragment:
         """Persist a fragment and best-effort index its embedding in ChromaDB."""
         if visibility not in VISIBILITIES:
@@ -51,6 +52,7 @@ class FragmentService:
                 "source_ref": source_ref or "",
                 "visibility": visibility,
                 "department": department,  # retrieval scope, filtered in the vector query
+                "source_url": source_url or "",
                 "speaker": speaker or "",  # who said it (transcripts), for provenance in answers
             },
         )
@@ -64,6 +66,7 @@ class FragmentService:
             embedding_id=embedding_id,
             visibility=visibility,
             department=department,
+            source_url=source_url,
         )
         db.add(fragment)
         db.commit()

@@ -1,7 +1,7 @@
 import io
 import re
 import structlog
-from typing import List
+from typing import List, Optional
 
 log = structlog.get_logger()
 
@@ -51,6 +51,22 @@ def _title_line(text: str) -> str:
         if line and not line.startswith("[") and len(line) <= 120:
             return line
     return ""
+
+
+_SOURCE_URL = re.compile(r"Source:\s*(https?://[^\s)\]]+)")
+_INLINE_SOURCE = re.compile(r"\(Source:\s*(https?://[^\s)]+)\)")
+
+
+def source_urls(text: str, chunks: list[str]) -> list[Optional[str]]:
+    """The public page each chunk was taken from: its first inline ``(Source: <url>)`` citation,
+    else the document's header source, else None. Used to cite web content to students."""
+    found = _SOURCE_URL.search(text[:600])
+    default = found.group(1) if found else None
+    out = []
+    for chunk in chunks:
+        m = _INLINE_SOURCE.search(chunk)
+        out.append(m.group(1) if m else default)
+    return out
 
 
 def chunk_document(

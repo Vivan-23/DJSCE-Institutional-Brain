@@ -8,6 +8,14 @@ Format: `## YYYY-MM-DD — title` then bullets of what/why.
 
 ---
 
+## 2026-10-14 — Website data: official links in answers; more evaluation questions
+- Chunks of djsce.ac.in content carry `source_url` (the Q&A's inline `(Source: …)` citation, else the file header);
+  stored on `Fragment` and in Chroma metadata, returned in `sources`, shown as "Official page" links in `SourceList`.
+- Website pages stay **institution-wide** even when they describe one department (they are public on the website);
+  department scoping covers department-specific and internal material (CE FAQ, IT overview, CE meetings/documents).
+- `qa_set.json`: +8 student questions on the website data (admissions, fees, IDEA Lab, SVKM, grading, scribe,
+  governance, counselling): 33 total.
+
 ## 2026-10-14 — Analytics dashboard
 - `GET /api/v1/analytics` + `/analytics` page (Coordinator+, sidebar `coordinator` flag): open/overdue commitments per
   meeting, tickets by status/category, median/mean hours to first reply, tickets open > 48 h, most-asked questions,

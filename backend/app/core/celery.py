@@ -62,7 +62,7 @@ def process_document_task(text: str, filename: str, visibility: str = "internal"
          procedure extraction and citations exactly like transcripts do
       3. Extract named entities with spaCy → upsert to Neo4j
     """
-    from app.services.parser import chunk_document
+    from app.services.parser import chunk_document, source_urls
     from app.services.fragment_service import fragment_service
     from app.services.ner_service import ner_service
     from app.services.graph_service import graph_service
@@ -74,10 +74,11 @@ def process_document_task(text: str, filename: str, visibility: str = "internal"
 
     # --- 1 + 2. Document row, then chunk → Fragments ---
     chunks = chunk_document(text)
+    urls = source_urls(text, chunks)  # cited web page per chunk (public website content)
     with Session(engine) as session:
         session.add(Document(title=filename, source_type="upload", raw_content=text[:5_000]))
         session.commit()
-        for chunk in chunks:
+        for chunk, url in zip(chunks, urls):
             fragment_service.create_fragment(
                 session,
                 source_type="document",
@@ -85,6 +86,7 @@ def process_document_task(text: str, filename: str, visibility: str = "internal"
                 content=chunk,
                 visibility=visibility,
                 department=department,
+                source_url=url,
             )
     log.info("Document chunks stored as fragments", filename=filename, count=len(chunks))
 

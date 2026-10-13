@@ -67,6 +67,7 @@ class RAGService:
                     "source_ref": meta.get("source_ref") or None,
                     "visibility": meta.get("visibility") or "internal",
                     "department": meta.get("department") or None,
+                    "source_url": meta.get("source_url") or None,
                     "speaker": meta.get("speaker") or None,
                     "excerpt": doc[:_EXCERPT_CHARS],
                 }

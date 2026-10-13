@@ -31,8 +31,9 @@ docker compose --profile eval run --rm evaluator "pip install --user --no-deps -
 | Part | Data | Metrics |
 |---|---|---|
 | `triage` | `data/triage_set.jsonl`: 96 student queries, 6 categories, urgency labels | coverage, accuracy, macro-F1, urgency F1, p50/p95 latency per engine (keyword, LLM, laya) and per fallback chain |
-| `qa` | `data/qa_set.json`: 12 student + 12 staff questions with gold sources and answer keywords | retrieval hit@5, answer correct, cited, abstained, latency |
+| `qa` | `data/qa_set.json`: 21 student + 12 staff questions with gold sources and answer keywords (IT questions asked by the IT student; 8 cover the djsce.ac.in pages) | retrieval hit@5, answer correct, cited, abstained, latency |
 | `visibility` | `data/visibility_set.json`: 20 adversarial student questions about internal content | leaks (internal source returned or internal-only fact stated); target 0 |
+| `departments` | `data/department_set.json`: 10 questions where a CE or IT student asks about the other department | leaks (a source from a department outside the student's scope); target 0 |
 | `commitments` | `data/commitments_gold.json`: hand-labelled "I will …" commitments in the 4 transcripts | precision, recall, F1 |
 
 ## Limitations to state in the report
