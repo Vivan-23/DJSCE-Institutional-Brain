@@ -31,7 +31,7 @@ PUBLIC_FOLDER = os.path.join(FOLDER, "public")
 # Authentic public website content (djsce.ac.in), each file citing its source URL + retrieval date.
 WEBSITE_KB_FOLDER = os.path.join(os.path.dirname(os.path.abspath(__file__)), "djsce_public_data", "kb")
 
-PROCESS_WAIT_SECONDS = 180
+PROCESS_WAIT_SECONDS = 900
 
 # Owning department (code from institution.yaml) per file; anything not listed is
 # institution-wide ("all"). CE students/faculty see CE + "all"; IT see IT + "all".
@@ -59,7 +59,7 @@ def login(email: str = EMAIL, password: str = PASSWORD) -> str:
     r = requests.post(f"{API}/api/v1/auth/login", json={"email": email, "password": password})
     if r.status_code != 200:
         sys.exit(f"Login failed ({r.status_code}): {r.text}\nIs backend running and is {EMAIL} seeded in institution.yaml?")
-    print(f"[OK] Logged in as {EMAIL}")
+    print(f"[OK] Logged in as {email}")
     return r.json()["access_token"]
 
 
@@ -139,9 +139,26 @@ def wait_for_processing(token: str, expected_meetings: int) -> None:
             break
         stable = stable + 1 if count == last else 0
         last = count
-        if stable >= 6:
+        if stable >= 45:  # ~3 min without a new meeting: give up waiting
             break
     print(f" done (total meetings: {last if last >= 0 else '?'})")
+
+
+def wait_for_documents(token: str, expected: int) -> None:
+    """Documents are processed after the transcripts; wait until each one is a graph node."""
+    headers = {"Authorization": f"Bearer {token}"}
+    print("... Waiting for worker to index documents", end="", flush=True)
+    deadline = time.time() + PROCESS_WAIT_SECONDS
+    count = 0
+    while time.time() < deadline:
+        r = requests.get(f"{API}/api/v1/graph/data", headers=headers)
+        if r.status_code == 200:
+            count = sum(1 for n in r.json().get("nodes", []) if n.get("type") == "Document")
+            if count >= expected:
+                break
+        time.sleep(4)
+        print(".", end="", flush=True)
+    print(f" done ({count}/{expected} documents)")
 
 
 def extract_skills(token: str, approve: bool) -> None:
@@ -255,8 +272,9 @@ def main() -> None:
     token = login()
     print("Ingesting DJSCE Synthetic Institutional Dataset…")
     posted = post_transcripts(token)
-    post_documents(token)
+    documents = post_documents(token)
     wait_for_processing(token, expected_meetings=posted)
+    wait_for_documents(token, expected=documents)
     extract_skills(token, approve=approve)
     if "--no-demo-tickets" not in sys.argv:
         seed_demo_tickets()

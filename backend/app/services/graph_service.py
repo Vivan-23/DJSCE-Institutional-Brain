@@ -124,7 +124,7 @@ class GraphService:
         if GraphService._constraints_ready:
             return
         for label, prop in (("Employee", "email"), ("Project", "name"), ("Document", "name"), ("Meeting", "name")):
-            neo4j_conn.execute_query(
+            neo4j_conn.execute_schema(
                 f"CREATE CONSTRAINT {label.lower()}_{prop}_unique IF NOT EXISTS "
                 f"FOR (n:{label}) REQUIRE n.{prop} IS UNIQUE"
             )
