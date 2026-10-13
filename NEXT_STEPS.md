@@ -1,4 +1,4 @@
-# Where we left off — 13 Oct 2026
+# Where we left off — 14 Oct 2026
 
 Pick up from here next session. Development lives in `backend/`, `frontend/`, `docs/`, `evaluation/`;
 publication material lives in `publication/`. Everything below is committed on `main`.
@@ -41,6 +41,16 @@ backend image build broken by a Debian mirror sync; FAQ answers split across chu
 - `02_poster/POSTER_CONTENT.md`: AVINYA layout draft.
 - `references/senior_samples/`: seniors' report and three posters.
 
+**Added 14 Oct** (full list with status per role: `docs/FEATURE_STATUS.html`, 34 of 41 built)
+- Per-department access, academic calendar + reminders, minutes export (DOCX/PDF), analytics dashboard.
+- Admin **Users** page (create, roles, departments, year/semester/division, deactivate, reset password, CSV import).
+- **Notices** to students filtered by department / year / semester / division, with inbox and read counts.
+- Readable **knowledge graph** (Cytoscape: filters, search, click-to-focus, neighbourhood loading).
+- **Alembic migrations**: rebuilding or updating code now keeps the data. Only `docker compose down -v` wipes it.
+- Demo data: 3 SOPs, 10 procedures, 7 tickets (open/answered/closed), 3 notices, 10 users incl. 6 students.
+- Fixes: graph didn't draw; procedure extraction produced 1 skill; graph ignored department scope;
+  a Neo4j deadlock dropped a meeting; meetings had file names instead of real titles and dates.
+
 ## 2. Evaluation so far
 
 **Run 1, baseline** (`publication/01_ipd_report/results/RESULTS_run1_baseline.md`), before the retrieval fixes:
@@ -57,20 +67,19 @@ Takeaways: the LLM triage is clearly best, so the default stays `llm,keyword`. l
 and took about 1.4 s per query on CPU. The weak answer score came from chunking and missing speaker
 names; both are fixed since run 1.
 
-**Run 2** was running when we stopped. If it finished, its results are in `publication/01_ipd_report/results/`
-(`RESULTS.md`, `latest.json`). It used data loaded *before* the last fact-check corrections, so treat it as interim.
+**Runs 2 and 3 did not finish.** Run 3 stopped because the Groq account hit its daily token limit
+(200,000 tokens/day on `openai/gpt-oss-120b`); the same limit made the last reload create 0 procedures and no ticket
+drafts. The evaluation now retries and saves after each part, so it can be re-run safely.
 
 ## 3. Next session — Claude's work
 
-1. Check whether run 2 finished; then reload the corrected data and do the **final run 3**:
-   ```bash
-   docker compose down -v && docker compose up -d --build
-   python ingest_institutional.py --approve
-   docker compose --profile eval run --rm evaluator
-   ```
+1. When the Groq quota has reset (or with a paid key / a model with its own quota): re-run procedure
+   extraction (Institutional Procedures → extract, or `POST /api/v1/skills/extract`), "Re-run triage & draft" on the
+   open tickets, then the **final run 3**: `docker compose --profile eval run --rm evaluator`.
+   No wipe needed any more: migrations keep the data.
 2. Put the run 3 numbers into report §7 and the abstract, the poster "Results" box, and the brief's
    results section (`.md` and `.html`); keep run 1 as the before/after comparison.
-3. Build per-department access (CE students see CE material), **once you approve it** (item 10 below).
+3. Decide the planned items: notice attachments/email, answer feedback, NBA/NAAC tracker, Jira sync.
 
 ## 4. Your work (only the team can do these)
 
@@ -84,9 +93,11 @@ names; both are fixed since run 1.
   - [ ] confirmation that synthetic committee data plus public website data is acceptable
   - [ ] target numbers for the SMART objectives (report §4.2)
   - [ ] notes saved in `publication/05_meetings_with_guide/YYYY-MM-DD.md` (copy `TEMPLATE.md`)
-- [ ] **Click through the demo once** (about 10 minutes): Student → Help Desk → raise a ticket → Faculty →
-      Help Desk Queue → reply → Student sees it. All APIs are tested, but the new pages haven't been
-      checked in a browser. Note anything that looks wrong.
+- [ ] **Click through the demo once** (about 15 minutes). Every page except the procedure evidence panel has now
+      been opened in a browser by automated screenshots, but a person should try the flows: Student → Help Desk →
+      ticket → Faculty → Queue → reply; Coordinator → Notices → send to TE CE → a CE TE student sees it; Admin →
+      Users → add a student. Note anything that looks wrong.
+- [ ] Replace the synthetic `academic_calendar:` dates in `institution.yaml` with the official DJSCE calendar.
 
 **Report writing**
 - [ ] Literature survey (§3): 15+ real papers on retrieval-augmented question answering, hallucination,
@@ -98,7 +109,8 @@ names; both are fixed since run 1.
 
 **Team**
 - [ ] Add colleagues as collaborators on the private GitHub repo; rule: pull before working, small commits, `main` only.
-- [ ] Decide: build **per-department access** next? (The roadmap's next item.)
+- [ ] Decisions taken by default on 14 Oct (change any): fixed roles (not editable permissions); `institution.yaml`
+      only creates new users; notices in-app only; faculty send notices to their own department only.
 
 ## 5. How to run things
 
@@ -109,6 +121,7 @@ names; both are fixed since run 1.
 | Open the app | http://localhost:3000 (all demo logins use `demo123`) |
 | Demo logins | `admin@example.com` · `aditi.rao@example.com` (coordinator) · `karan.shah@example.com` (faculty) · `aarav.desai@example.com` (student) |
 | Run evaluation | `docker compose --profile eval run --rm evaluator` |
-| Backend tests | see `CLAUDE.md` (136 passing) |
+| Backend tests | see `CLAUDE.md` (204 passing) |
+| Back up the database | `docker exec djsce_postgres pg_dump -U djsce_brain_user -Fc djsce_brain_db > backup.dump` |
 | Remote demo | `./start_public_share.ps1` (ngrok) |
 | Docs | `docs/ARCHITECTURE.md`, `docs/USAGE.md`, `evaluation/README.md` |

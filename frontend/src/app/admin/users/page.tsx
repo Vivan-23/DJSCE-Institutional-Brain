@@ -138,9 +138,9 @@ export default function AdminUsersPage() {
         (pw.length ? ` Temporary passwords (shown once): ${pw.join(', ')}` : ''));
   };
 
-  const deptSelect = (value: string, onChange: (v: string) => void) => (
+  const deptSelect = (value: string, onChange: (v: string) => void, empty = 'No department') => (
     <select value={value} onChange={(e) => onChange(e.target.value)} className={field} aria-label="Department">
-      <option value="">No department</option>
+      <option value="">{empty}</option>
       {departments.map((d) => (
         <option key={d.code} value={d.code}>{d.code}</option>
       ))}
@@ -202,7 +202,7 @@ export default function AdminUsersPage() {
           <option value="">All roles</option>
           {ROLES.map((r) => <option key={r} value={r}>{ROLE_LABEL[r]}</option>)}
         </select>
-        {deptSelect(filters.department, (v) => setFilters({ ...filters, department: v }))}
+        {deptSelect(filters.department, (v) => setFilters({ ...filters, department: v }), 'All departments')}
         <span className="text-[11px] text-slate-500">{users.length} users</span>
       </div>
 
