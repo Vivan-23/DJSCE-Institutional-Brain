@@ -241,7 +241,27 @@ Q&A, student visibility leaks and commitment extraction, and writes
 `laya==0.3.21` in the backend image and set `TRIAGE_ENGINES=laya,llm,keyword`.
 Details: [`evaluation/README.md`](../evaluation/README.md).
 
-## 8. Testing
+## 8. Database migrations and backups
+
+Startup applies migrations automatically (`alembic upgrade head`), so rebuilding and restarting
+(`docker compose up -d --build`) **keeps all data**. Only `docker compose down -v` deletes it.
+
+After changing `backend/app/models/structured.py`, add a migration (stack running):
+```bash
+docker exec djsce_postgres psql -U djsce_brain_user -d djsce_brain_db -c "CREATE DATABASE alembic_scratch;"
+docker run --rm --network djsce-brain_default -v "$PWD/backend:/src" -w /src --env-file .env   -e DATABASE_URL=postgresql://djsce_brain_user:brain_secure_pass@postgres:5432/alembic_scratch   --entrypoint sh djsce-brain-backend -c "alembic upgrade head && alembic revision --autogenerate -m 'describe change'"
+docker exec djsce_postgres psql -U djsce_brain_user -d djsce_brain_db -c "DROP DATABASE alembic_scratch;"
+```
+Review the generated file in `backend/migrations/versions/`, then run the tests (`test_migrations.py`).
+
+Back up / restore before risky changes:
+```bash
+docker exec djsce_postgres pg_dump -U djsce_brain_user -Fc djsce_brain_db > backup.dump
+docker exec -i djsce_postgres pg_restore -U djsce_brain_user -d djsce_brain_db --clean < backup.dump
+```
+(Chroma and Neo4j have their own volumes; re-running `ingest_institutional.py` rebuilds the demo content.)
+
+## 9. Testing
 
 ```bash
 cd backend && .venv/Scripts/python -m pytest -q      # no Docker needed
@@ -254,7 +274,7 @@ cd frontend && npx tsc --noEmit && npx eslint src
 
 ---
 
-## 9. Troubleshooting
+## 10. Troubleshooting
 
 | Symptom | Likely cause / fix |
 |---|---|

@@ -36,7 +36,7 @@ Ports: **API 8001**, **frontend 3000**, Postgres 5432, Neo4j 7474/7687, Chroma 8
 ```
 core/
   config.py        Settings (env-driven, pydantic-settings). All tunables live here.
-  db.py            SQLModel engine + init_db() (registers every table) + startup_lock() (Postgres advisory
+  db.py            SQLModel engine + init_db() (runs Alembic `upgrade head`; stamps pre-migration DBs) + startup_lock() (Postgres advisory
                    lock so multiple workers don't race on create_all/seeding) + get_session() dep.
   celery.py        Celery app, beat schedule, and ALL task definitions.
   chroma_db.py     Chroma connection singleton (chroma_conn).
@@ -89,7 +89,7 @@ tests/             pytest suite. conftest.py mocks all external services.
 | `ingest.py` | `/ingest` | 👥 Document upload (`visibility` and `department` form fields) → `process_document` task. |
 | `insights.py` | `/insights` | 👥 Active Feed insights (list/dismiss). |
 | `chat.py` | `/chat` | Grounded Q&A with `sources`; students get `public_only` retrieval. |
-| `graph.py` | `/graph` | 👥 Graph data for the relationship map. |
+| `graph.py` | `/graph` | 👥 `/data?limit=` (whole graph, bounded, `truncated` flag), `/neighbors/{id}?depth=` (a node's neighbourhood, for large graphs), `/stats`. Department-scoped: Document/Meeting nodes carry `department`. |
 | `transcripts.py` | `/transcripts` | 👥 Ingest transcript (202 → task) + list/get meetings. | `GET /{id}/minutes?format=docx|pdf` (Coordinator+) exports formal draft minutes.
 | `commitments.py` | `/commitments` | 👥 list / mine / patch status. |
 | `pa.py` | `/pa` | 👥 followups (+reply), checkin (message/complete). |
@@ -115,7 +115,10 @@ Conventions:
 - **Lists/dicts are stored as JSON strings** (DB-agnostic: SQLite in tests, Postgres in prod). E.g. `Skill.steps`, `Meeting.participants`, `AuditLog.audit_metadata`.
 - `QueryLog` records each assistant question (text, asker role + department, number of sources; no user id) for analytics. Evaluation runs also land here.
 - `Fragment` is the universal evidence unit; `source_type` distinguishes origin (`transcript`/`document`/`checkin`/`followup`/connector name); `visibility` decides who can retrieve it. Procedure extraction only uses `internal` fragments.
-- Any new table **must** be added to the import lists in both `core/db.py:init_db()` and `tests/conftest.py` or it won't be created.
+- Any new table **must** be added to the import lists in both `core/db.py:init_db()` and `tests/conftest.py`.
+- **Migrations** (`backend/migrations/`, `backend/alembic.ini`): every schema change ships an Alembic revision.
+  `0001_baseline` is the schema of 14 Oct 2026. Tests still build SQLite with `create_all`;
+  `test_migrations.py` checks the migrations reproduce the models exactly.
 
 ### Background jobs (`backend/app/core/celery.py`)
 
@@ -147,7 +150,7 @@ lib/useInstitution.ts      Public branding from /api/v1/institution.
 components/layout/Sidebar.tsx   Role-filtered nav (NAV[].staff) + auth state via useSyncExternalStore.
 components/knowledge/SourceList.tsx  Evidence excerpts behind an AI answer (public/internal badges).
 components/helpdesk/TicketBadge.tsx  Ticket status/priority styling (single source).
-components/graph/GraphCanvas.tsx
+components/graph/GraphCanvas.tsx  Cytoscape.js graph: type filters, hub hiding, search, focus mode, neighbourhood loading
 components/dashboard/InsightCard.tsx
 app/
   page.tsx           Governance overview (staff; students are redirected to /helpdesk)
@@ -224,7 +227,7 @@ Run: `cd backend && .venv/Scripts/python -m pytest -q` (currently **88 passing**
 
 | I want to… | Touch |
 |---|---|
-| Add a table | `models/structured.py` + both `init_db()` and `conftest.py` import lists |
+| Add a table / column | `models/structured.py` (+ both import lists for a table) **and** an Alembic revision in `backend/migrations/versions/` |
 | Add an endpoint | new/existing `api/v1/*.py` → register in `api/router.py` |
 | Add domain logic | a `services/*.py` singleton (keep routers thin) |
 | Add a scheduled job | a task + beat entry in `core/celery.py` |

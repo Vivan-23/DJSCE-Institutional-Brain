@@ -1,7 +1,8 @@
 from contextlib import contextmanager
+from pathlib import Path
 
-from sqlalchemy import text
-from sqlmodel import create_engine, Session, SQLModel
+from sqlalchemy import inspect, text
+from sqlmodel import create_engine, Session
 from app.core.config import settings
 
 engine = create_engine(
@@ -12,14 +13,39 @@ engine = create_engine(
 )
 
 
+_BACKEND_DIR = Path(__file__).resolve().parents[2]  # backend/ (holds alembic.ini + migrations/)
+
+
+def _alembic_config():
+    from alembic.config import Config
+
+    cfg = Config(str(_BACKEND_DIR / "alembic.ini"))
+    cfg.set_main_option("script_location", str(_BACKEND_DIR / "migrations"))
+    return cfg
+
+
 def init_db() -> None:
-    # Import all table models so they register on SQLModel.metadata before create_all
+    """Bring the schema up to date with Alembic migrations, keeping existing data.
+
+    A database created before migrations existed (tables present, no ``alembic_version``)
+    is stamped at the baseline instead of being re-created.
+    """
+    # Import all table models so they register on SQLModel.metadata (migrations/env.py uses it).
     from app.models.structured import (  # noqa: F401
         User, Document, ProgressReport, ActiveInsight,
         Employee, Meeting, Fragment, Commitment, CommitmentUpdate,
         CheckIn, Skill, SkillCitation, AuditLog, Ticket, QueryLog, Notice, NoticeRecipient,
     )
-    SQLModel.metadata.create_all(engine)
+    from alembic import command
+
+    cfg = _alembic_config()
+    with engine.begin() as conn:
+        cfg.attributes["connection"] = conn
+        tables = inspect(conn)
+        if tables.has_table("user") and not tables.has_table("alembic_version"):
+            command.stamp(cfg, "head")
+        else:
+            command.upgrade(cfg, "head")
 
 
 # Arbitrary app-wide key for the Postgres advisory lock that serializes startup.

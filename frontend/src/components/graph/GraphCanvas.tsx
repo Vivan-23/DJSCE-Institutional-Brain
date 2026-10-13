@@ -1,15 +1,15 @@
 'use client';
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import type { Core, EdgeSingular, ElementDefinition, NodeSingular } from 'cytoscape';
 import { apiFetch } from '@/lib/api';
 
 interface GraphNode {
   id: string;
   name: string;
   type: string;
-  x: number;
-  y: number;
-  vx: number;
-  vy: number;
+  department: string | null;
+  visibility: string | null;
+  degree: number;
 }
 
 interface GraphLink {
@@ -18,35 +18,47 @@ interface GraphLink {
   type: string;
 }
 
-const TYPE_COLOR: Record<string, string> = {
-  Employee: '#3b82f6',
-  Project: '#10b981',
-  Meeting: '#f59e0b',
-  Document: '#a78bfa',
-  Unknown: '#6b7280',
-};
+interface GraphData {
+  nodes: GraphNode[];
+  links: GraphLink[];
+  truncated?: boolean;
+}
 
-const TYPE_BADGE: Record<string, string> = {
-  Employee: 'Person',
-  Project: 'Body / initiative',
-  Meeting: 'Meeting',
-  Document: 'Document',
-};
+const TYPES: { key: string; label: string; color: string }[] = [
+  { key: 'Employee', label: 'People', color: '#3b82f6' },
+  { key: 'Project', label: 'Committees & departments', color: '#10b981' },
+  { key: 'Meeting', label: 'Meetings', color: '#f59e0b' },
+  { key: 'Document', label: 'Documents', color: '#a78bfa' },
+];
+const COLOR: Record<string, string> = Object.fromEntries(TYPES.map((t) => [t.key, t.color]));
+const LABEL: Record<string, string> = { Employee: 'Person', Project: 'Committee / department', Meeting: 'Meeting', Document: 'Document' };
+const EDGE_COLOR: Record<string, string> = { ATTENDED: '#f59e0b', MENTIONS: '#6366f1', WORKS_ON: '#10b981' };
 
-const REPULSION = 4000;
-const SPRING_K = 0.04;
-const SPRING_REST = 130;
-const DAMPING = 0.84;
-const GRAVITY = 0.0015;
+/** A node linked to more than this share of the visible nodes is a "hub" (e.g. the college itself). */
+const HUB_SHARE = 0.25;
 
-type GraphData = { nodes: { id: string; name: string; type: string }[]; links: GraphLink[] };
+function elements(data: GraphData): ElementDefinition[] {
+  return [
+    ...data.nodes.map((n) => ({ group: 'nodes' as const, data: { ...n, label: n.name } })),
+    ...data.links.map((l, i) => ({
+      group: 'edges' as const,
+      data: { id: `e${i}-${l.source}-${l.target}-${l.type}`, source: l.source, target: l.target, type: l.type },
+    })),
+  ];
+}
 
 export default function GraphCanvas() {
-  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const boxRef = useRef<HTMLDivElement>(null);
+  const cyRef = useRef<Core | null>(null);
   const [status, setStatus] = useState<'loading' | 'empty' | 'error' | 'ready'>('loading');
   const [data, setData] = useState<GraphData | null>(null);
+  const [shown, setShown] = useState<Record<string, boolean>>({ Employee: true, Project: true, Meeting: true, Document: false });
+  const [hideHubs, setHideHubs] = useState(true);
+  const [query, setQuery] = useState('');
+  const [selected, setSelected] = useState<GraphNode | null>(null);
+  const [neighbours, setNeighbours] = useState<GraphNode[]>([]);
+  const [visibleCount, setVisibleCount] = useState(0);
 
-  // Fetch first; draw in a second effect, once the canvas element is actually mounted.
   useEffect(() => {
     apiFetch('/api/v1/graph/data')
       .then((r) => r.json())
@@ -61,181 +73,188 @@ export default function GraphCanvas() {
       .catch(() => setStatus('error'));
   }, []);
 
-  useEffect(() => {
-    if (!data) return;
-    let animId = 0;
-    let onResize: (() => void) | null = null;
-    const rawNodes = data.nodes;
-    const rawLinks = data.links ?? [];
-    {
-      {
-        const canvas = canvasRef.current;
-        if (!canvas) return;
-        const ctx = canvas.getContext('2d');
-        if (!ctx) return;
-
-        let W = canvas.offsetWidth || 900;
-        let H = canvas.offsetHeight || 600;
-        canvas.width = W;
-        canvas.height = H;
-
-        const handleResize = () => {
-          if (!canvasRef.current) return;
-          W = canvasRef.current.offsetWidth || 900;
-          H = canvasRef.current.offsetHeight || 600;
-          canvasRef.current.width = W;
-          canvasRef.current.height = H;
-        };
-        onResize = handleResize;
-        window.addEventListener('resize', handleResize);
-
-        // Initialise node positions in a circle to avoid initial clustering
-        const nodes: GraphNode[] = rawNodes.map((n, i) => {
-          const angle = (2 * Math.PI * i) / rawNodes.length;
-          return {
-            ...n,
-            x: W / 2 + Math.cos(angle) * (Math.min(W, H) * 0.3),
-            y: H / 2 + Math.sin(angle) * (Math.min(W, H) * 0.3),
-            vx: 0,
-            vy: 0,
-          };
-        });
-
-        const nodeMap = new Map(nodes.map((n) => [n.id, n]));
-
-        const simulate = () => {
-          // Repulsion between every node pair (O(n²) – fine for <200 nodes)
-          for (let i = 0; i < nodes.length; i++) {
-            for (let j = i + 1; j < nodes.length; j++) {
-              const dx = nodes[j].x - nodes[i].x || 0.1;
-              const dy = nodes[j].y - nodes[i].y || 0.1;
-              const dist2 = dx * dx + dy * dy;
-              const dist = Math.sqrt(dist2) || 0.1;
-              const force = REPULSION / dist2;
-              const fx = (dx / dist) * force;
-              const fy = (dy / dist) * force;
-              nodes[i].vx -= fx;
-              nodes[i].vy -= fy;
-              nodes[j].vx += fx;
-              nodes[j].vy += fy;
-            }
-          }
-
-          // Spring attraction along edges
-          for (const link of rawLinks) {
-            const src = nodeMap.get(link.source);
-            const tgt = nodeMap.get(link.target);
-            if (!src || !tgt) continue;
-            const dx = tgt.x - src.x;
-            const dy = tgt.y - src.y;
-            const dist = Math.sqrt(dx * dx + dy * dy) || 0.1;
-            const force = SPRING_K * (dist - SPRING_REST);
-            const fx = (dx / dist) * force;
-            const fy = (dy / dist) * force;
-            src.vx += fx;
-            src.vy += fy;
-            tgt.vx -= fx;
-            tgt.vy -= fy;
-          }
-
-          // Centre gravity + damping + integrate
-          for (const n of nodes) {
-            n.vx += (W / 2 - n.x) * GRAVITY;
-            n.vy += (H / 2 - n.y) * GRAVITY;
-            n.vx *= DAMPING;
-            n.vy *= DAMPING;
-            n.x = Math.max(40, Math.min(W - 40, n.x + n.vx));
-            n.y = Math.max(40, Math.min(H - 40, n.y + n.vy));
-          }
-        };
-
-        const draw = () => {
-          ctx.clearRect(0, 0, W, H);
-          ctx.fillStyle = '#0d1117';
-          ctx.fillRect(0, 0, W, H);
-
-          // Edges
-          for (const link of rawLinks) {
-            const src = nodeMap.get(link.source);
-            const tgt = nodeMap.get(link.target);
-            if (!src || !tgt) continue;
-            ctx.beginPath();
-            ctx.moveTo(src.x, src.y);
-            ctx.lineTo(tgt.x, tgt.y);
-            ctx.strokeStyle = 'rgba(99,102,241,0.35)';
-            ctx.lineWidth = 1.5;
-            ctx.stroke();
-
-            // Edge label
-            const mx = (src.x + tgt.x) / 2;
-            const my = (src.y + tgt.y) / 2;
-            ctx.fillStyle = 'rgba(148,163,184,0.6)';
-            ctx.font = '9px Inter, sans-serif';
-            ctx.textAlign = 'center';
-            ctx.fillText(link.type, mx, my);
-          }
-
-          // Nodes
-          for (const n of nodes) {
-            const color = TYPE_COLOR[n.type] ?? TYPE_COLOR.Unknown;
-            const radius = 20;
-
-            // Glow
-            const grd = ctx.createRadialGradient(n.x, n.y, 0, n.x, n.y, radius * 2);
-            grd.addColorStop(0, color + '44');
-            grd.addColorStop(1, 'transparent');
-            ctx.beginPath();
-            ctx.arc(n.x, n.y, radius * 2, 0, 2 * Math.PI);
-            ctx.fillStyle = grd;
-            ctx.fill();
-
-            // Circle
-            ctx.beginPath();
-            ctx.arc(n.x, n.y, radius, 0, 2 * Math.PI);
-            ctx.fillStyle = color + '22';
-            ctx.fill();
-            ctx.strokeStyle = color;
-            ctx.lineWidth = 2;
-            ctx.stroke();
-
-            // Label
-            const label = n.name.length > 14 ? n.name.slice(0, 13) + '…' : n.name;
-            ctx.fillStyle = '#f1f5f9';
-            ctx.font = '11px Inter, sans-serif';
-            ctx.textAlign = 'center';
-            ctx.fillText(label, n.x, n.y + radius + 14);
-
-            // Type badge
-            const badge = TYPE_BADGE[n.type] ?? n.type;
-            ctx.fillStyle = color + 'cc';
-            ctx.font = '9px Inter, sans-serif';
-            ctx.fillText(badge, n.x, n.y + radius + 25);
-          }
-        };
-
-        let frame = 0;
-        const loop = () => {
-          simulate();
-          if (frame % 2 === 0) draw(); // draw every other frame to ease GPU load
-          frame++;
-          animId = requestAnimationFrame(loop);
-        };
-        loop();
-      }
-    }
-
-    return () => {
-      if (animId) cancelAnimationFrame(animId);
-      if (onResize) window.removeEventListener('resize', onResize);
-    };
+  const hubs = useMemo(() => {
+    if (!data) return new Set<string>();
+    const limit = Math.max(8, data.nodes.length * HUB_SHARE);
+    return new Set(data.nodes.filter((n) => n.degree > limit).map((n) => n.id));
   }, [data]);
 
-  if (status === 'loading') {
-    return (
-      <div className="glass-panel p-12 text-center text-slate-400 animate-pulse">
-        Loading institutional relationship graph…
-      </div>
+  /** Focus a node: keep it and its direct connections bright, fade everything else. */
+  const focus = useCallback((node: NodeSingular | null) => {
+    const cy = cyRef.current;
+    if (!cy) return;
+    cy.elements().removeClass('faded focus');
+    if (!node) {
+      setSelected(null);
+      setNeighbours([]);
+      return;
+    }
+    const hood = node.closedNeighborhood();
+    cy.elements().not(hood).addClass('faded');
+    node.addClass('focus');
+    setSelected(node.data() as GraphNode);
+    setNeighbours(
+      node
+        .neighborhood('node')
+        .map((n) => n.data() as GraphNode)
+        .sort((a, b) => b.degree - a.degree),
     );
+    cy.animate({
+      fit: { eles: hood, padding: 80 },
+      duration: 300,
+      // A node with few connections would otherwise fill the screen.
+      complete: () => {
+        if (cy.zoom() > 1.4) cy.zoom({ level: 1.4, position: node.position() });
+      },
+    });
+  }, []);
+
+  // Build the Cytoscape instance once data has arrived and the container is mounted.
+  useEffect(() => {
+    if (!data || !boxRef.current) return;
+    let destroyed = false;
+    import('cytoscape').then(({ default: cytoscape }) => {
+      if (destroyed || !boxRef.current) return;
+      const maxDeg = Math.max(1, ...data.nodes.map((n) => n.degree));
+      const cy = cytoscape({
+        container: boxRef.current,
+        elements: elements(data),
+        minZoom: 0.15,
+        maxZoom: 3,
+        wheelSensitivity: 0.25,
+        style: [
+          {
+            selector: 'node',
+            style: {
+              'background-color': (n: NodeSingular) => COLOR[n.data('type')] ?? '#6b7280',
+              width: (n: NodeSingular) => 14 + 34 * Math.sqrt(n.data('degree') / maxDeg),
+              height: (n: NodeSingular) => 14 + 34 * Math.sqrt(n.data('degree') / maxDeg),
+              label: 'data(label)',
+              color: '#e2e8f0',
+              'font-size': (n: NodeSingular) => 9 + 5 * Math.sqrt(n.data('degree') / maxDeg),
+              'min-zoomed-font-size': 7, // labels appear as you zoom in, so small nodes don't clutter
+              'text-valign': 'bottom',
+              'text-margin-y': 4,
+              'text-wrap': 'ellipsis',
+              'text-max-width': '120px',
+              'text-outline-color': '#0d1117',
+              'text-outline-width': 2,
+              'border-width': 1.5,
+              'border-color': '#0d1117',
+            },
+          },
+          {
+            selector: 'edge',
+            style: {
+              width: 1.2,
+              'line-color': (e) => EDGE_COLOR[e.data('type')] ?? '#64748b',
+              opacity: 0.45,
+              'curve-style': 'haystack',
+            },
+          },
+          { selector: '.faded', style: { opacity: 0.08, 'text-opacity': 0 } },
+          { selector: 'node.focus', style: { 'border-color': '#f8fafc', 'border-width': 3 } },
+          { selector: 'node.match', style: { 'border-color': '#facc15', 'border-width': 3 } },
+        ],
+      });
+      cy.on('tap', 'node', (evt) => focus(evt.target as NodeSingular));
+      cy.on('tap', (evt) => {
+        if (evt.target === cy) focus(null);
+      });
+      cyRef.current = cy;
+      (window as unknown as { __cy?: Core }).__cy = cy; // lets automated UI checks drive the graph
+      window.dispatchEvent(new Event('graph-ready'));
+    });
+    return () => {
+      destroyed = true;
+      cyRef.current?.destroy();
+      cyRef.current = null;
+    };
+  }, [data, focus]);
+
+  // Apply type / hub filters, then lay out what's visible.
+  const applyFilters = useCallback(() => {
+    const cy = cyRef.current;
+    if (!cy) return;
+    cy.batch(() => {
+      cy.nodes().forEach((n) => {
+        const hidden = !shown[n.data('type')] || (hideHubs && hubs.has(n.id()));
+        n.style('display', hidden ? 'none' : 'element');
+      });
+    });
+    // Nodes left with no visible connection add noise; hide them too (after the batch, so
+    // visibility reflects the filters just applied).
+    cy.batch(() => {
+      cy.nodes().forEach((n) => {
+        if (n.style('display') === 'none') return;
+        const linked = n
+          .connectedEdges()
+          .toArray()
+          .some((e) => (e as EdgeSingular).source().visible() && (e as EdgeSingular).target().visible());
+        if (!linked) n.style('display', 'none');
+      });
+    });
+    const visible = cy.elements(':visible');
+    setVisibleCount(cy.nodes(':visible').length);
+    visible
+      .layout({
+        name: 'cose',
+        animate: false,
+        nodeRepulsion: () => 40000,
+        idealEdgeLength: () => 140,
+        nodeOverlap: 40,
+        gravity: 0.15,
+        numIter: 2500,
+        padding: 40,
+        randomize: true,
+      })
+      .run();
+  }, [shown, hideHubs, hubs]);
+
+  useEffect(() => {
+    const run = () => applyFilters();
+    if (cyRef.current) run();
+    window.addEventListener('graph-ready', run);
+    return () => window.removeEventListener('graph-ready', run);
+  }, [applyFilters]);
+
+  const search = (e: React.FormEvent) => {
+    e.preventDefault();
+    const cy = cyRef.current;
+    if (!cy || !query.trim()) return;
+    cy.nodes().removeClass('match');
+    const q = query.trim().toLowerCase();
+    const hits = cy.nodes().filter((n) => String(n.data('name')).toLowerCase().includes(q));
+    if (hits.length === 0) return;
+    hits.forEach((n) => {
+      n.style('display', 'element'); // a search result is shown even if its type is filtered out
+    });
+    hits.addClass('match');
+    focus(hits[0] as NodeSingular);
+  };
+
+  /** Pull the node's full neighbourhood from the server (for graphs too big to load at once). */
+  const expand = async () => {
+    const cy = cyRef.current;
+    if (!cy || !selected) return;
+    const res = await apiFetch(`/api/v1/graph/neighbors/${encodeURIComponent(selected.id)}?depth=1`);
+    if (!res.ok) return;
+    const hood: GraphData = await res.json();
+    const fresh = elements(hood).filter((el) => {
+      const id = el.data.id as string | undefined;
+      if (el.group === 'nodes') return id ? cy.getElementById(id).empty() : false;
+      return !cy.edges().some(
+        (e) => e.data('source') === el.data.source && e.data('target') === el.data.target && e.data('type') === el.data.type,
+      );
+    });
+    cy.add(fresh);
+    const node = cy.getElementById(selected.id);
+    node.closedNeighborhood().style('display', 'element');
+    focus(node as NodeSingular);
+  };
+
+  if (status === 'loading') {
+    return <div className="glass-panel p-12 text-center text-slate-400 animate-pulse">Loading institutional relationship graph…</div>;
   }
   if (status === 'error') {
     return (
@@ -250,23 +269,122 @@ export default function GraphCanvas() {
         <p className="text-slate-300 font-medium">No institutional relationships mapped yet</p>
         <p className="text-slate-400 text-xs max-w-md mx-auto">
           Upload committee minutes or departmental circulars in{' '}
-          <a href="/sources" className="text-blue-400 hover:underline">
-            Document Repositories
-          </a>{' '}
-          — faculty, deans, and committee entities will appear here automatically following NER indexing.
+          <a href="/sources" className="text-blue-400 hover:underline">Document Repositories</a>; people, meetings and
+          committees appear here automatically after indexing.
         </p>
       </div>
     );
   }
 
   return (
-    <div className="glass-panel overflow-hidden">
-      <canvas
-        ref={canvasRef}
-        className="w-full h-[360px] sm:h-[460px] md:h-[540px] lg:h-[600px] block"
-        aria-label="Force-directed organizational relationship graph"
-        role="img"
-      />
+    <div className="space-y-3">
+      <div className="glass-panel p-3 flex flex-wrap items-center gap-2 text-xs">
+        <form onSubmit={search} className="flex gap-1.5">
+          <input
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            placeholder="Find a person, committee, meeting…"
+            aria-label="Search the graph"
+            className="bg-slate-900 border border-slate-700/80 rounded px-2.5 py-1 text-xs text-slate-100 w-56 focus:outline-none focus:border-blue-500"
+          />
+          <button type="submit" className="px-2.5 py-1 rounded border border-slate-700 text-slate-200 hover:border-blue-500/60 cursor-pointer">
+            Find
+          </button>
+        </form>
+        <span className="mx-1 h-4 w-px bg-slate-700" aria-hidden />
+        {TYPES.map((t) => (
+          <label key={t.key} className="flex items-center gap-1.5 cursor-pointer text-slate-300">
+            <input type="checkbox" checked={shown[t.key]} onChange={(e) => setShown({ ...shown, [t.key]: e.target.checked })} />
+            <span className="w-2.5 h-2.5 rounded-full inline-block" style={{ background: t.color }} />
+            {t.label}
+          </label>
+        ))}
+        <label className="flex items-center gap-1.5 cursor-pointer text-slate-300" title="Nodes linked to a large share of the graph, such as the college itself">
+          <input type="checkbox" checked={hideHubs} onChange={(e) => setHideHubs(e.target.checked)} />
+          Hide hubs{hubs.size ? ` (${hubs.size})` : ''}
+        </label>
+        <button
+          type="button"
+          onClick={() => {
+            focus(null);
+            cyRef.current?.animate({ fit: { eles: cyRef.current.elements(':visible'), padding: 30 }, duration: 300 });
+          }}
+          className="ml-auto px-2.5 py-1 rounded border border-slate-700 text-slate-200 hover:border-blue-500/60 cursor-pointer"
+        >
+          Reset view
+        </button>
+      </div>
+
+      {data?.truncated && (
+        <p className="text-[11px] text-amber-300/90">
+          The graph is larger than the display limit, so some links are not drawn. Search for a node and use “Show all its
+          connections” to load its full neighbourhood.
+        </p>
+      )}
+
+      <div className="grid lg:grid-cols-[minmax(0,1fr)_18rem] gap-3">
+        <div className="glass-panel overflow-hidden relative">
+          <div
+            ref={boxRef}
+            className="w-full h-[420px] sm:h-[520px] lg:h-[620px] bg-[#0d1117]"
+            role="img"
+            aria-label="Knowledge graph of people, committees, meetings and documents"
+          />
+          <p className="absolute bottom-2 left-3 text-[10px] text-slate-500 pointer-events-none">
+            {visibleCount} nodes shown · scroll to zoom · drag to pan · click a node to focus
+          </p>
+        </div>
+
+        <aside className="glass-panel p-3 text-xs space-y-2 max-h-[620px] overflow-y-auto" aria-label="Selected node">
+          {!selected ? (
+            <div className="text-slate-400 space-y-2">
+              <p className="text-slate-200 font-medium">Click a node to focus it.</p>
+              <p>Only it and its direct connections stay bright; its connections are listed here.</p>
+              <p>Bigger nodes have more connections. Labels of small nodes appear as you zoom in.</p>
+              <p>
+                Lines: <span style={{ color: EDGE_COLOR.ATTENDED }}>orange</span> = attended a meeting,{' '}
+                <span style={{ color: EDGE_COLOR.MENTIONS }}>indigo</span> = mentioned in a document or meeting.
+              </p>
+            </div>
+          ) : (
+            <>
+              <div>
+                <p className="text-sm font-semibold text-slate-100 break-words">{selected.name}</p>
+                <p className="text-slate-400">
+                  {LABEL[selected.type] ?? selected.type}
+                  {selected.department && selected.department !== 'all' ? ` · ${selected.department}` : ''}
+                  {selected.visibility ? ` · ${selected.visibility}` : ''} · {selected.degree} connection
+                  {selected.degree === 1 ? '' : 's'}
+                </p>
+              </div>
+              <button type="button" onClick={expand} className="w-full px-2 py-1 rounded border border-slate-700 text-slate-200 hover:border-blue-500/60 cursor-pointer">
+                Show all its connections
+              </button>
+              <ul className="space-y-1">
+                {neighbours.map((n) => (
+                  <li key={n.id}>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        const node = cyRef.current?.getElementById(n.id);
+                        if (node && node.nonempty()) {
+                          node.style('display', 'element');
+                          focus(node as NodeSingular);
+                        }
+                      }}
+                      className="w-full text-left flex items-center gap-2 px-1.5 py-1 rounded hover:bg-slate-800/70 cursor-pointer"
+                    >
+                      <span className="w-2 h-2 rounded-full shrink-0" style={{ background: COLOR[n.type] ?? '#6b7280' }} />
+                      <span className="text-slate-200 truncate">{n.name}</span>
+                      <span className="ml-auto text-slate-500">{n.degree}</span>
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            </>
+          )}
+        </aside>
+      </div>
     </div>
   );
 }

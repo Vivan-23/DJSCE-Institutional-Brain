@@ -98,7 +98,7 @@ def process_document_task(text: str, filename: str, visibility: str = "internal"
     entities = ner_service.extract_entities(text)
     people, bodies = graph_entities(text, entities)
     try:
-        graph_service.record_document(filename, visibility, people, bodies)
+        graph_service.record_document(filename, visibility, people, bodies, department)
     except Exception as e:
         log.warning("Graph write failed", filename=filename, error=str(e))
     log.info("Entities linked in graph", filename=filename, people=len(people), bodies=len(bodies))
@@ -146,7 +146,7 @@ def process_transcript_task(
         people, bodies = graph_entities(
             transcript, ner_service.extract_entities(transcript), known_people=result.get("speakers") or []
         )
-        graph_service.record_meeting(title, people, bodies)
+        graph_service.record_meeting(title, people, bodies, department)
     except Exception as e:
         log.warning("Meeting graph write failed", title=title, error=str(e))
     return result

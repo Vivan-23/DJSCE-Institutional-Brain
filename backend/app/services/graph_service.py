@@ -158,14 +158,14 @@ class GraphService:
         return neo4j_conn.execute_query(query, {"email": email, "project_name": project_name})
 
     def record_document(
-        self, filename: str, visibility: str, people: list[dict], bodies: list[str]
+        self, filename: str, visibility: str, people: list[dict], bodies: list[str], department: str = "all"
     ) -> None:
         """One document node + MENTIONS edges to every person and body found in it."""
         self._ensure_constraints()
         neo4j_conn.execute_write(
             """
             MERGE (d:Document {name: $filename})
-            SET d.visibility = $visibility
+            SET d.visibility = $visibility, d.department = $department
             FOREACH (person IN $people |
               MERGE (e:Employee {email: person.email})
               ON CREATE SET e.name = person.name, e.id = randomUUID()
@@ -176,16 +176,17 @@ class GraphService:
               MERGE (d)-[:MENTIONS]->(p))
             """,
             # Sorted so concurrent writers lock nodes in the same order (avoids deadlocks).
-            {"filename": filename, "visibility": visibility,
+            {"filename": filename, "visibility": visibility, "department": department,
              "people": sorted(people, key=lambda p: p["email"]), "bodies": sorted(bodies or [])},
         )
 
-    def record_meeting(self, title: str, people: list[dict], bodies: list[str]) -> None:
+    def record_meeting(self, title: str, people: list[dict], bodies: list[str], department: str = "all") -> None:
         """One meeting node; ATTENDED edges from participants, MENTIONS edges to bodies discussed."""
         self._ensure_constraints()
         neo4j_conn.execute_write(
             """
             MERGE (m:Meeting {name: $title})
+            SET m.department = $department
             FOREACH (person IN $people |
               MERGE (e:Employee {email: person.email})
               ON CREATE SET e.name = person.name, e.id = randomUUID()
@@ -195,7 +196,8 @@ class GraphService:
               ON CREATE SET p.status = 'active', p.id = randomUUID()
               MERGE (m)-[:MENTIONS]->(p))
             """,
-            {"title": title, "people": sorted(people, key=lambda p: p["email"]), "bodies": sorted(bodies or [])},
+            {"title": title, "department": department,
+             "people": sorted(people, key=lambda p: p["email"]), "bodies": sorted(bodies or [])},
         )
 
 

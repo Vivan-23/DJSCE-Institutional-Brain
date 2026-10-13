@@ -50,7 +50,10 @@ Demo logins come from `institution.yaml` (all `demo123`): `admin@example.com`, `
 ## Architecture (big picture)
 - **Backend** FastAPI (`backend/app`). Routers in `api/v1/*` stay thin; domain logic in `services/*` module-level singletons.
   Schema = `models/structured.py`; lists/dicts are stored as **JSON strings**. New tables must be registered in
-  `core/db.py:init_db()` **and** `tests/conftest.py`.
+  `core/db.py:init_db()` **and** `tests/conftest.py`. **Every schema change needs an Alembic migration**
+  (`backend/migrations/`; `alembic revision --autogenerate -m "..."`, run inside the backend image against a scratch
+  Postgres DB). Startup runs `alembic upgrade head`, so data survives code changes; `tests/test_migrations.py`
+  fails if models and migrations drift. Never `docker compose down -v` a database you want to keep.
 - **Async work**: ingestion endpoints return 202 and enqueue Celery tasks; all tasks + beat schedule live in
   `core/celery.py` (lazy imports inside task bodies).
 - **One evidence pipeline**: everything indexed is a `Fragment` written via `fragment_service` (Postgres row + Chroma vector).

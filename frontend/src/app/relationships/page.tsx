@@ -24,7 +24,7 @@ export default function RelationshipsPage() {
   }, []);
 
   return (
-    <main className="p-6 md:p-10 max-w-5xl mx-auto space-y-6">
+    <main className="p-6 md:p-10 max-w-7xl mx-auto space-y-6">
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
@@ -32,7 +32,7 @@ export default function RelationshipsPage() {
             Institutional Knowledge Graph
           </h1>
           <p className="text-slate-400 text-xs sm:text-sm mt-1">
-            Force-directed entity graph of faculty, leadership, committees, and academic initiatives mapped automatically by the NLP extraction pipeline.
+            Who attended which meetings and which committees, departments and documents are connected, extracted automatically from meetings and documents. Filter by type, search, and click a node to focus on it.
           </p>
         </div>
         {stats && (

@@ -8,6 +8,22 @@ Format: `## YYYY-MM-DD — title` then bullets of what/why.
 
 ---
 
+## 2026-10-14 — Alembic migrations: data survives code changes
+- `backend/migrations/` + `alembic.ini`; baseline `0001_baseline` = current schema. `init_db()` now runs
+  `alembic upgrade head`; a database created before migrations existed is **stamped**, not re-created (verified live:
+  12 users, 7 tickets, 3 notices, 153 fragments kept across a full rebuild).
+- `tests/test_migrations.py`: migrations reproduce the models exactly, and a pre-migration DB keeps its rows.
+- Dependency: `alembic==1.13.3`, `Mako==1.3.5`. USAGE.md §8: how to add a migration; `pg_dump` backup/restore.
+
+## 2026-10-14 — Knowledge graph redesign (readable at scale)
+- Cytoscape.js 3.34.3 replaces the hand-written canvas: zoom/pan, force layout, node size by number of connections,
+  labels that appear as you zoom, no edge labels (colour = relation), type filters (documents off by default),
+  "hide hubs" (nodes linked to > 25% of the graph, e.g. DJSCE), search, click-to-focus with a connections panel.
+- `/graph/data` returns up to 2000 relationships (was 200) with a `truncated` flag; new `/graph/neighbors/{id}`
+  loads one node's neighbourhood for graphs too large to draw.
+- **Fix**: the graph ignored department scope (IT faculty could see CE meetings/documents). Document and Meeting
+  nodes now carry `department` and both endpoints drop out-of-scope nodes and their edges.
+
 ## 2026-10-14 — Notices to students
 - `/api/v1/notices` + `/notices` page: staff send a notice (title, message, urgent flag, optional "show until" date)
   to an audience chosen by role, department, year, semester and division, with a live "reaches N people" count.
