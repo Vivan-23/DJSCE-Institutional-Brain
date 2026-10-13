@@ -39,26 +39,36 @@ const SPRING_REST = 130;
 const DAMPING = 0.84;
 const GRAVITY = 0.0015;
 
+type GraphData = { nodes: { id: string; name: string; type: string }[]; links: GraphLink[] };
+
 export default function GraphCanvas() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [status, setStatus] = useState<'loading' | 'empty' | 'error' | 'ready'>('loading');
+  const [data, setData] = useState<GraphData | null>(null);
 
+  // Fetch first; draw in a second effect, once the canvas element is actually mounted.
   useEffect(() => {
-    let animId = 0;
-    let onResize: (() => void) | null = null;
-
     apiFetch('/api/v1/graph/data')
       .then((r) => r.json())
-      .then((data: { nodes: { id: string; name: string; type: string }[]; links: GraphLink[] }) => {
-        const rawNodes = data.nodes ?? [];
-        const rawLinks = data.links ?? [];
-
-        if (rawNodes.length === 0) {
+      .then((d: GraphData) => {
+        if (!d.nodes?.length) {
           setStatus('empty');
           return;
         }
+        setData(d);
         setStatus('ready');
+      })
+      .catch(() => setStatus('error'));
+  }, []);
 
+  useEffect(() => {
+    if (!data) return;
+    let animId = 0;
+    let onResize: (() => void) | null = null;
+    const rawNodes = data.nodes;
+    const rawLinks = data.links ?? [];
+    {
+      {
         const canvas = canvasRef.current;
         if (!canvas) return;
         const ctx = canvas.getContext('2d');
@@ -211,14 +221,14 @@ export default function GraphCanvas() {
           animId = requestAnimationFrame(loop);
         };
         loop();
-      })
-      .catch(() => setStatus('error'));
+      }
+    }
 
     return () => {
       if (animId) cancelAnimationFrame(animId);
       if (onResize) window.removeEventListener('resize', onResize);
     };
-  }, []);
+  }, [data]);
 
   if (status === 'loading') {
     return (
