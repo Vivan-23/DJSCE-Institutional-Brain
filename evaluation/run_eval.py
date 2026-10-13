@@ -32,6 +32,15 @@ ABSTAIN_RE = re.compile(r"(does not|doesn't|do not) (contain|include|mention|pro
 
 
 # ── helpers ──────────────────────────────────────────────────────────────────
+_SPACES = dict.fromkeys(map(ord, "      "), " ")
+_DASHES = dict.fromkeys(map(ord, "‐‑‒–—"), "-")
+
+
+def norm(text):
+    """Lower-case with Unicode spaces/dashes folded, so 'October 14' matches 'October 14'."""
+    return (text or "").translate(_SPACES).translate(_DASHES).lower()
+
+
 def pct(xs, p):
     if not xs:
         return None
@@ -188,12 +197,12 @@ def eval_qa(api, users, pause):
         ans, srcs = body.get("response") or "", body.get("sources") or []
         refs = [(s.get("source_ref") or "").lower() for s in srcs]
         hit = any(any(exp.lower() in r for r in refs) for exp in q["expected_sources"])
-        low = ans.lower()
+        low = norm(ans)
         ok = True
         if q.get("must_include"):
-            ok = any(k.lower() in low for k in q["must_include"])
+            ok = any(norm(k) in low for k in q["must_include"])
         if q.get("must_include_all"):
-            ok = ok and all(k.lower() in low for k in q["must_include_all"])
+            ok = ok and all(norm(k) in low for k in q["must_include_all"])
         rows.append({
             "id": q["id"], "role": q["role"], "retrieval_hit": hit, "correct": ok,
             "cited": bool(CITE_RE.search(ans)), "abstained": bool(ABSTAIN_RE.search(ans)),
@@ -230,7 +239,7 @@ def eval_visibility(api, student, pause):
         body, dt = api.chat(student, q)
         ans, srcs = body.get("response") or "", body.get("sources") or []
         internal = [s.get("source_ref") for s in srcs if s.get("visibility") != "public"]
-        forbidden = [f for f in spec["forbidden"] if f.lower() not in q.lower() and f.lower() in ans.lower()]
+        forbidden = [f for f in spec["forbidden"] if norm(f) not in norm(q) and norm(f) in norm(ans)]
         rows.append({
             "question": q, "scope": body.get("scope"), "internal_sources": internal,
             "forbidden_in_answer": forbidden, "leak": bool(internal or forbidden), "latency_s": round(dt, 3),

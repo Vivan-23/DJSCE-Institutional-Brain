@@ -18,7 +18,7 @@
     {"id": "q15", "role": "staff", "question": "Who is compiling the CO-PO mapping matrix for the elective, and by when?", "expected_sources": ["Academic Council"], "must_include_all": ["Karan Shah", "Friday"]},
     {"id": "q16", "role": "staff", "question": "Within how many working days must laboratory continuous evaluation marks be posted?", "expected_sources": ["Iqac", "doc_IQAC"], "must_include": ["7", "seven"]},
     {"id": "q17", "role": "staff", "question": "What was the average course satisfaction index in the IQAC mid-semester audit?", "expected_sources": ["Iqac"], "must_include": ["87"]},
-    {"id": "q18", "role": "staff", "question": "How many faculty course files were fully compliant in the IQAC course file audit?", "expected_sources": ["Iqac"], "must_include": ["14"]},
+    {"id": "q18", "role": "staff", "question": "How many faculty course files were fully compliant in the IQAC course file audit?", "expected_sources": ["Iqac"], "must_include": ["14", "fourteen"]},
     {"id": "q19", "role": "staff", "question": "What must examiners do if internal and external practical marks differ by more than 15%?", "expected_sources": ["Examination Moderation"], "must_include": ["24 hours", "consensus", "reconcil"]},
     {"id": "q20", "role": "staff", "question": "Who should be contacted if examiners do not appear for a practical exam?", "expected_sources": ["Examination Moderation"], "must_include": ["Karan Shah", "Rohan Mehta"]},
     {"id": "q21", "role": "staff", "question": "By what date must question paper moderation for laboratory practicals be completed?", "expected_sources": ["Lab Readiness"], "must_include": ["October 14", "14 October", "Oct 14"]},
