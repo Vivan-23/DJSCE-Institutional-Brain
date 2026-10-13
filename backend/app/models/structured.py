@@ -69,6 +69,7 @@ class Meeting(SQLModel, table=True):
     occurred_at: datetime
     summary: Optional[str] = None
     participants: str = Field(default="[]")  # JSON list of participant names
+    decisions: str = Field(default="[]")  # JSON list of decisions extracted from the transcript
     source: str = Field(default="upload")  # upload / zoom / otter / fireflies / ...
     raw_transcript: Optional[str] = None
     department: str = Field(default="all", index=True)  # owning department code, or "all"

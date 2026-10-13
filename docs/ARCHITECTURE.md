@@ -74,6 +74,7 @@ tests/             pytest suite. conftest.py mocks all external services.
 | `graph_service.py` | `graph_service` | Neo4j writes. Nodes `:Employee` (person), `:Project` (body: committee/cell/board/department/lab), `:Document`, `:Meeting`; edges `(Document)-[:MENTIONS]->`, `(Employee)-[:ATTENDED]->(Meeting)`, `(Meeting)-[:MENTIONS]->(Project)`. `graph_entities()` cleans NER: people need an honorific or roster match, bodies must name an institutional unit. Uniqueness constraints keep concurrent MERGEs duplicate-free. |
 | `rag_service.py` | `rag_service` | Grounded Q&A via `llm_service`. `retrieve(public_only=)` filters by visibility inside the Chroma query (and re-checks results); `answer()` returns `{answer, sources}`. |
 | `calendar_service.py` | `calendar_service` | Merges `academic_calendar:` (institution.yaml) with commitment due dates; `post_reminders()` writes `deadline` ActiveInsights (idempotent) for items due within 3 days. |
+| `minutes_service.py` | `minutes_service` | Formal draft minutes from a stored meeting (attendees, summary, `Meeting.decisions`, commitments with owner/due/status) → DOCX (python-docx) or PDF (reportlab). No LLM call at export time. |
 | `ticket_service.py` | `ticket_service` | Help desk: triage chain from `settings.TRIAGE_ENGINES` (default `llm,keyword`; optional `laya`, a non-generative classifier, abstains below 0.5 confidence) → keyword fallback; category/priority/`routed_to` from `institution.yaml`; staff-only AI draft (`rag_service.answer(purpose="ticket_draft")`); human reply; audited. |
 | `connectors/` | registry | Source-connector framework: `base.py` + `slack/db/manual` stubs + `registry.py`. |
 
@@ -86,7 +87,7 @@ tests/             pytest suite. conftest.py mocks all external services.
 | `insights.py` | `/insights` | 👥 Active Feed insights (list/dismiss). |
 | `chat.py` | `/chat` | Grounded Q&A with `sources`; students get `public_only` retrieval. |
 | `graph.py` | `/graph` | 👥 Graph data for the relationship map. |
-| `transcripts.py` | `/transcripts` | 👥 Ingest transcript (202 → task) + list/get meetings. |
+| `transcripts.py` | `/transcripts` | 👥 Ingest transcript (202 → task) + list/get meetings. | `GET /{id}/minutes?format=docx|pdf` (Coordinator+) exports formal draft minutes.
 | `commitments.py` | `/commitments` | 👥 list / mine / patch status. |
 | `pa.py` | `/pa` | 👥 followups (+reply), checkin (message/complete). |
 | `skills.py` | `/skills` | 👥 list / extract🔒 / get / patch🔒 / approve🔒 / reject🔒 / file / feedback. |

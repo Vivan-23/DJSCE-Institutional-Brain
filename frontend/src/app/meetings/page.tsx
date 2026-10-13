@@ -2,6 +2,8 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { apiFetch } from '@/lib/api';
 import { formatDateTime } from '@/lib/format';
+import { isCoordinatorRole, useMe } from '@/lib/roles';
+import { useInstitution } from '@/lib/useInstitution';
 
 type SubmitStatus = 'idle' | 'submitting' | 'queued' | 'error';
 
@@ -11,11 +13,27 @@ interface MeetingSummary {
   occurred_at: string;
   summary: string | null;
   source: string;
+  department: string;
 }
 
 interface MeetingDetail extends MeetingSummary {
   participants: string[];
+  decisions: string[];
   raw_transcript: string;
+}
+
+/** Download an authenticated file (the JWT header rules out a plain link). */
+async function downloadMinutes(id: string, format: 'docx' | 'pdf'): Promise<string | null> {
+  const res = await apiFetch(`/api/v1/transcripts/${id}/minutes?format=${format}`);
+  if (!res.ok) return `Export failed (HTTP ${res.status})`;
+  const name = /filename="([^"]+)"/.exec(res.headers.get('content-disposition') ?? '')?.[1] ?? `minutes.${format}`;
+  const url = URL.createObjectURL(await res.blob());
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = name;
+  a.click();
+  URL.revokeObjectURL(url);
+  return null;
 }
 
 interface QueueResult {
@@ -62,6 +80,11 @@ Dr. Rohan Mehta: I will follow up with the remaining faculty on missing course f
 export default function MeetingsPage() {
   const [title, setTitle] = useState('');
   const [transcript, setTranscript] = useState('');
+  const [department, setDepartment] = useState('all');
+  const [exportError, setExportError] = useState('');
+  const { departments } = useInstitution();
+  const me = useMe();
+  const canExport = isCoordinatorRole(me?.role);
   const [status, setStatus] = useState<SubmitStatus>('idle');
   const [result, setResult] = useState<QueueResult | null>(null);
   const [errorMsg, setErrorMsg] = useState('');
@@ -119,6 +142,7 @@ export default function MeetingsPage() {
           title: title.trim(),
           transcript,
           source: 'demo_institutional',
+          department,
         }),
       });
       const data = await res.json();
@@ -209,6 +233,24 @@ export default function MeetingsPage() {
               className="w-full bg-slate-900/90 border border-slate-700/80 rounded-lg px-3.5 py-2 text-xs sm:text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:border-blue-500"
             />
           </div>
+
+          {departments.length > 0 && (
+            <label className="flex items-center gap-2 text-xs text-slate-300">
+              Department
+              <select
+                value={department}
+                onChange={(e) => setDepartment(e.target.value)}
+                className="flex-1 bg-slate-900/90 border border-slate-700/80 rounded-lg px-2.5 py-1.5 text-xs text-slate-100 focus:outline-none focus:border-blue-500"
+              >
+                <option value="all">Institution-wide (visible to every department)</option>
+                {departments.map((d) => (
+                  <option key={d.code} value={d.code}>
+                    {d.name} only
+                  </option>
+                ))}
+              </select>
+            </label>
+          )}
 
           <div>
             <label
@@ -348,6 +390,38 @@ export default function MeetingsPage() {
                                   </span>
                                 ))}
                               </div>
+                            </div>
+                          )}
+
+                          {detail.decisions.length > 0 && (
+                            <div>
+                              <h3 className="text-[11px] uppercase tracking-wider font-semibold text-slate-400 mb-1">
+                                Decisions
+                              </h3>
+                              <ol className="list-decimal list-inside space-y-0.5 text-xs sm:text-sm text-slate-200">
+                                {detail.decisions.map((d) => (
+                                  <li key={d}>{d}</li>
+                                ))}
+                              </ol>
+                            </div>
+                          )}
+
+                          {canExport && (
+                            <div className="flex flex-wrap items-center gap-2">
+                              <span className="text-[11px] uppercase tracking-wider font-semibold text-slate-400">
+                                Formal minutes
+                              </span>
+                              {(['docx', 'pdf'] as const).map((f) => (
+                                <button
+                                  key={f}
+                                  type="button"
+                                  onClick={async () => setExportError((await downloadMinutes(detail.id, f)) ?? '')}
+                                  className="px-2.5 py-1 rounded border border-slate-700 text-xs text-slate-200 hover:border-blue-500/60 cursor-pointer"
+                                >
+                                  Download {f.toUpperCase()}
+                                </button>
+                              ))}
+                              {exportError && <span className="text-rose-400 text-xs">{exportError}</span>}
                             </div>
                           )}
 

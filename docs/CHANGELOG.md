@@ -8,6 +8,14 @@ Format: `## YYYY-MM-DD — title` then bullets of what/why.
 
 ---
 
+## 2026-10-14 — Meeting minutes export
+- `GET /api/v1/transcripts/{id}/minutes?format=docx|pdf` (Coordinator+, department scoped, audited as
+  `minutes_export`). Built from stored extraction only; every file carries a "draft, verify before circulating" notice.
+- **Schema**: `Meeting.decisions` (JSON list). Decisions were extracted but never saved before.
+- Dependency: `reportlab==4.2.5` (+ `pillow==11.0.0`, `chardet==5.2.0`) in `requirements.lock`; the Dockerfile
+  installs from the lock, not `requirements.txt`.
+- Meetings page: decisions list, department picker on upload, DOCX/PDF buttons for coordinators.
+
 ## 2026-10-14 — Academic calendar and deadline reminders
 - `academic_calendar:` in `institution.yaml` (synthetic demo dates, labelled as such); `calendar_service` merges it
   with each staff member's open commitments that have due dates. `GET /api/v1/calendar` (all roles, audience and

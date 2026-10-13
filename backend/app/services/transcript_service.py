@@ -69,6 +69,7 @@ class TranscriptService:
             occurred_at=occurred_at,
             summary=extracted.get("summary") or None,
             participants=json.dumps(extracted.get("participants") or []),
+            decisions=json.dumps(extracted.get("decisions") or []),
             source=source,
             raw_transcript=transcript[:50_000],
             department=department,

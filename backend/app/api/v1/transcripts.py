@@ -1,13 +1,16 @@
 """Meeting transcript ingestion — the Phase-1 capture entry point."""
+import json
 from datetime import datetime
 from typing import Optional
+from uuid import UUID
 
 import structlog
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Query
+from fastapi.responses import Response
 from pydantic import BaseModel
 from sqlmodel import Session, select
 
-from app.api.v1.auth import department_scope, parse_department, require_staff
+from app.api.v1.auth import department_scope, parse_department, require_role, require_staff
 from app.core.db import get_session
 from app.models.structured import Meeting, User
 
@@ -77,22 +80,26 @@ def list_meetings(
     ]
 
 
+def _get_scoped(db: Session, meeting_id: str, user: User) -> Meeting:
+    """The meeting, or 404 if missing or outside the user's department scope."""
+    try:
+        mid = UUID(meeting_id)
+    except ValueError:
+        raise HTTPException(status_code=400, detail="Invalid meeting id")
+    meeting = db.get(Meeting, mid)
+    scope = department_scope(user)
+    if not meeting or (scope is not None and meeting.department not in scope):
+        raise HTTPException(status_code=404, detail="Meeting not found")
+    return meeting
+
+
 @router.get("/{meeting_id}")
 def get_meeting(
     meeting_id: str,
     current_user: User = Depends(require_staff),
     db: Session = Depends(get_session),
 ):
-    from uuid import UUID
-    try:
-        mid = UUID(meeting_id)
-    except ValueError:
-        raise HTTPException(status_code=400, detail="Invalid meeting id")
-    meeting = db.get(Meeting, mid)
-    scope = department_scope(current_user)
-    if not meeting or (scope is not None and meeting.department not in scope):
-        raise HTTPException(status_code=404, detail="Meeting not found")
-    import json
+    meeting = _get_scoped(db, meeting_id, current_user)
     return {
         "id": str(meeting.id),
         "title": meeting.title,
@@ -101,5 +108,35 @@ def get_meeting(
         "source": meeting.source,
         "department": meeting.department,
         "participants": json.loads(meeting.participants or "[]"),
+        "decisions": json.loads(meeting.decisions or "[]"),
         "raw_transcript": meeting.raw_transcript,
     }
+
+
+_MINUTES_TYPES = {
+    "docx": "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+    "pdf": "application/pdf",
+}
+
+
+@router.get("/{meeting_id}/minutes")
+def export_minutes(
+    meeting_id: str,
+    format: str = Query("docx", pattern="^(docx|pdf)$"),
+    current_user: User = Depends(require_role("manager")),
+    db: Session = Depends(get_session),
+):
+    """Formal draft minutes (DOCX or PDF) built from the stored extraction. Coordinator+; audited."""
+    from app.services.audit_service import audit_service
+    from app.services.minutes_service import minutes_service
+
+    meeting = _get_scoped(db, meeting_id, current_user)
+    minutes = minutes_service.build(db, meeting)
+    body = minutes_service.to_pdf(minutes) if format == "pdf" else minutes_service.to_docx(minutes)
+    audit_service.record(db, actor=current_user.email, action="minutes_export", target_id=str(meeting.id),
+                         metadata={"format": format})
+    return Response(
+        content=body,
+        media_type=_MINUTES_TYPES[format],
+        headers={"Content-Disposition": f'attachment; filename="{minutes_service.filename(minutes, format)}"'},
+    )

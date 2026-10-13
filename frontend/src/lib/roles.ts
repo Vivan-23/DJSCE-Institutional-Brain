@@ -16,11 +16,17 @@ export function isStaffRole(role: string | undefined | null): boolean {
   return role === 'employee' || role === 'manager' || role === 'admin';
 }
 
+/** Committee Coordinator or System Administrator (minutes export, analytics, approvals). */
+export function isCoordinatorRole(role: string | undefined | null): boolean {
+  return role === 'manager' || role === 'admin';
+}
+
 export interface Me {
   id: string;
   email: string;
   full_name: string | null;
   role: Role;
+  department: string | null;
 }
 
 let cached: { token: string; me: Me } | null = null;
