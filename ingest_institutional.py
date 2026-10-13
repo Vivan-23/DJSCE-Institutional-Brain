@@ -13,6 +13,10 @@ through the application pipeline:
 Usage:
   python ingest_institutional.py              # Ingests all 4 scenarios & reference documents
   python ingest_institutional.py --approve    # Also auto-approves extracted procedures
+  python ingest_institutional.py --no-demo-tickets   # Skip the sample help-desk tickets
+
+Sample tickets are raised by the demo students through the real help-desk API (so AI triage and
+drafts run as normal); staff then answer or close some, giving open / answered / closed examples.
 """
 import os
 import sys
@@ -37,8 +41,8 @@ def _title_from(filename: str) -> str:
     return " ".join(words)
 
 
-def login() -> str:
-    r = requests.post(f"{API}/api/v1/auth/login", json={"email": EMAIL, "password": PASSWORD})
+def login(email: str = EMAIL, password: str = PASSWORD) -> str:
+    r = requests.post(f"{API}/api/v1/auth/login", json={"email": email, "password": password})
     if r.status_code != 200:
         sys.exit(f"Login failed ({r.status_code}): {r.text}\nIs backend running and is {EMAIL} seeded in institution.yaml?")
     print(f"[OK] Logged in as {EMAIL}")
@@ -149,6 +153,67 @@ def extract_skills(token: str, approve: bool) -> None:
     print(f"[OK] Approved {approved} procedure(s) for formal SKILL.md export")
 
 
+# (student, subject, description, staff who acts, action, staff reply). Action: None = stays open.
+DEMO_TICKETS = [
+    ("aarav.desai@example.com", "Revaluation of my Data Structures paper",
+     "I got 38 in the semester-end Data Structures exam and expected more. How do I apply for revaluation and what is the deadline?",
+     "karan.shah@example.com", "answer",
+     "Apply through the Examination Cell within 7 days of the result, after paying the revaluation fee on the fee portal. "
+     "Your script will be checked by a different examiner; the revised result is usually out within about three weeks."),
+    ("aarav.desai@example.com", "Scholarship form for second year",
+     "Which documents do I need for the post-matric scholarship renewal, and where do I submit them?",
+     "pooja.verma@example.com", "close",
+     "Renewal needs last year's marksheet, the income certificate and the fee receipt. Submit online on the state portal and "
+     "hand the printed acknowledgement to the scholarship desk in the administrative office. Closing this; reopen if anything is unclear."),
+    ("aarav.desai@example.com", "Wi-Fi not working in the second-floor lab",
+     "The lab computers on the second floor have had no internet since Monday, so we cannot finish the web programming practical.",
+     None, None, None),
+    ("isha.kulkarni@example.com", "Can I change my honours specialisation?",
+     "I registered for the honours track in AI/ML but want to switch to Cyber Security. Is it allowed after the first semester of the track?",
+     "aditi.rao@example.com", "answer",
+     "A switch is considered only before the second semester of the track and needs the Head of Department's approval. "
+     "Write to the department office with your reason; credits already earned will count as electives."),
+    ("isha.kulkarni@example.com", "Hostel fee receipt not generated",
+     "I paid the hostel fee online three days ago but the portal still shows the fee as pending and no receipt was generated.",
+     None, None, None),
+    ("isha.kulkarni@example.com", "Duplicate ID card",
+     "I lost my college ID card. How can I get a duplicate one?",
+     "pooja.verma@example.com", "close",
+     "Fill the duplicate ID card form at the administrative office with a passport photo and the fee receipt; the card is ready in about a week."),
+    ("aarav.desai@example.com", "Internship letter for the summer",
+     "I have an internship offer for June and the company needs a bonafide / no-objection letter from the college. Whom should I contact?",
+     None, None, None),
+]
+
+
+def seed_demo_tickets() -> None:
+    """Raise sample tickets as students; staff answer or close some. Skips subjects already raised."""
+    print("Seeding sample help-desk tickets…")
+    tokens: dict[str, str] = {}
+
+    def auth(email: str) -> dict:
+        if email not in tokens:
+            tokens[email] = login(email, PASSWORD)
+        return {"Authorization": f"Bearer {tokens[email]}"}
+
+    counts = {"open": 0, "answered": 0, "closed": 0}
+    for student, subject, description, staff, action, reply in DEMO_TICKETS:
+        mine = requests.get(f"{API}/api/v1/helpdesk/tickets/mine", headers=auth(student))
+        if mine.status_code == 200 and any(t["subject"] == subject for t in mine.json()):
+            continue
+        r = requests.post(f"{API}/api/v1/helpdesk/tickets", json={"subject": subject, "description": description},
+                          headers=auth(student))
+        if r.status_code != 201:
+            print(f"  [!] Ticket not created: {subject} ({r.status_code}) {r.text[:120]}")
+            continue
+        ticket_id = r.json()["id"]
+        if action:
+            requests.post(f"{API}/api/v1/helpdesk/tickets/{ticket_id}/reply",
+                          json={"reply": reply, "close": action == "close"}, headers=auth(staff))
+        counts["closed" if action == "close" else "answered" if action else "open"] += 1
+    print(f"[OK] Sample tickets: {counts['open']} open, {counts['answered']} answered, {counts['closed']} closed")
+
+
 def print_summary(token: str) -> None:
     headers = {"Authorization": f"Bearer {token}"}
     def count_res(path):
@@ -178,6 +243,8 @@ def main() -> None:
     post_documents(token)
     wait_for_processing(token, expected_meetings=posted)
     extract_skills(token, approve=approve)
+    if "--no-demo-tickets" not in sys.argv:
+        seed_demo_tickets()
     print_summary(token)
 
 

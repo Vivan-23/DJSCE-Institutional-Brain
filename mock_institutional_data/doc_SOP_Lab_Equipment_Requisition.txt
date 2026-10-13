@@ -1,0 +1,28 @@
+[DEMONSTRATION PROTOTYPE · SYNTHETIC INSTITUTIONAL REFERENCE]
+Department Laboratory Office: Standard Operating Procedure for Equipment Requisition and Breakage
+SOP Reference: LAB/DJSCE/2026/SOP-07
+
+1. Purpose:
+To standardise how faculty request new laboratory equipment or consumables, and how breakage or loss by students is reported and recovered.
+
+2. Trigger:
+A faculty member needs equipment or consumables for a laboratory course, or a lab assistant records a breakage.
+
+3. Procedure for requisition:
+1. The faculty member fills the Lab Requisition Form with item, quantity, estimated cost and the course it supports.
+2. The Lab-in-Charge checks existing stock in the departmental stock register before forwarding.
+3. Requests under Rs. 25,000 are approved by the Head of Department.
+4. Requests of Rs. 25,000 or more require three vendor quotations and approval of the Purchase Committee.
+5. On delivery, the lab assistant enters the item in the dead-stock or consumables register within 3 working days.
+
+4. Procedure for breakage:
+1. The lab assistant records the breakage in the breakage register with the student's roll number and the date.
+2. The student is informed in writing and recovery is charged at replacement cost.
+3. Recovery amounts are adjusted against the student's caution deposit at the end of the academic year.
+
+5. Guardrails:
+- Equipment must not be moved between laboratories without an entry in both stock registers.
+- Accidental breakage during a supervised experiment, certified by the faculty in charge, is not charged to the student.
+
+6. Escalation:
+Unresolved stock discrepancies are escalated to the Head of Department and reported at the annual stock verification.

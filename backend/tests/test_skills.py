@@ -77,6 +77,18 @@ class TestSkillExtraction:
         ).all()
         assert len(cites) >= 3  # citation coverage back to evidence
 
+    def test_one_candidate_per_source(self, db_session):
+        """Overlapping vocabulary across sources must not collapse them into one skill."""
+        from app.services.skill_service import skill_service
+
+        shared = "procedure approval committee department faculty students submit form within days"
+        for ref in ("sop_exam.txt", "sop_lab.txt", "Meeting A"):
+            db_session.add(Fragment(source_type="document", source_ref=ref, content=f"{ref}: {shared}"))
+        db_session.commit()
+        with patch("app.services.skill_service.extraction_service.extract_skill", return_value=_CANNED_SKILL):
+            created = skill_service.extract_candidates(db_session)
+        assert created == 3
+
     def test_render_file_contains_sections(self):
         from app.services.skill_service import skill_service
 

@@ -29,7 +29,7 @@ log = structlog.get_logger()
 # Fragment kinds that carry procedural knowledge worth synthesizing into skills.
 _PROCEDURE_SOURCES = {"transcript", "document", "slack", "email", "checkin", "followup", "db"}
 _MIN_CLUSTER_SIZE = 3
-_MAX_CLUSTERS_PER_RUN = 5
+_MAX_CLUSTERS_PER_RUN = 10
 
 _STOPWORDS = {
     "the", "a", "an", "and", "or", "but", "if", "then", "to", "of", "in", "on",
@@ -57,7 +57,8 @@ class SkillService:
 
         created = 0
         for cluster in clusters[:_MAX_CLUSTERS_PER_RUN]:
-            if len(cluster) < _MIN_CLUSTER_SIZE:
+            # A sourced cluster is one coherent meeting/document; loose ones need corroboration.
+            if not cluster[0].source_ref and len(cluster) < _MIN_CLUSTER_SIZE:
                 continue
             skill = self._synthesize(db, cluster)
             if skill:
@@ -98,8 +99,21 @@ class SkillService:
         log.info("Candidate skill created", skill_id=str(skill.id), name=skill.name, citations=len(cluster))
         return skill
 
+    @classmethod
+    def _cluster(cls, fragments: list[Fragment]) -> list[list[Fragment]]:
+        """One cluster per source (a meeting or SOP describes one procedure); unsourced
+        fragments fall back to keyword clustering. Pure keyword clustering let the first
+        cluster's growing keyword set absorb nearly everything, yielding a single skill."""
+        by_source: dict[str, list[Fragment]] = {}
+        loose: list[Fragment] = []
+        for f in fragments:
+            (by_source.setdefault(f.source_ref, []) if f.source_ref else loose).append(f)
+        clusters = list(by_source.values()) + cls._keyword_cluster(loose)
+        clusters.sort(key=len, reverse=True)
+        return clusters
+
     @staticmethod
-    def _cluster(fragments: list[Fragment]) -> list[list[Fragment]]:
+    def _keyword_cluster(fragments: list[Fragment]) -> list[list[Fragment]]:
         """Greedy keyword-overlap clustering. Deterministic, no external services."""
         def keywords(text: str) -> set[str]:
             tokens = re.findall(r"[a-z][a-z']+", text.lower())

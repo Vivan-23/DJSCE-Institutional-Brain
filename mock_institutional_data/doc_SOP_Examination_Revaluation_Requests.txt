@@ -1,0 +1,30 @@
+[DEMONSTRATION PROTOTYPE · SYNTHETIC INSTITUTIONAL REFERENCE]
+Examination Cell: Standard Operating Procedure for Revaluation and Photocopy Requests
+SOP Reference: EXAM/DJSCE/2026/SOP-03
+
+1. Purpose:
+To define how the Examination Cell receives, verifies and settles student requests for a photocopy of an answer book or for revaluation of a semester-end examination script.
+
+2. Trigger:
+A student submits a revaluation or photocopy request after semester-end results are declared.
+
+3. Preconditions:
+- Results for the examination session have been formally declared.
+- The request is filed within 7 calendar days of result declaration.
+- The prescribed fee has been paid through the institute fee portal.
+
+4. Procedure:
+1. The Examination Cell clerk logs the request in the revaluation register and issues an acknowledgement number.
+2. The clerk verifies fee payment and the 7-day window; late or unpaid requests are returned with the reason noted.
+3. For photocopy requests, a scanned copy of the answer book is issued within 5 working days.
+4. For revaluation, the script is masked (seat number hidden) and sent to an examiner other than the original evaluator.
+5. If the revised marks differ from the original by 10% of the maximum marks or more, the script goes to a third examiner and the average of the two closest marks is taken.
+6. The Controller of Examinations approves the final marks and the result is updated within 21 working days of the request.
+
+5. Guardrails:
+- The original examiner must never revaluate their own script.
+- Marks can only increase or stay the same if the change is under 10% of maximum marks; any decrease requires the Controller's written approval.
+- No revaluation is permitted for practical, oral or term-work components.
+
+6. Escalation:
+Disputes after revaluation are escalated to the Examination Grievance Committee, chaired by the Controller of Examinations.
