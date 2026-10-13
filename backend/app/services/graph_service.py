@@ -162,7 +162,7 @@ class GraphService:
     ) -> None:
         """One document node + MENTIONS edges to every person and body found in it."""
         self._ensure_constraints()
-        neo4j_conn.execute_query(
+        neo4j_conn.execute_write(
             """
             MERGE (d:Document {name: $filename})
             SET d.visibility = $visibility
@@ -175,13 +175,15 @@ class GraphService:
               ON CREATE SET p.status = 'active', p.id = randomUUID()
               MERGE (d)-[:MENTIONS]->(p))
             """,
-            {"filename": filename, "visibility": visibility, "people": people, "bodies": bodies or []},
+            # Sorted so concurrent writers lock nodes in the same order (avoids deadlocks).
+            {"filename": filename, "visibility": visibility,
+             "people": sorted(people, key=lambda p: p["email"]), "bodies": sorted(bodies or [])},
         )
 
     def record_meeting(self, title: str, people: list[dict], bodies: list[str]) -> None:
         """One meeting node; ATTENDED edges from participants, MENTIONS edges to bodies discussed."""
         self._ensure_constraints()
-        neo4j_conn.execute_query(
+        neo4j_conn.execute_write(
             """
             MERGE (m:Meeting {name: $title})
             FOREACH (person IN $people |
@@ -193,7 +195,7 @@ class GraphService:
               ON CREATE SET p.status = 'active', p.id = randomUUID()
               MERGE (m)-[:MENTIONS]->(p))
             """,
-            {"title": title, "people": people, "bodies": bodies or []},
+            {"title": title, "people": sorted(people, key=lambda p: p["email"]), "bodies": sorted(bodies or [])},
         )
 
 

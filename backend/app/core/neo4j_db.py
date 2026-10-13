@@ -20,4 +20,10 @@ class Neo4jConnection:
                 logger.error(f"Neo4j query error: {e}")
                 raise e
 
+    def execute_write(self, query, parameters=None):
+        """Run a write in a managed transaction: the driver retries transient errors
+        (e.g. deadlocks when two Celery workers MERGE overlapping nodes)."""
+        with self.driver.session() as session:
+            return session.execute_write(lambda tx: list(tx.run(query, parameters)))
+
 neo4j_conn = Neo4jConnection(settings.NEO4J_URI, settings.NEO4J_USER, settings.NEO4J_PASSWORD)
