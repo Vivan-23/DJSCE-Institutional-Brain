@@ -240,7 +240,7 @@
       "role": "staff",
       "question": "What must examiners do if internal and external practical marks differ by more than 15%?",
       "expected_sources": [
-        "Examination Moderation"
+        "Moderation"
       ],
       "must_include": [
         "24 hours",
@@ -253,7 +253,7 @@
       "role": "staff",
       "question": "Who should be contacted if examiners do not appear for a practical exam?",
       "expected_sources": [
-        "Examination Moderation"
+        "Moderation"
       ],
       "must_include": [
         "Karan Shah",
@@ -265,7 +265,7 @@
       "role": "staff",
       "question": "By what date must question paper moderation for laboratory practicals be completed?",
       "expected_sources": [
-        "Lab Readiness"
+        "Readiness"
       ],
       "must_include": [
         "October 14",
@@ -278,7 +278,7 @@
       "role": "staff",
       "question": "What fix was decided for the network bottleneck in Lab 4?",
       "expected_sources": [
-        "Lab Readiness",
+        "Readiness",
         "doc_Departmental_Research"
       ],
       "must_include": [
@@ -293,7 +293,7 @@
       "question": "How many GPU workstations does Laboratory 302 have?",
       "expected_sources": [
         "doc_Departmental_Research",
-        "Lab Readiness",
+        "Readiness",
         "Academic Council"
       ],
       "must_include": [

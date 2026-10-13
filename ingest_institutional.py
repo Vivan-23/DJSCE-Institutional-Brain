@@ -21,6 +21,8 @@ drafts run as normal); staff then answer or close some, giving open / answered /
 import os
 import sys
 import time
+from datetime import datetime
+
 import requests
 
 API = os.environ.get("API_URL", "http://localhost:8001")
@@ -46,6 +48,24 @@ DEPARTMENT_OF = {
     "kb_computer_engineering_faq.txt": "CE",
     "kb_information_technology_overview.txt": "IT",
 }
+
+
+def _header(text: str, filename: str) -> tuple[str, str | None]:
+    """(meeting title, ISO date) from a transcript's header: the first line that isn't the
+    synthetic-record banner or metadata, and its "Date: October 4, 2026" line if present."""
+    title, occurred = None, None
+    for line in text.splitlines()[:8]:
+        clean = line.strip().lstrip("#").strip()
+        if not clean or clean.startswith("["):
+            continue
+        if clean.lower().startswith("date:"):
+            try:
+                occurred = datetime.strptime(clean[5:].strip(), "%B %d, %Y").date().isoformat()
+            except ValueError:
+                pass
+        elif title is None and not clean.lower().startswith(("attendees:", "target organization:", "document identifier:")):
+            title = clean.removeprefix("Standard Operating Procedure: ")
+    return title or _title_from(filename), occurred
 
 
 def _title_from(filename: str) -> str:
@@ -74,10 +94,12 @@ def post_transcripts(token: str) -> int:
     for filename in transcript_files:
         with open(os.path.join(FOLDER, filename), "r", encoding="utf-8") as fh:
             text = fh.read()
+        title, occurred_at = _header(text, filename)
         r = requests.post(
             f"{API}/api/v1/transcripts",
-            json={"title": _title_from(filename), "transcript": text, "source": "demo_institutional",
-                  "department": DEPARTMENT_OF.get(filename, "all")},
+            json={"title": title, "transcript": text, "source": "demo_institutional",
+                  "department": DEPARTMENT_OF.get(filename, "all"),
+                  **({"occurred_at": f"{occurred_at}T10:00:00+05:30"} if occurred_at else {})},
             headers=headers,
         )
         if r.status_code == 202:

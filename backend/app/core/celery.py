@@ -1,3 +1,5 @@
+from datetime import datetime
+
 import structlog
 from celery import Celery
 from celery.schedules import crontab
@@ -112,7 +114,9 @@ def process_document_task(text: str, filename: str, visibility: str = "internal"
 
 
 @celery_app.task(name="app.core.celery.process_transcript")
-def process_transcript_task(transcript: str, title: str, source: str = "upload", department: str = "all") -> dict:
+def process_transcript_task(
+    transcript: str, title: str, source: str = "upload", department: str = "all", occurred_at: str | None = None
+) -> dict:
     """
     Background transcript pipeline:
       1. LLM extraction → summary, decisions, commitments
@@ -126,7 +130,8 @@ def process_transcript_task(transcript: str, title: str, source: str = "upload",
     log.info("Starting transcript processing", title=title)
     with Session(engine) as session:
         result = transcript_service.ingest(
-            session, transcript=transcript, title=title, source=source, department=department
+            session, transcript=transcript, title=title, source=source, department=department,
+            occurred_at=datetime.fromisoformat(occurred_at) if occurred_at else None,
         )
     log.info("Transcript processing complete", title=title, **{
         "commitments": result.get("commitments_created"),

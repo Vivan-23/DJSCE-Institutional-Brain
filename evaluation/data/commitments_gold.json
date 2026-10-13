@@ -11,8 +11,8 @@
       {"assignee": "Iyer", "keywords": ["feedback report", "action-taken", "feedback"]},
       {"assignee": "Mehta", "keywords": ["attainment", "course file"]}
     ],
-    "Examination Moderation": [],
-    "Lab Readiness": [
+    "Moderation": [],
+    "Readiness": [
       {"assignee": "Shah", "keywords": ["question paper", "roster", "duty"]},
       {"assignee": "Verma", "keywords": ["switch", "bandwidth", "network"]},
       {"assignee": "Mehta", "keywords": ["examiner list", "appointment"]}
