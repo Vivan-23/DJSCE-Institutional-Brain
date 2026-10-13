@@ -73,6 +73,7 @@ tests/             pytest suite. conftest.py mocks all external services.
 | `active_intel.py` | `active_intel_service` | Org-risk insights (bottlenecks) for the Active Feed. |
 | `graph_service.py` | `graph_service` | Neo4j writes. Nodes `:Employee` (person), `:Project` (body: committee/cell/board/department/lab), `:Document`, `:Meeting`; edges `(Document)-[:MENTIONS]->`, `(Employee)-[:ATTENDED]->(Meeting)`, `(Meeting)-[:MENTIONS]->(Project)`. `graph_entities()` cleans NER: people need an honorific or roster match, bodies must name an institutional unit. Uniqueness constraints keep concurrent MERGEs duplicate-free. |
 | `rag_service.py` | `rag_service` | Grounded Q&A via `llm_service`. `retrieve(public_only=)` filters by visibility inside the Chroma query (and re-checks results); `answer()` returns `{answer, sources}`. |
+| `calendar_service.py` | `calendar_service` | Merges `academic_calendar:` (institution.yaml) with commitment due dates; `post_reminders()` writes `deadline` ActiveInsights (idempotent) for items due within 3 days. |
 | `ticket_service.py` | `ticket_service` | Help desk: triage chain from `settings.TRIAGE_ENGINES` (default `llm,keyword`; optional `laya`, a non-generative classifier, abstains below 0.5 confidence) → keyword fallback; category/priority/`routed_to` from `institution.yaml`; staff-only AI draft (`rag_service.answer(purpose="ticket_draft")`); human reply; audited. |
 | `connectors/` | registry | Source-connector framework: `base.py` + `slack/db/manual` stubs + `registry.py`. |
 
@@ -92,6 +93,7 @@ tests/             pytest suite. conftest.py mocks all external services.
 | `sources.py` | `/sources` | 👥 list connectors / sync🔒. |
 | `audit.py` | `/audit` | audit trail🔒. |
 | `institution.py` | `/institution` | public branding (name, short code, full name) from `institution.yaml`. |
+| `calendar.py` | `/calendar` | Everyone: `GET ?days=` → academic dates (audience + department scoped) and, for staff, own open commitments with due dates; each with `days_left` + `urgency`. |
 | `helpdesk.py` | `/helpdesk` | categories · tickets (create, mine) for everyone; queue / reply / retriage 👥. Non-staff only ever see their own tickets and never the AI draft. |
 
 👥 = staff only (`require_staff`: faculty and above). 🔒 = requires `manager` role (see RBAC below).
@@ -111,7 +113,7 @@ Conventions:
 
 Tasks: `process_document`, `process_transcript`, `run_daily_active_intelligence`,
 `run_daily_checkins`, `run_commitment_followups`, `run_skill_extraction`,
-`run_freshness_scan`. Beat schedule is defined in the same file. Task bodies use
+`run_freshness_scan`, `run_deadline_reminders` (07:30). Beat schedule is defined in the same file. Task bodies use
 lazy imports so the module loads without external deps.
 
 ---
@@ -142,6 +144,7 @@ components/dashboard/InsightCard.tsx
 app/
   page.tsx           Governance overview (staff; students are redirected to /helpdesk)
   helpdesk/          Student Help Desk: instant answers, raise ticket, my tickets
+  calendar/          Academic calendar + deadline reminders (all roles)
   tickets/           Staff Help Desk queue: triage, AI draft + sources, reply
   login/             Auth
   relationships/     Graph map

@@ -43,6 +43,11 @@ celery_app.conf.update(
             "task": "app.core.celery.run_freshness_scan",
             "schedule": crontab(hour=4, minute=0),
         },
+        # Active Feed reminders for academic dates and commitments due within 3 days
+        "deadline-reminders": {
+            "task": "app.core.celery.run_deadline_reminders",
+            "schedule": crontab(hour=7, minute=30),
+        },
     },
 )
 
@@ -138,6 +143,17 @@ def process_transcript_task(transcript: str, title: str, source: str = "upload",
     except Exception as e:
         log.warning("Meeting graph write failed", title=title, error=str(e))
     return result
+
+
+@celery_app.task(name="app.core.celery.run_deadline_reminders")
+def run_deadline_reminders() -> str:
+    from app.core.db import engine
+    from app.services.calendar_service import calendar_service
+    from sqlmodel import Session
+
+    with Session(engine) as session:
+        count = calendar_service.post_reminders(session)
+    return f"Posted {count} deadline reminders"
 
 
 @celery_app.task(name="app.core.celery.run_daily_active_intelligence")

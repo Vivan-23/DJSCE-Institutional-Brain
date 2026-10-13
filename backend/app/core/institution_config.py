@@ -15,6 +15,7 @@ falls back to built-in defaults, so the app always boots.
 import functools
 import os
 from dataclasses import dataclass, field
+from datetime import date
 from typing import Optional
 
 import structlog
@@ -47,6 +48,20 @@ class Department:
 ALL_DEPARTMENTS = "all"
 
 
+CALENDAR_AUDIENCES = ("all", "students", "staff")
+
+
+@dataclass
+class CalendarEvent:
+    """A published academic date (term, exam, holiday, deadline) from ``academic_calendar:``."""
+    start: date
+    title: str
+    kind: str = "event"  # term | exam | holiday | deadline | event
+    end: Optional[date] = None
+    audience: str = "all"  # all | students | staff
+    department: str = ALL_DEPARTMENTS
+
+
 @dataclass
 class HelpdeskCategory:
     key: str
@@ -67,6 +82,8 @@ class InstitutionConfig:
     helpdesk_categories: list[HelpdeskCategory] = field(default_factory=list)
     members: list[InstitutionMember] = field(default_factory=list)
     departments: list[Department] = field(default_factory=list)
+    calendar: list[CalendarEvent] = field(default_factory=list)
+    calendar_note: str = ""
 
     def department_code(self, value: Optional[str]) -> Optional[str]:
         """Resolve a department code or full name (case-insensitive) to its code, else None."""
@@ -145,6 +162,25 @@ def get_institution_config() -> InstitutionConfig:
         if isinstance(d, dict) and d.get("code")
     ]
 
+    cal_block = raw.get("academic_calendar") or {}
+    calendar: list[CalendarEvent] = []
+    for e in cal_block.get("events") or []:
+        try:
+            start = date.fromisoformat(str(e["date"]))
+            end = date.fromisoformat(str(e["end"])) if e.get("end") else None
+        except (KeyError, TypeError, ValueError):
+            log.warning("Skipping calendar event with a bad date", entry=e)
+            continue
+        audience = str(e.get("audience") or "all").strip().lower()
+        if audience not in CALENDAR_AUDIENCES or not e.get("title"):
+            log.warning("Skipping calendar event with bad audience/title", entry=e)
+            continue
+        calendar.append(CalendarEvent(
+            start=start, end=end, title=str(e["title"]).strip(), kind=str(e.get("kind") or "event").strip().lower(),
+            audience=audience, department=str(e.get("department") or ALL_DEPARTMENTS).strip(),
+        ))
+    calendar.sort(key=lambda ev: ev.start)
+
     categories: list[HelpdeskCategory] = []
     for c in (raw.get("helpdesk") or {}).get("categories") or []:
         if not isinstance(c, dict) or not c.get("key"):
@@ -169,6 +205,8 @@ def get_institution_config() -> InstitutionConfig:
         helpdesk_categories=categories,
         members=members,
         departments=departments,
+        calendar=calendar,
+        calendar_note=str(cal_block.get("note") or "").strip(),
     )
     # Members may name a department by code or full name; store the code. A profile with
     # no `departments:` list keeps the free-text value (department scoping then unused).

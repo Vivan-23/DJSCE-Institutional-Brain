@@ -58,6 +58,20 @@ material; coordinators and administrators see every department. Tag material whe
 institution-wide. A student or faculty member with no department sees only institution-wide
 material. Leave `departments:` out to disable scoping.
 
+### Academic calendar
+
+```yaml
+academic_calendar:
+  note: "Shown above the calendar (e.g. where the official calendar lives)."
+  events:
+    - { date: "2026-11-25", end: "2026-12-11", title: "End-semester theory examinations", kind: exam }
+    - { date: "2026-10-26", title: "Elective registration closes", kind: deadline, audience: students, department: CE }
+```
+
+`kind`: term / exam / holiday / deadline / event. `audience`: all / students / staff. `department`: a code
+or `all`. Events with a bad date or audience are skipped with a warning. The demo dates are **synthetic**;
+replace them with the official calendar before real use.
+
 ### Help-desk categories
 
 ```yaml

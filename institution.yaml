@@ -34,6 +34,30 @@ departments:
   - { code: "MECH",  name: "Mechanical Engineering" }
   - { code: "BSH",   name: "Basic Sciences and Humanities" }
 
+# ── Academic calendar ────────────────────────────────────────────────────────
+# Dates shown on the Calendar page and used for deadline reminders.
+#   audience:   all | students | staff        department: a code above, or "all"
+# SYNTHETIC: replace with the dates from the official DJSCE academic calendar
+# before any real use. These are plausible placeholders for the demo only.
+academic_calendar:
+  note: "Demonstration dates (synthetic). Always check the official DJSCE academic calendar."
+  events:
+    - { date: "2026-07-20", title: "Odd semester begins (Semesters III, V, VII)", kind: term }
+    - { date: "2026-10-12", end: "2026-10-16", title: "Mid-term practical evaluations", kind: exam, audience: students }
+    - { date: "2026-10-16", title: "Mid-term marks entry closes on the CA portal", kind: deadline, audience: staff }
+    - { date: "2026-10-20", title: "Student feedback form (end-term) opens", kind: event, audience: students }
+    - { date: "2026-10-21", title: "IQAC course-file compliance check", kind: deadline, audience: staff }
+    - { date: "2026-10-23", title: "Last date for honours / minor track change requests", kind: deadline, audience: students }
+    - { date: "2026-10-26", title: "Elective IV registration closes (Computer Engineering)", kind: deadline, audience: students, department: CE }
+    - { date: "2026-10-28", title: "Lab Readiness review (Information Technology)", kind: event, audience: staff, department: IT }
+    - { date: "2026-11-02", end: "2026-11-06", title: "Diwali vacation", kind: holiday }
+    - { date: "2026-11-13", title: "Last instructional day of the odd semester", kind: term }
+    - { date: "2026-11-16", end: "2026-11-21", title: "End-semester practical and oral examinations", kind: exam }
+    - { date: "2026-11-18", title: "Question paper moderation submission deadline", kind: deadline, audience: staff }
+    - { date: "2026-11-25", end: "2026-12-11", title: "End-semester theory examinations", kind: exam }
+    - { date: "2026-12-14", end: "2027-01-01", title: "Winter vacation", kind: holiday }
+    - { date: "2027-01-04", title: "Even semester begins (Semesters IV, VI, VIII)", kind: term }
+
 # ── Student Help Desk ────────────────────────────────────────────────────────
 # Tickets are triaged into one of these categories and routed to its owner.
 # `keywords` drive the offline fallback classifier; `quick_questions` appear as

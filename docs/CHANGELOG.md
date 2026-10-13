@@ -8,6 +8,13 @@ Format: `## YYYY-MM-DD — title` then bullets of what/why.
 
 ---
 
+## 2026-10-14 — Academic calendar and deadline reminders
+- `academic_calendar:` in `institution.yaml` (synthetic demo dates, labelled as such); `calendar_service` merges it
+  with each staff member's open commitments that have due dates. `GET /api/v1/calendar` (all roles, audience and
+  department scoped); `/calendar` page with a reminders box (overdue / today / within 3 days).
+- Daily beat `run_deadline_reminders` (07:30) posts `deadline` insights to the Active Feed, never twice for the same item.
+  Reminders are computed on read, so no new table.
+
 ## 2026-10-14 — Per-department access; graph rendering; procedure extraction; demo tickets
 - **Per-department access**: `departments:` in `institution.yaml`; `department` on `User`, `Fragment`, `Meeting` and
   Chroma metadata (`all` = institution-wide). Students and faculty retrieve own department + `all`; coordinators/admins

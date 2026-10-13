@@ -11,6 +11,7 @@ const NAV = [
   { href: '/', label: 'Governance Overview', staff: true },
   { href: '/helpdesk', label: 'Student Help Desk', staff: false },
   { href: '/chat', label: 'Institutional Assistant', staff: false },
+  { href: '/calendar', label: 'Calendar & Deadlines', staff: false },
   { href: '/tickets', label: 'Help Desk Queue', staff: true },
   { href: '/meetings', label: 'Meetings & Minutes', staff: true },
   { href: '/commitments', label: 'Action Commitments', staff: true },
