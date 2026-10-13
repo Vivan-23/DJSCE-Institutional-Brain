@@ -1,4 +1,4 @@
-[PUBLIC DJSCE INFORMATION · Source: https://www.djsce.ac.in/placements-hs · Retrieved: 2026-10-13 · Verify against the official DJSCE website for updates.]
+[PUBLIC DJSCE INFORMATION · Source: https://www.djsce.ac.in/placements-hs; https://www.djsce.ac.in/docs/placements/placement%2025-26%20report%20-%2008-09-2026.pdf · Retrieved: 2026-10-13 · Verify against the official DJSCE website for updates.]
 Campus Placement Recruiters and Published Statistics
 
 Q: Which prominent companies recruit students from DJSCE?
@@ -6,7 +6,7 @@ A: Prominent campus recruiters include:
 - Software & Technology: Google, Rubrik, Adobe, Salesforce, BrowserStack, Media.net, Juspay, Atlan, ION Group, CleverTap, Think360.
 - Financial Services & Investment Banking: Morgan Stanley, Goldman Sachs, J.P. Morgan Chase (JPMC), Apollo Global Management, UBS Bank, Nomura, Dolat Capital, JM Financial, IDFC First Bank, Kotak Securities.
 - Consulting & Professional Services: ZS Associates, Houlihan Lokey, Axxela, Wissen, Oracle Financial Services Software (OFSS).
-(Source: https://www.djsce.ac.in/placements-hs)
+All names above appear in the A.Y. 2025-26 placement report PDF linked from the Placements page. The category grouping is editorial, not from the source. (Source: https://www.djsce.ac.in/docs/placements/placement%2025-26%20report%20-%2008-09-2026.pdf)
 
 Q: What are the top salary packages published for the 2026 graduating batch?
 A: As published in the official campus placement report for the B.Tech 2026 batch (A.Y. 2025-26):
@@ -21,4 +21,4 @@ A: As published in the official campus placement report for the B.Tech 2026 batc
 - Juspay: 27.0 LPA
 - JPMC: 19.75 LPA
 - Apollo Global Management: 19.0 LPA
-(Source: https://www.djsce.ac.in/placements-hs)
+(Source: https://www.djsce.ac.in/docs/placements/placement%2025-26%20report%20-%2008-09-2026.pdf)

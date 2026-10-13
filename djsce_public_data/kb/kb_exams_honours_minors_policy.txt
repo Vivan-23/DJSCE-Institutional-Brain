@@ -2,7 +2,7 @@
 Honours and Minor Degree Programme Regulations
 
 Q: Who is eligible to opt for an Honours or Minor Degree programme?
-A: Regular engineering students who have no live or dead backlog ("F" grade) in Semester I and II, and who possess a CGPA of 7.50 and above based on Semesters I and II, are eligible. For Direct Second Year (DSE) admitted learners, an aggregate diploma percentage of 70% and above is required. (Source: https://www.djsce.ac.in/docs/exams/Exam%20Manual%20with%20sign.pdf)
+A: Regular engineering students who have no live or dead backlog ("F" grade) in Semester I and II, and who possess a CGPA of 7.50 and above based on Semesters I and II, are eligible. For Direct Second Year (DSE) admitted learners, an aggregate percentage of 70% and above is required. (Source: https://www.djsce.ac.in/docs/exams/Exam%20Manual%20with%20sign.pdf)
 
 Q: How many Honours or Minor programmes can a student pursue simultaneously?
 A: An eligible student can opt for a maximum of one Honours or one Minor programme at any point in time during regular engineering studies. (Source: https://www.djsce.ac.in/docs/exams/Exam%20Manual%20with%20sign.pdf)

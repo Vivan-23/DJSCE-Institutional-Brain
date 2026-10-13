@@ -2,7 +2,7 @@
 Department of Computer Engineering
 
 Q: When was the Department of Computer Engineering established?
-A: The Department of Computer Engineering was established in 2001. Initially started with 30 seats, intake was increased to 60 in 2002-03, and subsequently increased to 180 seats. (Source: https://www.djsce.ac.in/ug-computer-engineering)
+A: The Department of Computer Engineering was established in 2001. Initially started with 30 seats, intake was increased to 60 in 2002-03, to 120 in 2011-12, and to 180 in 2021-22. (Source: https://www.djsce.ac.in/ug-computer-engineering)
 
 Q: What is the duration, intake, and degree offered?
 A: The programme is a 4-year undergraduate course with an intake of 180 seats, awarding the B.Tech in Computer Engineering degree. (Source: https://www.djsce.ac.in/ug-computer-engineering)

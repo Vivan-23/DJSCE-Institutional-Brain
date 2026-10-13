@@ -4,7 +4,7 @@
 Q: What grading system is used at DJSCE?
 A: A 10-point letter grading system is followed for all Under Graduate and Post Graduate programmes under autonomy. (Source: https://www.djsce.ac.in/docs/exams/Exam%20Manual%20with%20sign.pdf)
 
-Q: What are the letter grades and corresponding grade points (AY 2024-25 onwards)?
+Q: What are the letter grades and corresponding grade points (batches admitted in AY 2024-25 onwards)?
 A: The grading scale is:
 - Marks 90 to 100%: Grade Point 10 | Letter Grade: O (Outstanding)
 - Marks 80 to 89.99%: Grade Point 9 | Letter Grade: A+ (Excellent)
@@ -22,3 +22,6 @@ A: SGPA = (Sum of Product of Grade Point and Credit for each course) / (Sum of C
 
 Q: How is the CGPA (Cumulative Grade Point Average) calculated?
 A: CGPA = (Sum of Product of Grade Point and Credit for each course across all semesters) / (Sum of Credits assigned across all semesters taken together). (Source: https://www.djsce.ac.in/docs/exams/Exam%20Manual%20with%20sign.pdf)
+
+Q: Is there a different grading table for batches admitted before AY 2024-25?
+A: Yes. The Exam Manual has a separate grading matrix for batches admitted prior to AY 2024-2025, with different lower marks bands (including 45-49.99 and 40-44.99). Refer to the Exam Manual for the full table. (Source: https://www.djsce.ac.in/docs/exams/Exam%20Manual%20with%20sign.pdf)
