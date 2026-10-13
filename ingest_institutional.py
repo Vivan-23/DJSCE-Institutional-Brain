@@ -3,7 +3,7 @@ DJSCE Institutional Brain — DEMO Institutional Data Loader.
 
 Ingests synthetic institutional records (committee transcripts, SOPs, curriculum docs)
 through the application pipeline:
-  1. Authenticates as the demo admin (from company.yaml).
+  1. Authenticates as the demo admin (from institution.yaml).
   2. Submits synthetic committee meeting transcripts to POST /api/v1/transcripts.
   3. Uploads reference documents and SOPs to POST /api/v1/ingest/file for
      the ChromaDB vector store and Neo4j institutional relationship graph.
@@ -20,9 +20,10 @@ import time
 import requests
 
 API = os.environ.get("API_URL", "http://localhost:8001")
-EMAIL = os.environ.get("DEMO_EMAIL", "demo@example.com")
+EMAIL = os.environ.get("DEMO_EMAIL", "admin@example.com")
 PASSWORD = os.environ.get("DEMO_PASSWORD", "demo123")
 FOLDER = os.path.join(os.path.dirname(os.path.abspath(__file__)), "mock_institutional_data")
+PUBLIC_FOLDER = os.path.join(FOLDER, "public")
 
 PROCESS_WAIT_SECONDS = 180
 
@@ -37,7 +38,7 @@ def _title_from(filename: str) -> str:
 def login() -> str:
     r = requests.post(f"{API}/api/v1/auth/login", json={"email": EMAIL, "password": PASSWORD})
     if r.status_code != 200:
-        sys.exit(f"Login failed ({r.status_code}): {r.text}\nIs backend running and is {EMAIL} seeded in company.yaml?")
+        sys.exit(f"Login failed ({r.status_code}): {r.text}\nIs backend running and is {EMAIL} seeded in institution.yaml?")
     print(f"[OK] Logged in as {EMAIL}")
     return r.json()["access_token"]
 
@@ -47,7 +48,7 @@ def post_transcripts(token: str) -> int:
     posted = 0
     transcript_files = [
         f for f in sorted(os.listdir(FOLDER))
-        if f.endswith(".txt") and ("scenario" in f or "review" in f or "sync" in f)
+        if f.startswith("scenario_") and f.endswith(".txt")
     ]
 
     for filename in transcript_files:
@@ -68,24 +69,33 @@ def post_transcripts(token: str) -> int:
 
 
 def post_documents(token: str) -> int:
-    """Send reference documents and SOPs through /api/v1/ingest/file for Vector + Neo4j Graph."""
-    headers = {"Authorization": f"Bearer {token}"}
-    sent = 0
-    doc_files = [f for f in sorted(os.listdir(FOLDER)) if f.endswith(".txt")]
+    """Upload reference documents through /api/v1/ingest/file (vector index + graph).
 
-    for filename in doc_files:
-        with open(os.path.join(FOLDER, filename), "rb") as fh:
-            r = requests.post(
-                f"{API}/api/v1/ingest/file",
-                files={"file": (filename, fh, "text/plain")},
-                headers=headers,
-            )
-        if r.status_code in (200, 202):
-            sent += 1
-            print(f"  [OK] Ingested document for graph: {filename}")
-        else:
-            print(f"  [!] Document upload failed: {filename} ({r.status_code})")
-    print(f"[OK] Ingested {sent} document(s) for RAG and Knowledge Graph")
+    ``doc_*.txt`` are internal staff documents; everything in ``public/`` is
+    student-visible knowledge (department FAQs, curriculum, outcomes).
+    Meeting transcripts are NOT re-uploaded here — they go through /transcripts.
+    """
+    headers = {"Authorization": f"Bearer {token}"}
+    batches = [
+        (FOLDER, [f for f in sorted(os.listdir(FOLDER)) if f.startswith("doc_") and f.endswith(".txt")], "internal"),
+        (PUBLIC_FOLDER, sorted(f for f in os.listdir(PUBLIC_FOLDER) if f.endswith(".txt")) if os.path.isdir(PUBLIC_FOLDER) else [], "public"),
+    ]
+    sent = 0
+    for folder, files, visibility in batches:
+        for filename in files:
+            with open(os.path.join(folder, filename), "rb") as fh:
+                r = requests.post(
+                    f"{API}/api/v1/ingest/file",
+                    files={"file": (filename, fh, "text/plain")},
+                    data={"visibility": visibility},
+                    headers=headers,
+                )
+            if r.status_code in (200, 202):
+                sent += 1
+                print(f"  [OK] Queued {visibility} document: {filename}")
+            else:
+                print(f"  [!] Document upload failed: {filename} ({r.status_code}) {r.text[:120]}")
+    print(f"[OK] Queued {sent} document(s) for the knowledge index and graph")
     return sent
 
 

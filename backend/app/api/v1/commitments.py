@@ -7,7 +7,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel
 from sqlmodel import Session
 
-from app.api.v1.auth import get_current_user
+from app.api.v1.auth import require_staff
 from app.core.db import get_session
 from app.models.structured import Commitment, Employee, User
 from app.services.commitment_service import commitment_service, VALID_STATUSES
@@ -43,7 +43,7 @@ def _serialize(db: Session, c: Commitment) -> dict:
 @router.get("")
 def list_commitments(
     status: Optional[str] = None,
-    current_user: User = Depends(get_current_user),
+    current_user: User = Depends(require_staff),
     db: Session = Depends(get_session),
 ):
     if status and status not in VALID_STATUSES:
@@ -55,7 +55,7 @@ def list_commitments(
 @router.get("/mine")
 def my_commitments(
     open_only: bool = False,
-    current_user: User = Depends(get_current_user),
+    current_user: User = Depends(require_staff),
     db: Session = Depends(get_session),
 ):
     employee = employee_service.get_or_create_for_user(db, current_user)
@@ -67,7 +67,7 @@ def my_commitments(
 def update_commitment(
     commitment_id: str,
     update: StatusUpdate,
-    current_user: User = Depends(get_current_user),
+    current_user: User = Depends(require_staff),
     db: Session = Depends(get_session),
 ):
     try:

@@ -66,8 +66,9 @@ def get_current_user(
 
 
 # Role-based access control (security/NFR: role-based access).
-# Roles, least → most privileged: employee < manager < admin.
-_ROLE_RANK = {"employee": 0, "manager": 1, "admin": 2}
+# Roles, least → most privileged:
+#   student < employee (Faculty) < manager (Committee Coordinator) < admin (System Administrator)
+_ROLE_RANK = {"student": 0, "employee": 1, "manager": 2, "admin": 3}
 
 
 def require_role(*allowed_roles: str):
@@ -87,6 +88,15 @@ def require_role(*allowed_roles: str):
     return _checker
 
 
+# Any staff member (faculty and above). Gate internal institutional data with this —
+# students must never reach meetings, commitments, procedures under review, or the graph.
+require_staff = require_role("employee")
+
+
+def is_staff(user: User) -> bool:
+    return _ROLE_RANK.get(user.role, -1) >= _ROLE_RANK["employee"]
+
+
 @router.post("/register", status_code=201)
 def register(req: RegisterRequest, db: Session = Depends(get_session)):
     if db.exec(select(User).where(User.email == req.email)).first():
@@ -95,7 +105,9 @@ def register(req: RegisterRequest, db: Session = Depends(get_session)):
         email=req.email,
         full_name=req.full_name,
         hashed_password=hash_password(req.password),
-        role="employee",
+        # Least privilege: self-registration creates a student account. Staff roles
+        # come from institution.yaml or an administrator.
+        role="student",
     )
     db.add(user)
     db.commit()

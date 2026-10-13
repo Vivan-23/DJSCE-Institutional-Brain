@@ -15,7 +15,7 @@ class ChromaConnection:
                 port=settings.CHROMA_PORT,
             )
             self.collection = self.client.get_or_create_collection(
-                name="company_brain_chunks",
+                name="djsce_knowledge",
                 metadata={"hnsw:space": "cosine"},
             )
             log.info("ChromaDB connected", host=settings.CHROMA_HOST, port=settings.CHROMA_PORT)

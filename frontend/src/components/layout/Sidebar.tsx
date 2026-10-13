@@ -3,17 +3,21 @@ import React, { useCallback, useEffect, useState, useSyncExternalStore } from 'r
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { clearToken, getToken } from '@/lib/api';
-import { useCompany } from '@/lib/useCompany';
+import { useInstitution } from '@/lib/useInstitution';
+import { clearMe, isStaffRole, ROLE_LABEL, useMe } from '@/lib/roles';
 
+// `staff: true` items are hidden from students (the backend also refuses them).
 const NAV = [
-  { href: '/', label: 'Governance Overview' },
-  { href: '/chat', label: 'Institutional Assistant' },
-  { href: '/meetings', label: 'Meetings & Minutes' },
-  { href: '/commitments', label: 'Action Commitments' },
-  { href: '/relationships', label: 'Knowledge Graph' },
-  { href: '/assistant', label: 'Faculty Desk (PA)' },
-  { href: '/skills', label: 'Institutional Procedures' },
-  { href: '/sources', label: 'Document Repositories' },
+  { href: '/', label: 'Governance Overview', staff: true },
+  { href: '/helpdesk', label: 'Student Help Desk', staff: false },
+  { href: '/chat', label: 'Institutional Assistant', staff: false },
+  { href: '/tickets', label: 'Help Desk Queue', staff: true },
+  { href: '/meetings', label: 'Meetings & Minutes', staff: true },
+  { href: '/commitments', label: 'Action Commitments', staff: true },
+  { href: '/relationships', label: 'Knowledge Graph', staff: true },
+  { href: '/assistant', label: 'Faculty Desk (PA)', staff: true },
+  { href: '/skills', label: 'Institutional Procedures', staff: true },
+  { href: '/sources', label: 'Document Repositories', staff: true },
 ];
 
 const subscribe = (cb: () => void) => {
@@ -24,13 +28,22 @@ const subscribe = (cb: () => void) => {
 export default function Sidebar() {
   const pathname = usePathname();
   const router = useRouter();
-  const company = useCompany();
+  const institution = useInstitution();
   const [mobileOpen, setMobileOpen] = useState(false);
   const loggedIn = useSyncExternalStore(
     subscribe,
     useCallback(() => !!getToken(), []),
     () => false,
   );
+  const me = useMe(loggedIn);
+  const staff = isStaffRole(me?.role);
+  const nav = NAV.filter((item) => !item.staff || staff);
+  const initials = (me?.full_name || me?.email || '?')
+    .split(/[\s@.]+/)
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((w) => w[0]?.toUpperCase())
+    .join('');
 
   // Close mobile drawer on route change
   const [prevPathname, setPrevPathname] = useState(pathname);
@@ -52,6 +65,7 @@ export default function Sidebar() {
 
   const handleLogout = () => {
     clearToken();
+    clearMe();
     router.push('/login');
   };
 
@@ -61,14 +75,14 @@ export default function Sidebar() {
       <div className="mb-6 pb-4 border-b border-slate-800/80">
         <div className="flex items-center gap-3">
           <div className="w-9 h-9 rounded-lg bg-blue-600/15 border border-blue-500/40 flex items-center justify-center shrink-0 shadow-xs">
-            <span className="text-blue-400 font-bold text-xs tracking-wider">{company.short_code}</span>
+            <span className="text-blue-400 font-bold text-xs tracking-wider">{institution.short_code}</span>
           </div>
           <div className="min-w-0">
             <h2 className="text-sm font-bold text-slate-100 tracking-tight leading-tight truncate">
-              {company.name}
+              {institution.name}
             </h2>
             <p className="text-[11px] text-slate-400 font-medium truncate mt-0.5">
-              D. J. Sanghvi College of Engg.
+              {institution.full_name}
             </p>
           </div>
         </div>
@@ -76,7 +90,7 @@ export default function Sidebar() {
 
       {/* Navigation Links */}
       <nav className="flex-1 space-y-1 overflow-y-auto pr-1" aria-label="Main navigation">
-        {NAV.map(({ href, label }) => {
+        {nav.map(({ href, label }) => {
           const active = pathname === href;
           return (
             <Link
@@ -107,11 +121,11 @@ export default function Sidebar() {
           <div className="flex items-center justify-between pt-1">
             <div className="flex items-center gap-2.5 min-w-0">
               <div className="w-7 h-7 rounded bg-slate-800 border border-slate-700 flex items-center justify-center text-[10px] font-bold text-blue-400 shrink-0">
-                DS
+                {initials}
               </div>
               <div className="min-w-0">
-                <p className="text-xs font-medium text-slate-200 truncate">Academic Session</p>
-                <p className="text-[10px] text-slate-400 truncate">Authenticated</p>
+                <p className="text-xs font-medium text-slate-200 truncate">{me?.full_name || me?.email || 'Signed in'}</p>
+                <p className="text-[10px] text-slate-400 truncate">{me ? ROLE_LABEL[me.role] ?? me.role : '…'}</p>
               </div>
             </div>
             <button
@@ -162,10 +176,10 @@ export default function Sidebar() {
           </button>
           <div className="flex items-center gap-2 min-w-0">
             <div className="w-7 h-7 rounded bg-blue-600/20 border border-blue-500/40 flex items-center justify-center shrink-0">
-              <span className="text-blue-400 font-bold text-[10px]">{company.short_code}</span>
+              <span className="text-blue-400 font-bold text-[10px]">{institution.short_code}</span>
             </div>
             <span className="font-bold text-xs sm:text-sm text-slate-100 truncate">
-              {company.name}
+              {institution.name}
             </span>
           </div>
         </div>

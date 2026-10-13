@@ -2,19 +2,11 @@
 import pytest
 from sqlmodel import Session
 from app.models.structured import ActiveInsight
+from tests.helpers import register
 
 
 def _get_token(client) -> str:
-    res = client.post(
-        "/api/v1/auth/register",
-        json={"email": "insights@test.com", "full_name": "Insights User", "password": "pass1234"},
-    )
-    if res.status_code == 400:
-        res = client.post(
-            "/api/v1/auth/login",
-            json={"email": "insights@test.com", "password": "pass1234"},
-        )
-    return res.json()["access_token"]
+    return register(client, "insights@test.com", "Insights User")
 
 
 def _seed_insight(db_session: Session) -> ActiveInsight:

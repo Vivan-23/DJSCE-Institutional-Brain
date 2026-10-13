@@ -1,9 +1,11 @@
 'use client';
 import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import InsightCard, { type Insight } from '@/components/dashboard/InsightCard';
 import { apiFetch } from '@/lib/api';
 import { formatDate } from '@/lib/format';
+import { isStaffRole, useMe } from '@/lib/roles';
 
 interface MetricState {
   totalInsights: number;
@@ -29,6 +31,13 @@ interface RecentCommitment {
 }
 
 export default function Dashboard() {
+  const router = useRouter();
+  const me = useMe();
+  // The governance overview is staff-only; students belong on the Help Desk.
+  useEffect(() => {
+    if (me && !isStaffRole(me.role)) router.replace('/helpdesk');
+  }, [me, router]);
+
   const [insights, setInsights] = useState<Insight[]>([]);
   const [recentMeetings, setRecentMeetings] = useState<RecentMeeting[]>([]);
   const [recentCommitments, setRecentCommitments] = useState<RecentCommitment[]>([]);

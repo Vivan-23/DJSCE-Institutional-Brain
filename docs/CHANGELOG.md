@@ -8,6 +8,46 @@ Format: `## YYYY-MM-DD — title` then bullets of what/why.
 
 ---
 
+## 2026-10-13 — Final-submission identity, student role, unified evidence, AI Help Desk
+**Identity / data (breaking — volumes were reset).**
+- `company.yaml` → `institution.yaml` (`institution:`, `helpdesk:`, `members:` keys); loader `core/institution_config.py`,
+  seeder `services/institution_seed.py`, branding `GET /api/v1/institution` (was `/company`), env `INSTITUTION_CONFIG`.
+- Compose project `djsce-brain`, DB/user `djsce_brain_db`/`djsce_brain_user`, containers `djsce_*`, Chroma collection
+  `djsce_knowledge`, Celery app `djsce_brain`. Backend env de-duplicated with a YAML anchor. Old `company-brain` volumes removed.
+- Demo cast: admin, 2 coordinators, 3 faculty, 2 students (all synthetic, `demo123`). Admin is now `admin@example.com`.
+
+**Student role + enforced access.**
+- Roles `student < employee < manager < admin`; self-registration now creates **students** (least privilege).
+- `require_staff` on ingest, insights, graph, transcripts, commitments, PA, skills and sources — previously any logged-in
+  user could read every internal record. Students keep auth, institution branding, chat and the help desk.
+- UI role names (Student / Faculty / Committee Coordinator / System Administrator) in `frontend/src/lib/roles.ts`;
+  role-filtered sidebar; students are routed to `/helpdesk`.
+
+**One evidence pipeline + cited, visibility-aware answers.**
+- `Fragment.visibility` (`internal`/`public`), mirrored in Chroma metadata. Uploaded documents now become Fragments
+  (`source_type="document"`) instead of raw Chroma rows, so they feed citations and procedure extraction (internal only).
+- `rag_service` rewritten on the shared `llm_service` (it had its own Groq client); filters by visibility in the vector
+  query and re-checks hits; returns `sources`. `/chat` returns `sources` + `scope` (was a constant `sources_used: true`).
+- Upload form/API take `visibility`. Loader fixed: it re-uploaded the meeting transcripts as documents (double-counted
+  evidence); now uploads `doc_*` as internal and `public/` as public.
+
+**Student Help Desk (merged from the Python student-chatbot mini-project).**
+- Merged the mini-project's *content and ideas*, not its Django/Gemini code: 60 Computer Engineering FAQs + the IT
+  department overview (contact details and the faculty roster removed) as public knowledge; its categories and quick
+  questions as `institution.yaml` help-desk config; its keyword category matcher as the offline triage fallback.
+- `Ticket` table, `ticket_service`, `/api/v1/helpdesk/*`, pages `/helpdesk` (students) and `/tickets` (staff queue).
+  AI triage is constrained to configured categories; AI drafts are staff-only and must be sent by a human; audited.
+- Procedure "approved" badge reads "Approved in Review" (was "Ratified / Active", which implied official approval).
+- **Startup race fixed**: on a fresh DB the 2 uvicorn workers both ran `create_all`/seeding and one crashed
+  (`duplicate key … pg_type_typname_nsp_index`). Startup now holds a Postgres advisory lock (`core/db.py:startup_lock`).
+- Transcript fragments now carry the meeting title as `source_ref`; RAG labels each excerpt with its origin (fixed staff
+  answers missing facts whose utterance never named the meeting). Ticket drafts use a staff-review prompt with
+  `[TO CONFIRM: …]` gaps.
+- Backend image no longer needs apt/curl (health check uses Python stdlib) — builds failed on a Debian mirror sync.
+- Added `publication/` (brief, IPD report draft, poster content, guide-meeting template, senior samples).
+- Tests: shared `tests/helpers.py:register(role=)` replaces 8 copies; +32 tests (student access, visibility, help desk,
+  document fragments, profile) → **120 passing**.
+
 ## 2026-10-13 — Rebrand repository as DJSCE Institutional Brain; dedupe cleanup
 - Repo now lives at github.com/Vivan-23/DJSCE-Institutional-Brain; work happens on `main` only (`demo` branch retired).
 - Removed legacy Company-Brain artifacts: `mock_company_data/`, `ingest_all.py`, `generate_mock_data.py`, `COMPANY_BRAIN_OVERVIEW.txt`. `ingest_institutional.py` is the only data loader.

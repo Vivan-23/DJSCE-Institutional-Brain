@@ -7,7 +7,7 @@ from app.core.config import settings
 log = structlog.get_logger()
 
 celery_app = Celery(
-    "company_brain",
+    "djsce_brain",
     broker=settings.REDIS_URL,
     backend=settings.REDIS_URL,
 )
@@ -48,53 +48,49 @@ celery_app.conf.update(
 
 
 @celery_app.task(name="app.core.celery.process_document")
-def process_document_task(text: str, filename: str) -> dict:
+def process_document_task(text: str, filename: str, visibility: str = "internal") -> dict:
     """
     Background ingestion pipeline:
-      1. Chunk the document text
-      2. Embed chunks and store in ChromaDB
+      1. Persist a Document row to Postgres
+      2. Chunk the text; each chunk becomes a Fragment (Postgres + Chroma index)
+         carrying the document's visibility, so documents feed retrieval,
+         procedure extraction and citations exactly like transcripts do
       3. Extract named entities with spaCy → upsert to Neo4j
-      4. Persist a Document row to Postgres
     """
-    import uuid
     from app.services.parser import chunk_document
-    from app.services.embedding import embedding_service
+    from app.services.fragment_service import fragment_service
     from app.services.ner_service import ner_service
     from app.services.graph_service import graph_service
-    from app.core.chroma_db import chroma_conn
     from app.core.db import engine
     from app.models.structured import Document
     from sqlmodel import Session
 
-    log.info("Starting document processing", filename=filename)
+    log.info("Starting document processing", filename=filename, visibility=visibility)
 
-    # --- 1. Chunk ---
+    # --- 1 + 2. Document row, then chunk → Fragments ---
     chunks = chunk_document(text)
-
-    # --- 2. Embed + store ---
-    stored_chunks = 0
-    if chunks and chroma_conn.collection:
-        try:
-            embeddings = embedding_service.embed_texts(chunks)
-            ids = [str(uuid.uuid4()) for _ in chunks]
-            metadatas = [{"filename": filename} for _ in chunks]
-            chroma_conn.collection.add(
-                ids=ids,
-                embeddings=embeddings,
-                metadatas=metadatas,
-                documents=chunks,
+    with Session(engine) as session:
+        session.add(Document(title=filename, source_type="upload", raw_content=text[:5_000]))
+        session.commit()
+        for chunk in chunks:
+            fragment_service.create_fragment(
+                session,
+                source_type="document",
+                source_ref=filename,
+                content=chunk,
+                visibility=visibility,
             )
-            stored_chunks = len(chunks)
-            log.info("Chunks embedded and stored", filename=filename, count=stored_chunks)
-        except Exception as e:
-            log.error("Chroma storage failed", filename=filename, error=str(e))
+    log.info("Document chunks stored as fragments", filename=filename, count=len(chunks))
 
     # --- 3. NER → Neo4j ---
+    from app.core.institution_config import get_institution_config
+
     entities = ner_service.extract_entities(text)
+    domain = get_institution_config().email_domain
 
     for person in entities["persons"]:
-        # Derive a deterministic internal email from the extracted name
-        email = person.lower().replace(" ", ".") + "@company.internal"
+        # Derive a deterministic graph key from the extracted name
+        email = person.lower().replace(" ", ".") + "@" + domain
         try:
             graph_service.upsert_employee(name=person, email=email)
         except Exception as e:
@@ -113,22 +109,10 @@ def process_document_task(text: str, filename: str) -> dict:
         orgs=len(entities["orgs"]),
     )
 
-    # --- 4. Persist Document row ---
-    try:
-        with Session(engine) as session:
-            doc = Document(
-                title=filename,
-                source_type="upload",
-                raw_content=text[:5_000],
-            )
-            session.add(doc)
-            session.commit()
-    except Exception as e:
-        log.error("Document DB write failed", filename=filename, error=str(e))
-
     return {
         "filename": filename,
-        "chunks_stored": stored_chunks,
+        "chunks_stored": len(chunks),
+        "visibility": visibility,
         "persons_found": entities["persons"],
         "orgs_found": entities["orgs"],
     }

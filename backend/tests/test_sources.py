@@ -2,16 +2,11 @@
 from sqlmodel import select
 
 from app.models.structured import Fragment, User
+from tests.helpers import register
 
 
 def _register(client, email):
-    res = client.post(
-        "/api/v1/auth/register",
-        json={"email": email, "full_name": "Src User", "password": "pass1234"},
-    )
-    if res.status_code == 400:
-        res = client.post("/api/v1/auth/login", json={"email": email, "password": "pass1234"})
-    return res.json()["access_token"]
+    return register(client, email, "Src User")
 
 
 def _make_manager(db, email):

@@ -27,7 +27,7 @@ interface SkillFull extends SkillMeta {
 
 const STATUS_STYLE: Record<Status, { label: string; style: string }> = {
   draft: { label: 'Draft Proposal', style: 'bg-blue-500/15 border-blue-500/30 text-blue-300' },
-  approved: { label: 'Ratified / Active', style: 'bg-emerald-500/15 border-emerald-500/30 text-emerald-300' },
+  approved: { label: 'Approved in Review', style: 'bg-emerald-500/15 border-emerald-500/30 text-emerald-300' },
   stale: { label: 'Under Revision (Stale)', style: 'bg-amber-500/15 border-amber-500/30 text-amber-300' },
   deprecated: { label: 'Superseded', style: 'bg-slate-700/20 border-slate-600/40 text-slate-400' },
   rejected: { label: 'Rejected by Committee', style: 'bg-rose-500/15 border-rose-500/30 text-rose-300' },
@@ -107,7 +107,7 @@ export default function SkillsPage() {
     setActionMsg('');
     const res = await apiFetch(`/api/v1/skills/${id}/${action}`, { method: 'POST' });
     if (res.status === 403) {
-      setActionMsg('Notice: Committee Convener or Academic Coordinator role required to ratify procedures.');
+      setActionMsg('Notice: Committee Coordinator role or higher is required to approve or reject procedures.');
       return;
     }
     if (res.ok) {
@@ -123,7 +123,7 @@ export default function SkillsPage() {
     if (res.ok) {
       setFileText(await res.text());
     } else {
-      setActionMsg('Notice: Only ratified and approved procedures export an executable SKILL.md file.');
+      setActionMsg('Notice: Only procedures approved in review export a SKILL.md file.');
     }
   };
 
@@ -131,7 +131,7 @@ export default function SkillsPage() {
     setActionMsg('');
     const res = await apiFetch('/api/v1/skills/extract', { method: 'POST' });
     if (res.status === 403) {
-      setActionMsg('Notice: Academic Coordinator or Administrator role required to trigger procedure synthesis.');
+      setActionMsg('Notice: Committee Coordinator role or higher is required to run procedure extraction.');
       return;
     }
     if (res.ok) {
@@ -284,7 +284,7 @@ export default function SkillsPage() {
                                 onClick={() => act(s.id, 'approve')}
                                 className="px-3 py-1.5 rounded bg-emerald-600/20 hover:bg-emerald-600/30 text-emerald-300 border border-emerald-500/40 font-semibold transition-colors cursor-pointer"
                               >
-                                Ratify Procedure (Approve)
+                                Approve Procedure
                               </button>
                               <button
                                 onClick={() => act(s.id, 'reject')}

@@ -1,0 +1,131 @@
+# ============================================================================
+# DJSCE Institutional Brain — INSTITUTION PROFILE
+# ============================================================================
+# Single source of truth for branding, settings, help-desk routing and people.
+# Mounted read-only into the backend containers; restart them to apply edits.
+#
+# NOTE: Every person below is a SYNTHETIC demonstration identity. None of them
+# represent real DJSCE staff or students, and nothing seeded from this file is an
+# official college record.
+# ============================================================================
+
+institution:
+  name: "DJSCE Institutional Brain"
+  short_code: "DJSCE"
+  full_name: "Dwarkadas J. Sanghvi College of Engineering"
+  email_domain: "example.com"
+
+settings:
+  pa_checkin_hour: 17            # Local hour (0-23) for the Faculty Desk end-of-day check-in
+  commitment_followup_hours: 48  # A commitment idle this long gets a follow-up nudge
+
+# ── Student Help Desk ────────────────────────────────────────────────────────
+# Tickets are triaged into one of these categories and routed to its owner.
+# `keywords` drive the offline fallback classifier; `quick_questions` appear as
+# one-click prompts on the Help Desk page.
+helpdesk:
+  categories:
+    - key: "academics"
+      label: "Courses & Curriculum"
+      routed_to: "Board of Studies / Department Office"
+      keywords: [course, syllabus, semester, elective, credit, curriculum, subject, lab, project]
+      quick_questions:
+        - "What courses are in Semester V of Computer Engineering?"
+        - "Which department electives are offered in Semester VI?"
+        - "What are the Program Outcomes of Information Technology?"
+    - key: "examinations"
+      label: "Examinations & Results"
+      routed_to: "Examination Cell"
+      keywords: [exam, test, result, marks, grade, revaluation, re-evaluation, moderation, hall ticket, backlog, kt]
+      quick_questions:
+        - "How does laboratory examination moderation work?"
+        - "What is the process for applying for re-evaluation?"
+    - key: "attendance"
+      label: "Attendance & Policies"
+      routed_to: "Academic Coordinator"
+      keywords: [attendance, policy, leave, defaulter, rule, integrity, plagiarism, absence]
+      quick_questions:
+        - "What is the minimum attendance requirement?"
+    - key: "facilities"
+      label: "Labs & Facilities"
+      routed_to: "Laboratory In-charge"
+      keywords: [lab, computer, wifi, internet, projector, workstation, gpu, software, library, classroom]
+      quick_questions:
+        - "What facilities are available in the department labs?"
+    - key: "careers"
+      label: "Placements & Higher Studies"
+      routed_to: "Training & Placement Cell"
+      keywords: [placement, internship, company, recruit, career, job, higher studies, gre, abroad]
+      quick_questions:
+        - "Which companies recruit from the Computer Engineering department?"
+    - key: "general"
+      label: "General Enquiry"
+      routed_to: "Help Desk"
+      keywords: []
+      quick_questions:
+        - "What is the vision of the Computer Engineering department?"
+
+# ── People ───────────────────────────────────────────────────────────────────
+#   role:     student | employee (Faculty) | manager (Committee Coordinator) | admin (System Administrator)
+#   manager:  email of this person's reporting coordinator, or null
+#   password: set → this person gets a login (all demo logins use demo123)
+members:
+  - name: "Demo Administrator"
+    email: "admin@example.com"
+    role: "admin"
+    title: "System Administrator"
+    password: "demo123"
+
+  - name: "Dr. Aditi Rao"
+    email: "aditi.rao@example.com"
+    role: "manager"
+    title: "Academic Coordinator, Academic Council"
+    department: "Computer Engineering"
+    manager: "admin@example.com"
+    password: "demo123"
+
+  - name: "Prof. Neha Iyer"
+    email: "neha.iyer@example.com"
+    role: "manager"
+    title: "IQAC Coordinator"
+    department: "Information Technology"
+    manager: "admin@example.com"
+    password: "demo123"
+
+  - name: "Dr. Rohan Mehta"
+    email: "rohan.mehta@example.com"
+    role: "employee"
+    title: "Associate Professor"
+    department: "Computer Engineering"
+    manager: "aditi.rao@example.com"
+    password: "demo123"
+
+  - name: "Prof. Karan Shah"
+    email: "karan.shah@example.com"
+    role: "employee"
+    title: "Assistant Professor, Examination In-charge"
+    department: "Computer Engineering"
+    manager: "aditi.rao@example.com"
+    password: "demo123"
+
+  - name: "Prof. Pooja Verma"
+    email: "pooja.verma@example.com"
+    role: "employee"
+    title: "Assistant Professor, Laboratory In-charge"
+    department: "Information Technology"
+    manager: "neha.iyer@example.com"
+    password: "demo123"
+
+  - name: "Aarav Desai"
+    email: "aarav.desai@example.com"
+    role: "student"
+    title: "B.Tech Computer Engineering, Third Year"
+    department: "Computer Engineering"
+    password: "demo123"
+
+  - name: "Isha Kulkarni"
+    email: "isha.kulkarni@example.com"
+    role: "student"
+    title: "B.Tech Information Technology, Second Year"
+    department: "Information Technology"
+    password: "demo123"

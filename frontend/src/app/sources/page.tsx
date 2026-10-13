@@ -16,6 +16,7 @@ export default function SourcesPage() {
   const [status, setStatus] = useState<UploadStatus>('idle');
   const [result, setResult] = useState<UploadResult | null>(null);
   const [errorMsg, setErrorMsg] = useState('');
+  const [visibility, setVisibility] = useState<'internal' | 'public'>('internal');
 
   const handleUpload = async () => {
     if (!file) return;
@@ -25,6 +26,7 @@ export default function SourcesPage() {
 
     const form = new FormData();
     form.append('file', file);
+    form.append('visibility', visibility);
 
     try {
       const res = await apiFetch('/api/v1/ingest/file', { method: 'POST', body: form });
@@ -108,6 +110,28 @@ export default function SourcesPage() {
               }}
             />
           </label>
+
+          <fieldset className="flex flex-wrap gap-x-5 gap-y-1.5 text-xs text-slate-300">
+            <legend className="sr-only">Who can see this document</legend>
+            <label className="flex items-center gap-1.5 cursor-pointer">
+              <input
+                type="radio"
+                name="visibility"
+                checked={visibility === 'internal'}
+                onChange={() => setVisibility('internal')}
+              />
+              Internal — faculty &amp; staff only
+            </label>
+            <label className="flex items-center gap-1.5 cursor-pointer">
+              <input
+                type="radio"
+                name="visibility"
+                checked={visibility === 'public'}
+                onChange={() => setVisibility('public')}
+              />
+              Public — students can get answers from it
+            </label>
+          </fieldset>
 
           <button
             onClick={handleUpload}

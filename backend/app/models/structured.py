@@ -6,7 +6,7 @@ from uuid import UUID, uuid4
 class UserBase(SQLModel):
     email: str = Field(unique=True, index=True)
     full_name: Optional[str] = None
-    role: str = Field(default="employee")
+    role: str = Field(default="student")  # student | employee | manager | admin
 
 class User(UserBase, table=True):
     id: UUID = Field(default_factory=uuid4, primary_key=True)
@@ -43,7 +43,7 @@ class ActiveInsight(SQLModel, table=True):
 
 
 # ─────────────────────────────────────────────────────────────────────────────
-# Company PA + Skill layer
+# Faculty Desk PA + procedure ("skill") layer
 #
 # Complex/nested fields (lists, dicts) are stored as JSON-serialized strings to
 # stay database-agnostic (the test suite runs on SQLite, prod on Postgres) —
@@ -51,7 +51,7 @@ class ActiveInsight(SQLModel, table=True):
 # ─────────────────────────────────────────────────────────────────────────────
 
 class Employee(SQLModel, table=True):
-    """A person the Company PA serves. Optionally linked to a login User."""
+    """A staff member the Faculty Desk PA serves. Optionally linked to a login User."""
     id: UUID = Field(default_factory=uuid4, primary_key=True)
     user_id: Optional[UUID] = Field(default=None, foreign_key="user.id", index=True)
     display_name: str = Field(index=True)
@@ -76,8 +76,10 @@ class Meeting(SQLModel, table=True):
 class Fragment(SQLModel, table=True):
     """The shared evidence unit. Everything ingested becomes Fragments."""
     id: UUID = Field(default_factory=uuid4, primary_key=True)
-    source_type: str = Field(index=True)  # transcript/slack/email/ticket/doc/db/checkin/followup
-    source_ref: Optional[str] = None  # permalink / external id
+    source_type: str = Field(index=True)  # transcript/document/checkin/followup/ticket/<connector>
+    source_ref: Optional[str] = None  # permalink / external id / filename
+    # Who may retrieve this evidence: "internal" (staff only) or "public" (students too).
+    visibility: str = Field(default="internal", index=True)
     author_employee_id: Optional[UUID] = Field(default=None, foreign_key="employee.id")
     meeting_id: Optional[UUID] = Field(default=None, foreign_key="meeting.id", index=True)
     content: str
@@ -153,3 +155,32 @@ class AuditLog(SQLModel, table=True):
     target_id: Optional[str] = None
     audit_metadata: str = Field(default="{}")  # JSON object ("metadata" is reserved by SQLModel)
     created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Student Help Desk
+# ─────────────────────────────────────────────────────────────────────────────
+
+class Ticket(SQLModel, table=True):
+    """A help-desk query raised by a student (or staff). AI triages and drafts;
+    a staff member reviews and sends the reply — the AI never answers directly."""
+    id: UUID = Field(default_factory=uuid4, primary_key=True)
+    raised_by_user_id: UUID = Field(foreign_key="user.id", index=True)
+    subject: str
+    description: str
+    status: str = Field(default="open", index=True)  # open / answered / closed
+    # Triage (AI or keyword fallback) — category keys come from institution.yaml.
+    category: str = Field(default="general", index=True)
+    priority: str = Field(default="normal")  # low / normal / high
+    routed_to: str = Field(default="Help Desk")
+    triage_method: str = Field(default="keyword")  # keyword / llm
+    triage_rationale: Optional[str] = None
+    # Staff-only AI draft + the evidence it was grounded in (JSON list).
+    ai_draft_reply: Optional[str] = None
+    ai_sources: str = Field(default="[]")
+    # The human-approved reply the requester sees.
+    reply: Optional[str] = None
+    replied_by_user_id: Optional[UUID] = Field(default=None, foreign_key="user.id")
+    replied_at: Optional[datetime] = None
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    updated_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))

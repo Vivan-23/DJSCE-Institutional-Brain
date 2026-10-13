@@ -6,16 +6,11 @@ from sqlmodel import select
 
 from app.models.structured import CheckIn, Commitment, CommitmentUpdate, Fragment, User
 from app.services.employee_service import employee_service
+from tests.helpers import register
 
 
 def _register(client, email="pa@test.com"):
-    res = client.post(
-        "/api/v1/auth/register",
-        json={"email": email, "full_name": "PA User", "password": "pass1234"},
-    )
-    if res.status_code == 400:
-        res = client.post("/api/v1/auth/login", json={"email": email, "password": "pass1234"})
-    return res.json()["access_token"]
+    return register(client, email, "PA User")
 
 
 def _employee_for(db, email):

@@ -4,7 +4,7 @@ from uuid import UUID
 from fastapi import APIRouter, Depends, HTTPException
 from sqlmodel import Session, select
 
-from app.api.v1.auth import get_current_user
+from app.api.v1.auth import require_staff
 from app.core.db import get_session
 from app.models.structured import ActiveInsight, User
 
@@ -16,7 +16,7 @@ router = APIRouter()
 @router.get("/")
 def get_insights(
     db: Session = Depends(get_session),
-    current_user: User = Depends(get_current_user),
+    current_user: User = Depends(require_staff),
 ):
     insights = db.exec(
         select(ActiveInsight).where(ActiveInsight.is_dismissed == False)  # noqa: E712
@@ -28,7 +28,7 @@ def get_insights(
 def dismiss_insight(
     insight_id: str,
     db: Session = Depends(get_session),
-    current_user: User = Depends(get_current_user),
+    current_user: User = Depends(require_staff),
 ):
     try:
         uid = UUID(insight_id)
@@ -50,7 +50,7 @@ def dismiss_insight(
 def delete_insight(
     insight_id: str,
     db: Session = Depends(get_session),
-    current_user: User = Depends(get_current_user),
+    current_user: User = Depends(require_staff),
 ):
     try:
         uid = UUID(insight_id)

@@ -4,19 +4,11 @@ from unittest.mock import patch, MagicMock
 from sqlmodel import select
 
 from app.models.structured import Meeting, Fragment, Commitment, Employee
+from tests.helpers import register
 
 
 def _get_token(client) -> str:
-    res = client.post(
-        "/api/v1/auth/register",
-        json={"email": "trans@test.com", "full_name": "Trans User", "password": "pass1234"},
-    )
-    if res.status_code == 400:
-        res = client.post(
-            "/api/v1/auth/login",
-            json={"email": "trans@test.com", "password": "pass1234"},
-        )
-    return res.json()["access_token"]
+    return register(client, "trans@test.com", "Trans User")
 
 
 class TestTranscriptEndpoint:
@@ -101,7 +93,7 @@ class TestTranscriptPipeline:
         assert all(c.assignee_employee_id is not None for c in commitments)
 
         # Assignee names resolved to employees (created as stubs, or matched to
-        # people already seeded from company.yaml — e.g. "Priya" -> "Priya Nair").
+        # people already seeded from institution.yaml — e.g. "Priya" -> "Priya Nair").
         employees = {e.display_name for e in db_session.exec(select(Employee)).all()}
         assert any(n == "Priya" or n.startswith("Priya") for n in employees)
         assert any(n == "Alex Chen" or n.startswith("Alex") for n in employees)

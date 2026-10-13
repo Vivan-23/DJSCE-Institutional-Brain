@@ -14,7 +14,7 @@ from fastapi import APIRouter, Depends, HTTPException, Response
 from pydantic import BaseModel
 from sqlmodel import Session
 
-from app.api.v1.auth import get_current_user, require_role
+from app.api.v1.auth import require_role, require_staff
 from app.core.db import get_session
 from app.models.structured import Skill, User
 from app.services.audit_service import audit_service
@@ -87,7 +87,7 @@ def _get_or_404(db: Session, skill_id: str) -> Skill:
 @router.get("")
 def list_skills(
     status: Optional[str] = None,
-    current_user: User = Depends(get_current_user),
+    current_user: User = Depends(require_staff),
     db: Session = Depends(get_session),
 ):
     return [_meta(s) for s in skill_service.list_skills(db, status=status)]
@@ -107,7 +107,7 @@ def trigger_extraction(
 @router.get("/{skill_id}")
 def get_skill(
     skill_id: str,
-    current_user: User = Depends(get_current_user),
+    current_user: User = Depends(require_staff),
     db: Session = Depends(get_session),
 ):
     skill = _get_or_404(db, skill_id)
@@ -117,7 +117,7 @@ def get_skill(
 @router.get("/{skill_id}/file")
 def get_skill_file(
     skill_id: str,
-    current_user: User = Depends(get_current_user),
+    current_user: User = Depends(require_staff),
     db: Session = Depends(get_session),
 ):
     """Rendered, agent-consumable skill file. Only approved skills export by default (FR6)."""
@@ -176,7 +176,7 @@ def reject_skill(
 def skill_feedback(
     skill_id: str,
     req: FeedbackRequest,
-    current_user: User = Depends(get_current_user),
+    current_user: User = Depends(require_staff),
     db: Session = Depends(get_session),
 ):
     """An agent reports an execution outcome (FR7) — logged and fed to freshness."""

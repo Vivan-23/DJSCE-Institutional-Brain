@@ -6,12 +6,19 @@ reference documents and a per-member assistant — and turns it into searchable,
 institutional knowledge: decisions, tracked commitments, documented procedures, and a knowledge graph.
 
 > ⚠️ **Demonstration data.** Every meeting, document, person and procedure bundled in this repository
-> (`mock_institutional_data/`, `company.yaml`) is **synthetic**. Nothing here is an official DJSCE record,
+> (`mock_institutional_data/`, `institution.yaml`) is **synthetic**. Nothing here is an official DJSCE record,
 > decision or approved policy.
 
 Built on the open-source *Company Brain* architecture and adapted for a college setting.
 
 ---
+
+## Repository layout
+
+| Path | Side | Contents |
+|---|---|---|
+| `backend/`, `frontend/`, `docs/`, `mock_institutional_data/` | Development | Application code, engineering docs, synthetic dataset |
+| [`publication/`](publication/) | Publication | Project brief for the guide, IPD report, AVINYA poster, slides, paper, meeting notes |
 
 ## 📖 Documentation
 
@@ -19,7 +26,7 @@ Built on the open-source *Company Brain* architecture and adapted for a college 
 |---|---|
 | **[docs/USAGE.md](docs/USAGE.md)** | Setup, running (Docker or local dev), feature walkthrough, troubleshooting |
 | **[docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)** | Codebase map — services, routes, models, jobs, "where to change X" |
-| **[docs/CUSTOMIZING.md](docs/CUSTOMIZING.md)** | Institutional profile (`company.yaml`): branding, settings, people and roles |
+| **[docs/CUSTOMIZING.md](docs/CUSTOMIZING.md)** | Institution profile (`institution.yaml`): branding, settings, help desk, people and roles |
 | **[docs/CHANGELOG.md](docs/CHANGELOG.md)** | What changed and why |
 
 ---
@@ -41,7 +48,8 @@ review) needs to be followed again, nobody can find *how it was actually done* o
 | **Procedures** | Related evidence is clustered and synthesized into structured procedures (trigger, steps, decision rules, guardrails, escalation), each citing its source excerpts. A coordinator reviews and approves them. |
 | **Evidence & provenance** | The Evidence panel groups duplicate excerpts while keeping every underlying citation inspectable. |
 | **Knowledge graph** | People and bodies mentioned in documents are linked in Neo4j and visualised. |
-| **Q&A assistant** | RAG chat grounded in indexed transcripts and documents. |
+| **Q&A assistant** | RAG chat grounded in indexed transcripts and documents; every answer lists its sources. |
+| **Student Help Desk** | Students get instant answers from *public* department information (curriculum, electives, outcomes, placements), or raise a ticket. AI triages it (category, priority, owning office) and drafts a cited reply that a faculty member reviews and sends. |
 | **Freshness** | When new evidence contradicts an approved procedure, it is flagged `stale` and routed back for review. |
 
 ---
@@ -70,7 +78,7 @@ flowchart TD
 |---|---|
 | Frontend | Next.js 16, React 19, TypeScript, Tailwind CSS v4 |
 | Backend API | FastAPI, Python 3.11 |
-| Auth | JWT, role-based access: `employee < manager < admin` |
+| Auth | JWT, role-based access: Student < Faculty < Committee Coordinator < System Administrator, enforced in the API; knowledge tagged public/internal |
 | Relational store | PostgreSQL (SQLModel) |
 | Vector search | ChromaDB + sentence-transformers |
 | Graph | Neo4j |
@@ -88,27 +96,29 @@ docker compose up -d --build
 python ingest_institutional.py     # load the synthetic DJSCE dataset (optional: --approve)
 ```
 
-Open http://localhost:3000 and sign in with the demo account from `company.yaml`
-(`demo@example.com` / `demo123`). Full instructions: [docs/USAGE.md](docs/USAGE.md).
+Open http://localhost:3000 and use the one-click demo logins (all synthetic,
+password `demo123`): System Administrator, Committee Coordinator, Faculty, Student. Full instructions: [docs/USAGE.md](docs/USAGE.md).
 
 ---
 
 ## API overview
 
-All endpoints except `/health`, `/api/v1/company` and auth require a Bearer token. 🔒 = `manager` role or higher.
+All endpoints except `/health`, `/api/v1/institution` and auth require a Bearer token. 👥 = staff only (faculty and above). 🔒 = `manager` role or higher.
 
 | Method | Path | Description |
 |---|---|---|
 | `POST` | `/api/v1/auth/login` · `/register` | Obtain a JWT |
 | `POST` / `GET` | `/api/v1/transcripts` · `/{id}` | Ingest a transcript (queued) / list and fetch meetings |
-| `POST` | `/api/v1/ingest/file` | Upload a .txt / .pdf / .docx reference document (queued) |
+| `POST` | `/api/v1/ingest/file` | 👥 Upload a .txt / .pdf / .docx document, `visibility=internal\|public` (queued) |
 | `GET` · `PATCH` | `/api/v1/commitments` · `/mine` · `/{id}` | List commitments / update status |
 | `GET` · `POST` | `/api/v1/pa/followups` · `/pa/checkin` … | Assistant follow-ups and end-of-day check-in |
 | `GET` | `/api/v1/skills` · `/{id}` | List procedures / full procedure with citations |
 | `POST` | `/api/v1/skills/extract` | 🔒 Run procedure extraction |
 | `PATCH` · `POST` | `/api/v1/skills/{id}` · `/approve` · `/reject` | 🔒 Edit and review procedures |
 | `GET` | `/api/v1/skills/{id}/file` | Rendered `SKILL.md` (approved only) |
-| `POST` | `/api/v1/chat` | Q&A over indexed knowledge |
+| `POST` | `/api/v1/chat` | Q&A with sources (students: public knowledge only) |
+| `GET` · `POST` | `/api/v1/helpdesk/categories` · `/tickets` · `/tickets/mine` | Help desk: categories, raise and track own tickets |
+| `GET` · `POST` | `/api/v1/helpdesk/tickets` (queue) · `/{id}/reply` · `/{id}/retriage` | 👥 Staff queue, AI draft, human reply |
 | `GET` | `/api/v1/graph/data` · `/stats` | Knowledge-graph data |
 | `GET` · `POST` | `/api/v1/sources` · `/{name}/sync` | Source connectors (sync 🔒) |
 | `GET` | `/api/v1/audit` | 🔒 Audit trail |
@@ -122,8 +132,8 @@ Interactive docs: http://localhost:8001/docs
 
 - Meeting capture is transcript-based (no live meeting bot).
 - Slack / database connectors are credential-aware stubs; the `manual` connector accepts pushed items.
-- Uploaded documents are indexed for Q&A and the graph but do not yet feed procedure extraction.
-- Roles are the generic `employee < manager < admin`; a DJSCE display mapping (Faculty / Committee Coordinator / System Administrator) is planned, not yet implemented.
+- Visibility is two-level (public / internal); per-department or per-committee scoping is not implemented yet.
+- Help-desk replies are always written or approved by staff; the AI never answers a ticket on its own.
 
 ## Tests
 

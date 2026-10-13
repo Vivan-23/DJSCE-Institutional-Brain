@@ -87,7 +87,7 @@ Write-Host "`n==================================================================
 Write-Host "  PUBLIC SHARE READY FOR PRESENTATION AND EVALUATION PANEL        " -ForegroundColor Green
 Write-Host "==================================================================" -ForegroundColor Green
 Write-Host "  Shareable Web URL:    $publicUrl" -ForegroundColor Cyan
-Write-Host "  Demo Credentials:     demo@example.com / demo123" -ForegroundColor White
+Write-Host "  Demo Logins:          admin@example.com, aarav.desai@example.com (student) / demo123" -ForegroundColor White
 Write-Host "------------------------------------------------------------------" -ForegroundColor Gray
 Write-Host "  Architecture:         Single-Domain Reverse Proxy" -ForegroundColor White
 Write-Host "                        Next.js proxies /api/* internally to FastAPI" -ForegroundColor Gray

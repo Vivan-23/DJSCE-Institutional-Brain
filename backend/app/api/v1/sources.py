@@ -7,7 +7,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel
 from sqlmodel import Session
 
-from app.api.v1.auth import get_current_user, require_role
+from app.api.v1.auth import require_role, require_staff
 from app.core.db import get_session
 from app.models.structured import User
 from app.services.connectors.base import RawFragment
@@ -31,7 +31,7 @@ class SyncRequest(BaseModel):
 
 @router.get("")
 def list_sources(
-    current_user: User = Depends(get_current_user),
+    current_user: User = Depends(require_staff),
 ):
     return [
         {"name": c.name, "label": c.label, "configured": c.is_configured}

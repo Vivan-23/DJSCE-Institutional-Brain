@@ -1,7 +1,7 @@
 import structlog
 from fastapi import APIRouter, Depends
 
-from app.api.v1.auth import get_current_user
+from app.api.v1.auth import require_staff
 from app.core.neo4j_db import neo4j_conn
 from app.models.structured import User
 
@@ -10,7 +10,7 @@ router = APIRouter()
 
 
 @router.get("/data")
-def get_graph_data(current_user: User = Depends(get_current_user)):
+def get_graph_data(current_user: User = Depends(require_staff)):
     query = """
     MATCH (n)-[r]->(m)
     RETURN n, r, m
@@ -53,7 +53,7 @@ def get_graph_data(current_user: User = Depends(get_current_user)):
 
 
 @router.get("/stats")
-def get_graph_stats(current_user: User = Depends(get_current_user)):
+def get_graph_stats(current_user: User = Depends(require_staff)):
     try:
         employee_count = neo4j_conn.execute_query("MATCH (e:Employee) RETURN count(e) AS c")[0]["c"]
         project_count = neo4j_conn.execute_query("MATCH (p:Project) RETURN count(p) AS c")[0]["c"]

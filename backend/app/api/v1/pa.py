@@ -7,7 +7,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel
 from sqlmodel import Session
 
-from app.api.v1.auth import get_current_user
+from app.api.v1.auth import require_staff
 from app.core.db import get_session
 from app.models.structured import CheckIn, User
 from app.services.employee_service import employee_service
@@ -43,7 +43,7 @@ def _serialize_checkin(ci: CheckIn) -> dict:
 
 @router.get("/followups")
 def list_followups(
-    current_user: User = Depends(get_current_user),
+    current_user: User = Depends(require_staff),
     db: Session = Depends(get_session),
 ):
     employee = employee_service.get_or_create_for_user(db, current_user)
@@ -54,7 +54,7 @@ def list_followups(
 def reply_to_followup(
     commitment_id: str,
     req: ReplyRequest,
-    current_user: User = Depends(get_current_user),
+    current_user: User = Depends(require_staff),
     db: Session = Depends(get_session),
 ):
     if not req.text.strip():
@@ -72,7 +72,7 @@ def reply_to_followup(
 
 @router.get("/checkin")
 def get_checkin(
-    current_user: User = Depends(get_current_user),
+    current_user: User = Depends(require_staff),
     db: Session = Depends(get_session),
 ):
     employee = employee_service.get_or_create_for_user(db, current_user)
@@ -83,7 +83,7 @@ def get_checkin(
 @router.post("/checkin/message")
 def post_checkin_message(
     req: MessageRequest,
-    current_user: User = Depends(get_current_user),
+    current_user: User = Depends(require_staff),
     db: Session = Depends(get_session),
 ):
     if not req.text.strip():
@@ -97,7 +97,7 @@ def post_checkin_message(
 
 @router.post("/checkin/complete")
 def complete_checkin(
-    current_user: User = Depends(get_current_user),
+    current_user: User = Depends(require_staff),
     db: Session = Depends(get_session),
 ):
     employee = employee_service.get_or_create_for_user(db, current_user)

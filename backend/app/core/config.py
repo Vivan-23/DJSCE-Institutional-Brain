@@ -8,7 +8,7 @@ class Settings(BaseSettings):
     VERSION: str = "1.0.0"
 
     # Databases
-    DATABASE_URL: str = "postgresql://company_brain_user:brain_secure_pass@localhost:5432/company_brain_db"
+    DATABASE_URL: str = "postgresql://djsce_brain_user:brain_secure_pass@localhost:5432/djsce_brain_db"
     NEO4J_URI: str = "bolt://localhost:7687"
     NEO4J_USER: str = "neo4j"
     NEO4J_PASSWORD: str = "brain_graph_pass"
@@ -51,13 +51,13 @@ class Settings(BaseSettings):
 
 settings = Settings()
 
-# Apply per-company overrides from company.yaml (single source of truth). Kept
+# Apply per-institution overrides from institution.yaml (single source of truth). Kept
 # out of the Settings class so a bad/missing profile can never break boot.
 try:
-    from app.core.company_config import get_company_config
+    from app.core.institution_config import get_institution_config
 
-    _company = get_company_config()
-    settings.PA_CHECKIN_HOUR = _company.pa_checkin_hour
-    settings.COMMITMENT_FOLLOWUP_HOURS = _company.commitment_followup_hours
+    _institution = get_institution_config()
+    settings.PA_CHECKIN_HOUR = _institution.pa_checkin_hour
+    settings.COMMITMENT_FOLLOWUP_HOURS = _institution.commitment_followup_hours
 except Exception:  # noqa: BLE001
     pass

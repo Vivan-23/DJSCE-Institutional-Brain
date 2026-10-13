@@ -54,7 +54,7 @@ Celery **beat** scheduler, and the frontend. Then open:
 > docker compose exec backend pip freeze > backend/requirements.lock
 > ```
 
-On first boot the people in `company.yaml` are seeded; the demo admin is **`demo@example.com` / `demo123`**.
+On first boot the people in `institution.yaml` are seeded. Demo logins (all `demo123`): **`admin@example.com`** (System Administrator), `aditi.rao@example.com` (Committee Coordinator), `karan.shah@example.com` (Faculty), `aarav.desai@example.com` (Student). The login page has one-click buttons for each.
 
 ### Option B — Local dev (hot reload)
 
@@ -93,8 +93,9 @@ npm run dev
 
 ## 4. Using the product
 
-Log in at http://localhost:3000 with the demo account (or register a new one —
-new users get the `employee` role).
+Log in at http://localhost:3000 with a demo account (or register — self-registration
+always creates a **student** account). Students land on the **Help Desk**; staff on
+the governance overview.
 
 ### A. Capture a meeting → commitments  (`/meetings`)
 1. Go to **Meetings**, paste a transcript (speaker-labelled lines like
@@ -129,7 +130,10 @@ new users get the `employee` role).
 4. The **freshness** job flags an approved skill `stale` when new evidence
    contradicts it and raises an insight on the Active Feed.
 
-### E. Sources  (`/sources` + API)
+### E. Documents & Sources  (`/sources` + API)
+- Upload a .txt/.pdf/.docx and choose **Internal** (staff only, the default) or
+  **Public** (students can get answers from it). Chunks become Fragments, so
+  internal documents also feed procedure extraction and citations.
 - `GET /api/v1/sources` lists connectors and whether they're configured.
 - `POST /api/v1/sources/{name}/sync` (manager) ingests fragments. Live Slack/email/
   ticket pulls are post-V1 stubs; the **`manual`** connector accepts pushed items
@@ -140,7 +144,17 @@ new users get the `employee` role).
     -d '{"items":[{"content":"Refunds over $500 need manager approval","author":"Dana"}]}'
   ```
 
-### F. Agent consumption (the deliverable)
+### F. Student Help Desk  (`/helpdesk`, `/tickets`)
+- **Students** (`/helpdesk`): one-click quick questions per category (from
+  `institution.yaml`) are answered instantly from *public* knowledge, with sources.
+  If that doesn't help, **Raise a ticket** — it is triaged (category, priority,
+  owning office) and listed under *My tickets* with the eventual reply.
+- **Staff** (`/tickets`): the queue shows the triage result and method (AI or
+  keyword fallback), plus an **AI-suggested reply with its sources** (an amber
+  warning appears if it used internal sources). Edit it and **Send reply** — the
+  student never sees the draft, only what you send.
+
+### G. Agent consumption
 An agent runtime fetches approved skills and reports outcomes:
 ```
 GET  /api/v1/skills                  → list (metadata)
@@ -148,26 +162,33 @@ GET  /api/v1/skills/{id}/file        → executable SKILL.md
 POST /api/v1/skills/{id}/feedback    → {agent_id, outcome, detail}   (audited)
 ```
 
-### G. Audit  (`/api/v1/audit`, manager)
+### H. Audit  (`/api/v1/audit`, manager)
 Every autonomous action (extraction, approval, skill-use, check-in, follow-up,
-sync) is logged. Filter by `?action=` or `?target_id=`.
+sync, ticket create/triage/reply) is logged. Filter by `?action=` or `?target_id=`.
 
 ---
 
 ## 5. Roles
 
-`employee < manager < admin`. New registrations are `employee`. Reviewing/
-approving skills, running extraction, syncing sources, and reading the audit log
-need `manager`+. Promote a user by setting `User.role` (DB) — no re-login needed.
-The seeded demo user is `admin`.
+| Role id | Shown as | Can |
+|---|---|---|
+| `student` | Student | Help Desk (ask, raise/track own tickets), assistant over **public** knowledge only |
+| `employee` | Faculty | Everything internal: meetings, commitments, Faculty Desk, procedures (read), graph, documents, ticket queue |
+| `manager` | Committee Coordinator | + approve/reject/extract procedures, sync sources, audit log |
+| `admin` | System Administrator | everything |
+
+New self-registrations are `student`. Change a role in `institution.yaml` (then
+restart the backend) or by setting `User.role` in the DB — takes effect without
+re-login. Enforcement is in the backend (`require_staff` / `require_role`); the
+sidebar only hides what the API would refuse anyway.
 
 ---
 
 ## 6. Loading the demo data
 
 All bundled data is **synthetic** — it demonstrates the platform and is not an
-official DJSCE record. People are pre-seeded from [`company.yaml`](../company.yaml)
-(sign in as `demo@example.com` / `demo123`, or any listed member with a password).
+official DJSCE record. People are pre-seeded from [`institution.yaml`](../institution.yaml)
+(sign in as `admin@example.com` / `demo123`, or any listed member).
 
 With the stack running and `GROQ_API_KEY` set, load the dataset in
 [`mock_institutional_data/`](../mock_institutional_data) through the real pipeline:
@@ -179,10 +200,14 @@ python ingest_institutional.py --approve  # also auto-approve extracted procedur
 ```
 
 The loader logs in, posts the committee transcripts (→ **Meetings** +
-**Commitments**), uploads the reference documents (→ Q&A index + **Knowledge
-Graph**), waits for the worker, then triggers procedure extraction.
+**Commitments**), uploads `doc_*.txt` as **internal** documents and everything in
+`public/` (department FAQs, curriculum, outcomes — from the student-chatbot
+mini-project, contact details removed) as **public** documents, waits for the
+worker, then triggers procedure extraction.
 
-**Suggested demo path:** Governance Overview → Meetings → Commitments →
+**Suggested demo path:** sign in as the **Student** → Help Desk quick question →
+raise a ticket → sign in as **Faculty** → Help Desk Queue (review AI draft, reply) →
+Governance Overview → Meetings → Commitments →
 Procedures (review, open the Evidence panel) → Institutional Assistant (ask a
 question about a committee decision) → Knowledge Graph.
 
@@ -223,9 +248,9 @@ cd frontend && npx tsc --noEmit && npx eslint src
 | `pytest` PermissionError deleting test DB | Known Windows file-handle quirk; `engine.dispose()` handles it — rerun. |
 | `docker compose up` fails: bcrypt/chromadb version conflict | Fixed — `bcrypt>=4.0.1,<4.1`. If you edited deps, regenerate the lock (above). |
 | Backend exits: `error parsing value for field "CORS_ORIGINS"` | Fixed — config now parses a comma-separated string. Set `CORS_ORIGINS=a,b` (not JSON). |
-| `cb_chroma` unhealthy / blocks backend | Fixed — image has no curl; healthcheck removed, dependents use `service_started`. |
-| `cb_neo4j` unhealthy: "authentication failure" | Stale `neo4jdata` volume with an old password. `docker compose down -v` then `up` to re-init. |
+| `djsce_chroma` unhealthy / blocks backend | Fixed — image has no curl; healthcheck removed, dependents use `service_started`. |
+| `djsce_neo4j` unhealthy: "authentication failure" | Stale `neo4jdata` volume with an old password. `docker compose down -v` then `up` to re-init. |
 | Port bind error on 8000/3000/5432 | Another process/old container holds it. `docker compose down --remove-orphans`, or remap the host port. |
 | `celery_beat` exits: `Permission denied: 'celerybeat-schedule'` | Fixed — beat writes to `/tmp` (non-root container). |
-| `cb_frontend` works on host but shows unhealthy | Fixed — `HOSTNAME=0.0.0.0` so Next binds all interfaces. |
+| `djsce_frontend` works on host but shows unhealthy | Fixed — `HOSTNAME=0.0.0.0` so Next binds all interfaces. |
 | Backend log: "Failed to load embedding model — Permission denied: '/home/app'" | Fixed — `app` user now has a writable HOME/`HF_HOME` and the model is baked into the image. |

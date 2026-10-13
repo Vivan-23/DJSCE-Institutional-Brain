@@ -1,0 +1,125 @@
+[PUBLIC STUDENT INFORMATION · Compiled from the DJSCE Student Query Chatbot mini-project. Informational only — verify against official DJSCE notices and the college website.]
+Department of Information Technology — Overview, Outcomes and Syllabus
+
+About Us
+In the modern era, the world is moving towards efficient improvements and productivity using technology. As more and more jobs are being automated, IT department is at par with the changes going around in the world and helps students to gain a strong foothold in the ever-growing modern world. Having the foresight to consider the growth of technology, back in 1999 D.J. Sanghvi college of engineering introduced a new discipline of Information Technology. This program is accredited by the National Board of Accreditation (NBA) till A.Y. 2022- 2023 (i.e., till 30th June 2023). In other words, IT deals with the use of computers and software to provide a new tangent all together in the technology, to convert, store, protect, process, transmit and retrieve information, securely. To keep pace with the current technological trends and to sharpen their skills, faculty development workshops are carried out regularly. During this four-year program, the emphasis is on the technology itself more than on the information it conveys. A highly skilled, dynamic, and technologically sound faculty endows the IT department. IT students have striven hard to achieve many awards and laurels for the college and many of the alumnus work for big MNCs. The IT department boasts of having two student committees, namely DJ-CSI and INIT-AI. These committees aim to not only give students opportunities to advance academically but also to hone their overall skills. DJCSI bagged the award of the best CSI chapter in India for the academic year 2017-19.
+Students at our department are always encouraged to participate in research projects and research assignments not only under the competent faculty in the department but also with renowned organizations outside e.g., CDAC, IIT-Bombay etc. Students at our department are also motivated to contribute their research publications in renowned journal and conferences. Students also get a chance to not only participate in the coding competitions and hackathons but they are also actively involved in organizing such prestigious events as well. Through all these activities, students get a good exposure to earn strong technical and non-technical skills that help them to build their impressive profile for their candidature application at foreign universities and other PG programs. Competent faculty in the department provides every possible assistance to students in their academic and research work for this process. Strong recommendation from the faculty have always played a vital role in students grabbing the best and their ambitious admits for higher studies opportunities at the prestigious universities.
+• Build Technological Foundation
+• Wholesome Development
+• To get Practical Exposure
+• Blend of Academics
+• Good Research Projects
+• Global Environment
+• Impact on The Society
+• Innovative Ideas and Learning
+• Soft and Professional Skills Development
+
+Key Points
+Duration
+4 Years
+
+Year of establishment
+1999
+
+Intake
+180
+
+Degree 
+B.Tech
+Vision
+To emerge out as a prominent department offering a programme blended with research culture in its pursuit for academic excellence in order to develop professionally competent and socially responsible engineers capable of meeting industry demands and social obligations in a vibrant global environment.
+Mission
+1. To build fertile environment, where students receive the best of technological foundation and direction to explore, pursue and hone their own areas of interests, culminating with a wholesome development.
+2. To strive towards building an atmosphere that will be a catalyst for innovative ideas and learning, providing students with various opportunities and experiences that can help them to thrive and prosper through a blend of academics, practical exposure and research programs to pursue successful careers in a global environment.
+3. To bridge the gap between the industry, institute and society by acquainting the students with the highly dynamic information technology domain.
+4. To imbibe a sense of responsibility amongst students to apply their knowledge diligently keeping in mind its possible impact on the society.
+5. To develop soft and professional skills.
+Program Outcomes
+• PO1: To apply knowledge of mathematics, science and engineering fundamentals and an engineering specialization to the solution of complex engineering problems.
+• PO2: To identify and formulate, research literature and analyze complex engineering problems resulting in substantial conclusions using principles of mathematics, natural sciences and engineering sciences.
+• PO3: To design solutions of complex engineering problems and design system components or processes that meet specified needs with appropriate consideration for public health and safety, cultural, societal and environmental considerations.
+• PO4: To use research based knowledge and research methods including design of experiments, analysis and interpretation of data synthesis of information to provide valid conclusions.
+• PO5: To create, select and apply appropriate techniques, resources and modern engineering and IT tools including prediction and modelling to complex engineering activities with an understanding of the limitations.
+• PO6: To apply reasoning informed by contextual knowledge to assess societal, health, safety, legal and cultural issues and the consequent responsibilities relevant to professional engineering practice.
+• PO7: To understand the impact of professional engineering solutions in the societal and Environmental context and demonstrate knowledge and need for sustainable development.
+• PO8: To apply ethical principles and further to commit to professional ethics and responsibilities and norms of engineering practice.
+• PO9: To function effectively as an individual and as a member or leader in diverse teams and in multidisciplinary settings.
+• PO10: To communicate effectively on complex engineering activities with the engineering community and with society at large, such as being able to comprehend and write effective reports and design documentation, make effective presentations and give and receive clear instructions.
+• PO11: To demonstrate knowledge and understanding of engineering and management principles and apply these to one’s own work, as a member and leader in a team, to manage projects and in multidisciplinary environments.
+• PO12: To recognize the need for and have the preparation and ability to engage in independent and lifelong learning in the broadest context of technological change.
+Program Specific Outcomes
+• Students will be able to:
+• Analyze real life problems and design user friendly solutions.
+• To provide effective solutions for problems in sectors like healthcare, science, commerce, e-governance etc., by employing right set of tools and methodologies.
+• Design and implement right IT infrastructural setups for any organization.
+• Plan, execute, check and act in specific project tasks.
+Program Educational Objectives
+• To impart learners with sound knowledge of basic sciences and core engineering fundamentals.
+• To prepare learners use modern programming tools/technologies and develop competency to counter complicated engineering problems.
+• To prepare learners to be professionally competent and socially responsible to sustain and strive through the competitive, global/environment challenges.
+• To create a strong foundation in IT discipline and motivate learners undertake postgraduate studies, explore professional avenues or venture into entrepreneurship.
+• To inculcate personality traits and professional ethics.
+
+Syllabus
+Semester III
+• Discrete Structures
+• Data Structures and Algorithms
+• Database Management System
+• Logic Design and Computer Architecture
+• Operating System
+• Java and Advanced Java Programming Laboratory
+• Innovative Product Development I (Audit)
+• Constitution of India (Audit)
+• Web Programming Laboratory
+Semester IV
+• Probability and Statistics
+• Formal Languages and Automata Theory
+• Design and Analysis of Algorithms
+• Computer Networks
+• Python Programming Laboratory
+• Universal Human Values
+• Innovative Product Development II (Audit)
+• Environmental Studies (Audit)
+Semester V
+• Cryptography and Network Security
+• Advanced Data Structures
+• Data Warehousing and Mining
+• Artificial Intelligence
+• Professional and Business Communication
+• Microcontrollers and Embedded Systems (Dept. Elective)
+• Human Computer Interaction (Dept. Elective)
+• Statistical Analysis (Dept. Elective)
+• Innovative Product Development III (Credit)
+Semester VI
+• Software Engineering
+• Machine Learning
+• Image Processing and Computer Vision
+• Full Stack Web Development Laboratory
+• Infrastructure Security (Dept. Elective)
+• Internet of Things (Dept. Elective)
+• ARVR (Dept. Elective)
+• Big Data Analysis (Dept. Elective)
+• Information Systems and IT Governance (Dept. Elective)
+• Environmental Studies (Audit)
+• Innovative Product Development IV (Credit)
+Semester VII
+• Service Oriented Architecture
+• Design Thinking
+• Blockchain Technology (Dept. Elective)
+• Machine Learning (Dept. Elective)
+• Wireless Sensor Network (Dept. Elective)
+• AR/VR (Dept. Elective)
+• Business Analytics (Dept. Elective)
+• Institute Level Optional Courses - I
+• Project Stage - I
+Semester VIII
+• Semantic Web Technology
+• Design Patterns
+• Industrial Internet of Things (Dept. Elective)
+• Game Design & Gamification (Dept. Elective)
+• Predictive Analytics (Dept. Elective)
+• Advanced Machine Learning (Dept. Elective)
+• Advanced Security (Dept. Elective)
+• Quantum Computing (Dept. Elective)
+• Institute Level Optional Courses - II
+• Project Stage – II

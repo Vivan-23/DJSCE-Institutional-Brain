@@ -7,7 +7,7 @@ re-reading the whole codebase.
 |---|---|
 | [ARCHITECTURE.md](ARCHITECTURE.md) | **Read first.** Codebase map: services, routes, models, jobs, data flow, and "where to change X". |
 | [USAGE.md](USAGE.md) | Setup, running (Docker or local dev), and feature-by-feature procedures. Troubleshooting table at the end. |
-| [CUSTOMIZING.md](CUSTOMIZING.md) | Institutional profile — edit `company.yaml` (branding, settings, people and roles). |
+| [CUSTOMIZING.md](CUSTOMIZING.md) | Institution profile — edit `institution.yaml` (branding, settings, help desk, people and roles). |
 | [CHANGELOG.md](CHANGELOG.md) | What changed and why, newest first. Append here when you ship. |
 | [../README.md](../README.md) | Project pitch + API summary. |
 

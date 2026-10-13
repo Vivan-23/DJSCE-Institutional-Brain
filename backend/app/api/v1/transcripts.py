@@ -7,7 +7,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel
 from sqlmodel import Session, select
 
-from app.api.v1.auth import get_current_user
+from app.api.v1.auth import require_staff
 from app.core.db import get_session
 from app.models.structured import Meeting, User
 
@@ -27,7 +27,7 @@ class TranscriptRequest(BaseModel):
 @router.post("", status_code=202)
 def ingest_transcript(
     req: TranscriptRequest,
-    current_user: User = Depends(get_current_user),
+    current_user: User = Depends(require_staff),
 ):
     text = req.transcript.strip()
     if not text:
@@ -54,7 +54,7 @@ def ingest_transcript(
 
 @router.get("")
 def list_meetings(
-    current_user: User = Depends(get_current_user),
+    current_user: User = Depends(require_staff),
     db: Session = Depends(get_session),
 ):
     meetings = db.exec(select(Meeting).order_by(Meeting.occurred_at.desc())).all()
@@ -73,7 +73,7 @@ def list_meetings(
 @router.get("/{meeting_id}")
 def get_meeting(
     meeting_id: str,
-    current_user: User = Depends(get_current_user),
+    current_user: User = Depends(require_staff),
     db: Session = Depends(get_session),
 ):
     from uuid import UUID

@@ -27,7 +27,7 @@ from app.services.extraction_service import extraction_service
 log = structlog.get_logger()
 
 # Fragment kinds that carry procedural knowledge worth synthesizing into skills.
-_PROCEDURE_SOURCES = {"transcript", "slack", "email", "ticket", "doc", "checkin", "followup", "db"}
+_PROCEDURE_SOURCES = {"transcript", "document", "slack", "email", "checkin", "followup", "db"}
 _MIN_CLUSTER_SIZE = 3
 _MAX_CLUSTERS_PER_RUN = 5
 
@@ -49,7 +49,9 @@ class SkillService:
         fragments = [
             f
             for f in db.exec(select(Fragment).order_by(Fragment.created_at.desc()).limit(500))
-            if f.source_type in _PROCEDURE_SOURCES and f.id not in cited_ids
+            # Procedures are internal governance knowledge; public student FAQs are
+            # answered by the assistant directly, not synthesized into procedures.
+            if f.source_type in _PROCEDURE_SOURCES and f.visibility == "internal" and f.id not in cited_ids
         ]
         clusters = self._cluster(fragments)
 

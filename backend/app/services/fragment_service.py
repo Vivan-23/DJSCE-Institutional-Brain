@@ -1,8 +1,8 @@
 """
 Fragment service — the shared evidence layer.
 
-Everything ingested (transcript utterances, check-in turns, follow-up replies,
-later Slack/email/tickets) becomes a Fragment: persisted in Postgres and, when
+Everything ingested (transcript utterances, uploaded-document chunks, check-in
+turns, follow-up replies, connector items) becomes a Fragment: persisted in Postgres and, when
 embeddings are available, indexed in ChromaDB for clustering and retrieval.
 """
 from datetime import datetime
@@ -21,6 +21,9 @@ from app.models.structured import Fragment
 
 log = structlog.get_logger()
 
+#: "internal" evidence is staff-only; "public" evidence is also retrievable by students.
+VISIBILITIES = {"internal", "public"}
+
 
 class FragmentService:
     def create_fragment(
@@ -33,11 +36,14 @@ class FragmentService:
         author_employee_id: Optional[UUID] = None,
         meeting_id: Optional[UUID] = None,
         occurred_at: Optional[datetime] = None,
+        visibility: str = "internal",
     ) -> Fragment:
         """Persist a fragment and best-effort index its embedding in ChromaDB."""
+        if visibility not in VISIBILITIES:
+            raise ValueError(f"Invalid visibility '{visibility}'. Allowed: {sorted(VISIBILITIES)}")
         embedding_id = self._index_embedding(
             content,
-            metadata={"source_type": source_type, "source_ref": source_ref or ""},
+            metadata={"source_type": source_type, "source_ref": source_ref or "", "visibility": visibility},
         )
         fragment = Fragment(
             source_type=source_type,
@@ -47,6 +53,7 @@ class FragmentService:
             content=content,
             occurred_at=occurred_at,
             embedding_id=embedding_id,
+            visibility=visibility,
         )
         db.add(fragment)
         db.commit()

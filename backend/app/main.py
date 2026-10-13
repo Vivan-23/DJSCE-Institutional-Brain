@@ -4,7 +4,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.core.config import settings
-from app.core.db import engine, init_db
+from app.core.db import engine, init_db, startup_lock
 from app.api.router import api_router
 
 log = structlog.get_logger()
@@ -12,13 +12,14 @@ log = structlog.get_logger()
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    init_db()
-    # Seed the org structure + admin from company.yaml (idempotent).
     from sqlmodel import Session
-    from app.services.company_seed import seed_company
+    from app.services.institution_seed import seed_institution
 
-    with Session(engine) as session:
-        seed_company(session)
+    # One worker at a time: create tables, then seed people from institution.yaml (idempotent).
+    with startup_lock():
+        init_db()
+        with Session(engine) as session:
+            seed_institution(session)
     yield
 
 

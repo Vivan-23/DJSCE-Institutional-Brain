@@ -3,20 +3,11 @@ import io
 import pytest
 from unittest.mock import patch, MagicMock
 
+from tests.helpers import register
+
 
 def _get_token(client) -> str:
-    """Helper: register a user and return a valid JWT."""
-    res = client.post(
-        "/api/v1/auth/register",
-        json={"email": "ingest@test.com", "full_name": "Ingest User", "password": "pass1234"},
-    )
-    # Idempotent — if email already exists, log in instead
-    if res.status_code == 400:
-        res = client.post(
-            "/api/v1/auth/login",
-            json={"email": "ingest@test.com", "password": "pass1234"},
-        )
-    return res.json()["access_token"]
+    return register(client, "ingest@test.com", "Ingest User")
 
 
 class TestIngestEndpoint:
@@ -69,3 +60,52 @@ class TestIngestEndpoint:
             headers={"Authorization": f"Bearer {token}"},
         )
         assert res.status_code == 413
+
+
+class TestDocumentVisibility:
+    def test_visibility_is_forwarded_to_the_task(self, client):
+        token = _get_token(client)
+        with patch("app.core.celery.process_document_task.delay") as mock_task:
+            mock_task.return_value = MagicMock(id="t")
+            res = client.post(
+                "/api/v1/ingest/file",
+                files={"file": ("faq.txt", io.BytesIO(b"Public FAQ"), "text/plain")},
+                data={"visibility": "public"},
+                headers={"Authorization": f"Bearer {token}"},
+            )
+        assert res.status_code == 202
+        assert res.json()["visibility"] == "public"
+        assert mock_task.call_args.args == ("Public FAQ", "faq.txt", "public")
+
+    def test_rejects_unknown_visibility(self, client):
+        token = _get_token(client)
+        res = client.post(
+            "/api/v1/ingest/file",
+            files={"file": ("x.txt", io.BytesIO(b"text"), "text/plain")},
+            data={"visibility": "everyone"},
+            headers={"Authorization": f"Bearer {token}"},
+        )
+        assert res.status_code == 400
+
+
+class TestDocumentTask:
+    def test_document_chunks_become_fragments_with_visibility(self, test_engine):
+        from sqlmodel import Session, select
+
+        from app.core.celery import process_document_task
+        from app.models.structured import Fragment
+
+        ner = MagicMock()
+        ner.extract_entities.return_value = {"persons": [], "orgs": []}
+        with (
+            patch("app.core.db.engine", test_engine),
+            patch("app.services.ner_service.ner_service", ner),
+            patch("app.services.fragment_service.embedding_mod.embedding_service") as emb,
+        ):
+            emb.is_available = False  # skip vector indexing; we assert on Postgres rows
+            result = process_document_task("Attendance must be at least 75 percent.", "policy-kb.txt", "public")
+
+        assert result["chunks_stored"] >= 1
+        with Session(test_engine) as db:
+            frags = db.exec(select(Fragment).where(Fragment.source_ref == "policy-kb.txt")).all()
+        assert frags and all(f.source_type == "document" and f.visibility == "public" for f in frags)

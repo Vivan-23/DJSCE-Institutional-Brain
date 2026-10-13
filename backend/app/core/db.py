@@ -1,3 +1,6 @@
+from contextlib import contextmanager
+
+from sqlalchemy import text
 from sqlmodel import create_engine, Session, SQLModel
 from app.core.config import settings
 
@@ -14,9 +17,32 @@ def init_db() -> None:
     from app.models.structured import (  # noqa: F401
         User, Document, ProgressReport, ActiveInsight,
         Employee, Meeting, Fragment, Commitment, CommitmentUpdate,
-        CheckIn, Skill, SkillCitation, AuditLog,
+        CheckIn, Skill, SkillCitation, AuditLog, Ticket,
     )
     SQLModel.metadata.create_all(engine)
+
+
+# Arbitrary app-wide key for the Postgres advisory lock that serializes startup.
+_STARTUP_LOCK_KEY = 724_001
+
+
+@contextmanager
+def startup_lock():
+    """Serialize schema creation + seeding across processes.
+
+    The API runs several uvicorn workers (plus Celery). On a fresh database they would
+    all CREATE TABLE / seed users at once and crash on duplicate-key races. A
+    session-level Postgres advisory lock makes them take turns; it is a no-op on SQLite.
+    """
+    if engine.dialect.name != "postgresql":
+        yield
+        return
+    with engine.connect() as conn:
+        conn.execute(text("SELECT pg_advisory_lock(:k)"), {"k": _STARTUP_LOCK_KEY})
+        try:
+            yield
+        finally:
+            conn.execute(text("SELECT pg_advisory_unlock(:k)"), {"k": _STARTUP_LOCK_KEY})
 
 
 def get_session():

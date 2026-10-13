@@ -1,10 +1,13 @@
 'use client';
 import React, { useRef, useState } from 'react';
 import { apiFetch } from '@/lib/api';
+import SourceList, { type Source } from '@/components/knowledge/SourceList';
+import { isStaffRole, useMe } from '@/lib/roles';
 
 interface Message {
   role: 'user' | 'assistant';
   content: string;
+  sources?: Source[];
 }
 
 const WELCOME: Message = {
@@ -21,7 +24,16 @@ const SUGGESTED_QUERIES = [
   'Summarize the responsibilities assigned during the IQAC review.',
 ];
 
+const STUDENT_QUERIES = [
+  'What courses are in Semester V of Computer Engineering?',
+  'Which electives are offered in Semester VI?',
+  'What are the Program Outcomes of Information Technology?',
+  'Which companies recruit from the department?',
+];
+
 export default function ChatPage() {
+  const me = useMe();
+  const studentScope = me !== null && !isStaffRole(me.role);
   const [messages, setMessages] = useState<Message[]>([WELCOME]);
   const [query, setQuery] = useState('');
   const [loading, setLoading] = useState(false);
@@ -41,7 +53,7 @@ export default function ChatPage() {
     try {
       const res = await apiFetch('/api/v1/chat/', {
         method: 'POST',
-        body: JSON.stringify({ messages: outgoing }),
+        body: JSON.stringify({ messages: outgoing.map(({ role, content }) => ({ role, content })) }),
       });
 
       if (!res.ok) {
@@ -52,7 +64,7 @@ export default function ChatPage() {
       const data = await res.json();
       setMessages((prev) => [
         ...prev,
-        { role: 'assistant', content: data.response },
+        { role: 'assistant', content: data.response, sources: data.sources ?? [] },
       ]);
     } catch (err: unknown) {
       const msg =
@@ -85,7 +97,7 @@ export default function ChatPage() {
             </p>
           </div>
           <span className="hidden sm:inline-block px-2.5 py-1 rounded text-[11px] font-semibold uppercase tracking-wider bg-blue-500/10 text-blue-400 border border-blue-500/30">
-            RAG Grounded
+            {studentScope ? 'Public knowledge only' : 'RAG Grounded'}
           </span>
         </div>
       </div>
@@ -96,7 +108,7 @@ export default function ChatPage() {
           Suggested Institutional Inquiries
         </p>
         <div className="flex flex-wrap gap-1.5">
-          {SUGGESTED_QUERIES.map((sq, i) => (
+          {(studentScope ? STUDENT_QUERIES : SUGGESTED_QUERIES).map((sq, i) => (
             <button
               key={i}
               onClick={() => handleSend(sq)}
@@ -130,6 +142,7 @@ export default function ChatPage() {
                 </div>
               )}
               <div className="whitespace-pre-wrap">{msg.content}</div>
+              {msg.role === 'assistant' && msg.sources && <SourceList sources={msg.sources} />}
             </div>
           </div>
         ))}

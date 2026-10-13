@@ -1,14 +1,22 @@
 'use client';
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { setToken, API_BASE } from '@/lib/api';
-import { useCompany } from '@/lib/useCompany';
+import { apiFetch, setToken, API_BASE } from '@/lib/api';
+import { isStaffRole } from '@/lib/roles';
+import { useInstitution } from '@/lib/useInstitution';
 
 type Mode = 'login' | 'register';
 
+const DEMO_USERS = [
+  { label: 'System Administrator', email: 'admin@example.com' },
+  { label: 'Committee Coordinator', email: 'aditi.rao@example.com' },
+  { label: 'Faculty', email: 'karan.shah@example.com' },
+  { label: 'Student', email: 'aarav.desai@example.com' },
+];
+
 export default function LoginPage() {
   const router = useRouter();
-  const company = useCompany();
+  const institution = useInstitution();
   const [mode, setMode] = useState<Mode>('login');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -16,8 +24,9 @@ export default function LoginPage() {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
-  const fillDemo = () => {
-    setEmail('demo@example.com');
+  const fillDemo = (demoEmail: string) => {
+    setMode('login');
+    setEmail(demoEmail);
     setPassword('demo123');
   };
 
@@ -44,7 +53,9 @@ export default function LoginPage() {
         throw new Error(data.detail ?? 'Authentication failed');
       }
       setToken(data.access_token);
-      router.push('/');
+      // Students land on the Help Desk; staff on the governance overview.
+      const me = await apiFetch('/api/v1/auth/me').then((r) => (r.ok ? r.json() : null));
+      router.push(isStaffRole(me?.role) ? '/' : '/helpdesk');
     } catch (err: unknown) {
       setError(err instanceof Error ? err.message : 'An error occurred');
     } finally {
@@ -58,9 +69,9 @@ export default function LoginPage() {
         {/* Institutional Logo & Identity */}
         <div className="text-center">
           <div className="w-14 h-14 rounded-xl bg-blue-600/15 border border-blue-500/40 flex items-center justify-center mx-auto mb-3 shadow-xs">
-            <span className="text-blue-400 font-bold text-xl tracking-wider">{company.short_code}</span>
+            <span className="text-blue-400 font-bold text-xl tracking-wider">{institution.short_code}</span>
           </div>
-          <h1 className="text-xl font-bold text-slate-100 tracking-tight">{company.name}</h1>
+          <h1 className="text-xl font-bold text-slate-100 tracking-tight">{institution.name}</h1>
           <p className="text-slate-400 text-xs mt-1">
             Institutional Knowledge, Governance Intelligence &amp; Decision Support
           </p>
@@ -136,20 +147,27 @@ export default function LoginPage() {
           </button>
 
           {mode === 'login' && (
-            <button
-              type="button"
-              onClick={fillDemo}
-              className="w-full bg-slate-800/80 text-slate-300 py-2 rounded-md hover:bg-slate-700/80 transition-colors text-xs border border-slate-700 cursor-pointer"
-            >
-              Fill Demo Evaluation Credentials
-            </button>
+            <div className="space-y-1.5">
+              <p className="text-[11px] text-slate-500 text-center">Sign in as a demo user (synthetic accounts):</p>
+              <div className="grid grid-cols-2 gap-1.5">
+                {DEMO_USERS.map((u) => (
+                  <button
+                    key={u.email}
+                    type="button"
+                    onClick={() => fillDemo(u.email)}
+                    className="bg-slate-800/80 text-slate-300 py-2 rounded-md hover:bg-slate-700/80 transition-colors text-[11px] border border-slate-700 cursor-pointer"
+                  >
+                    {u.label}
+                  </button>
+                ))}
+              </div>
+            </div>
           )}
         </form>
 
         {mode === 'login' && (
           <p className="text-center text-slate-500 text-[11px]">
-            Demo credentials: <span className="text-slate-300 font-mono">demo@example.com</span> /{' '}
-            <span className="text-slate-300 font-mono">demo123</span>
+            All demo accounts use the password <span className="text-slate-300 font-mono">demo123</span>
           </p>
         )}
       </div>

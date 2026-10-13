@@ -1,0 +1,183 @@
+[PUBLIC STUDENT INFORMATION · Compiled from the DJSCE Student Query Chatbot mini-project. Informational only — verify against official DJSCE notices and the college website.]
+
+Department of Computer Engineering — Frequently Asked Questions
+
+Q: When was the Computer Engineering department established?
+A: The department was established in 2001.
+
+Q: What was the initial intake of the department?
+A: The initial intake was 30 students.
+
+Q: How has the intake changed over the years?
+A: In 2002-03, the intake was increased to 60, in 2011-12 to 120, and in 2021-22 to 180.
+
+Q: When did the ME program start?
+A: The ME program started in 2012-13 with an intake of 18 students.
+
+Q: When did the Ph.D. program begin?
+A: The Ph.D. program began in 2015-16 with an intake of 10 students.
+
+Q: Who is the current Head of Department?
+A: Dr. (Mrs.) Meera Narvekar is the current Head of Department.
+
+Q: What is the vision of the Computer Engineering department?
+A: To impart high quality education, promote research culture and inculcate ethical values to develop professionally competent engineers capable of meeting global challenges.
+
+Q: What are the mission objectives?
+A: Encourage research aptitude, develop soft skills and ethics, create awareness about sustainability, nurture technocrats for industry, and provide state-of-the-art infrastructure.
+
+Q: What is the intake capacity for B.Tech?
+A: The intake capacity is 180 students.
+
+Q: What is the duration of the B.Tech program?
+A: The program duration is 4 years.
+
+Q: Which year was the program accredited by NBA?
+A: The program was accredited in the Academic Year 2012-13.
+
+Q: What courses are in Semester III?
+A: Engineering Mathematics-III, Data Structures, Discrete Structures, Database Management Systems, Digital Electronics, Java Programming Lab, IPD-I (Audit), Constitution of India (Audit).
+
+Q: What courses are in Semester IV?
+A: Engineering Mathematics-IV, Formal Language & Automata Theory, Operating System, Analysis of Algorithms, Computer Networks, Universal Human Values, IPD-II (Audit).
+
+Q: What courses are in Semester V?
+A: Data Mining and Warehouse, Processor Organization and Architecture, Artificial Intelligence, Communication Lab, Department Electives, Python Lab, IPD-III (Credit).
+
+Q: What courses are in Semester VI?
+A: Software Engineering, Advanced Algorithm, Information Security, Electives like IoT, ML, Compiler Design, etc., IPD-IV (Credit), Environmental Studies (Audit).
+
+Q: What courses are in Semester VII?
+A: Digital Signal Processing, Distributed Computing, Deep Learning (Elective), Blockchain, Predictive Modeling, Institute Level Optional Course I, Project Stage I.
+
+Q: What courses are in Semester VIII?
+A: Web Intelligence, High Performance Computing, NLP, Software Architecture, Software Testing, Institute Level Optional Course II, Project Stage II.
+
+Q: What programming languages are taught?
+A: Java and Python are the main programming languages taught through lab courses.
+
+Q: What facilities are provided in labs?
+A: Labs are equipped with modern computer systems, licensed and open-source software, internet, OHPs, LCD projectors, scanners, and printers.
+
+Q: How many faculty members are in the department?
+A: There are 24 faculty members in the department.
+
+Q: What are some department elective options in Semester V?
+A: Advanced Operating System, Advanced DBMS, Network Engineering.
+
+Q: Name 3 electives in Semester VI.
+A: Internet of Things, Machine Learning, Compiler Design.
+
+Q: What are some career options after this degree?
+A: Careers in AI, Data Science, Software Development, Embedded Systems, and placements in MNCs.
+
+Q: Can students pursue higher education abroad?
+A: Yes, in institutions like IITs, IISc, and universities in the UK, US, Canada, and more.
+
+Q: What are the Program Educational Objectives?
+A: Quality education, comprehensive knowledge, and developing professionals to meet industry and societal needs.
+
+Q: What are the Program Outcomes?
+A: Includes engineering knowledge, problem-solving, ethics, communication, teamwork, and lifelong learning.
+
+Q: What are the Program Specific Outcomes?
+A: Understanding of computer systems, programming languages, modeling problems, and interdisciplinary applications.
+
+Q: What does the subject ‘Web Intelligence’ cover?
+A: Covered in Semester VIII, focusing on advanced web technologies and intelligent systems.
+
+Q: What infrastructure is available in classrooms?
+A: Classrooms are equipped with OHP, LCD projectors, internet, and other teaching aids.
+
+Q: How are the Innovative Product Development courses structured?
+A: These are progressive from IPD-I to IPD-IV, with initial ones being audit and later for credit.
+
+Q: What does the department do for placements?
+A: Ensures 100% placements in reputed national and multinational companies.
+
+Q: Which companies recruit from the department?
+A: Microsoft, Google, JP Morgan, Morgan Stanley, TCS, Accenture, CapGemini, E&Y, and more.
+
+Q: What are the eligibility criteria for admission?
+A: Eligibility criteria follow university and government norms.
+
+Q: How is research encouraged?
+A: Through Ph.D. programs, faculty expertise, and infrastructure support.
+
+Q: How is ethical behavior promoted in the program?
+A: Ethics is included as one of the Program Outcomes and emphasized in mission and vision.
+
+Q: How does the department promote sustainability?
+A: It’s included in the Program Outcomes and mission focus on environmental considerations.
+
+Q: What is taught under Artificial Intelligence?
+A: AI is taught in Semester V with focus on fundamental concepts and applications.
+
+Q: What are Institute Level Optional Courses?
+A: These are offered in Semesters VII and VIII, selected based on interest and availability.
+
+Q: Which semesters have audit courses?
+A: Semesters III, IV, and VI include audit courses like IPD and Constitution of India.
+
+Q: What is the contact of Dr. Meera Narvekar?
+A: Official contact details for department faculty are published on the DJSCE website.
+
+Q: Name an Assistant Professor with more than 10 years of experience.
+A: Sudhir Bagul has 11 years of experience.
+
+Q: What tools are used in Software Engineering?
+A: Tools may include modeling, project planning, testing, and version control systems .
+
+Q: What topics are taught in Compiler Design?
+A: Offered as elective in Semester VI; covers compiler theory and implementation.
+
+Q: How does the department prepare for global challenges?
+A: Through modern curriculum, research culture, and international placement/higher studies support.
+
+Q: What topics are covered under Advanced Algorithms?
+A: Covered in Semester VI; includes optimization and advanced problem-solving methods.
+
+Q: What is the role of Engineering Mathematics III and IV?
+A: Provide foundational knowledge for algorithm and computing applications.
+
+Q: What is the purpose of the Programming Laboratory courses?
+A: Hands-on experience with Java (Sem III) and Python (Sem V).
+
+Q: Who teaches Operating Systems?
+A: Specific faculty not listed, but covered in Semester IV.
+
+Q: Which subject includes Business Analytics?
+A: Business Analytics is a department elective in Semester VI.
+
+Q: What is covered under Network Engineering?
+A: A department elective in Semester V covering networking concepts and technologies.
+
+Q: What is taught in Digital Signal Processing and Applications?
+A: Offered in Semester VII, covering signal processing techniques.
+
+Q: Which faculty has 20+ years of experience?
+A: Dr. Meera Narvekar, Dr. Narendra Shekokar, Dr. Chetashri Bhadane.
+
+Q: What topics fall under Blockchain Technology?
+A: Covered as a department elective in Semester VII.
+
+Q: What is taught in the subject Deep Learning?
+A: An elective in Semester VII covering neural networks and deep models.
+
+Q: Name any 5 professors with a Ph.D.
+A: Dr. Meera Narvekar, Dr. Narendra Shekokar, Dr. Pratik Kanani, Dr. Chetashri Bhadane, Dr. Kiran Bhowmick.
+
+Q: What kind of interdisciplinary opportunities are available?
+A: Students apply computing in multiple domains like AI, IoT, Data Science, and Embedded Systems.
+
+Q: What are the key features of Formal Language and Automata Theory?
+A: Taught in Semester IV; covers language design, grammar, and automata theory.
+
+Q: How are students supported in their final year projects?
+A: Through Project Stage I and II with faculty mentoring and evaluation.
+
+Q: What are the course outcomes for Data Mining and Warehousing?
+A: Offered in Semester V, teaches knowledge extraction and data organization.
+
+Q: What kind of modeling is done in Predictive Modeling?
+A: An elective in Semester VII focusing on data-driven forecasting and trends.

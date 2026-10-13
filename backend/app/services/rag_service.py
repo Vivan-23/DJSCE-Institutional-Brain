@@ -1,86 +1,117 @@
-import json
+"""
+Retrieval-augmented Q&A over indexed institutional knowledge.
+
+Retrieval is filtered by Fragment visibility *inside the vector query*: students
+(``public_only=True``) can only ever retrieve ``public`` evidence, so internal
+committee transcripts never reach their prompt. Every answer returns the excerpts
+it was grounded in, keeping retrieved evidence separate from the model's wording.
+"""
+from typing import Any, Optional
+
 import structlog
-from app.core.config import settings
-from app.core.company_config import get_company_config
-from app.core.chroma_db import chroma_conn
-from app.services.embedding import embedding_service
-from app.core.neo4j_db import neo4j_conn
+
+# Import modules (not singletons) so test patches of the module attributes apply.
+from app.core import chroma_db as chroma_mod
+from app.core import neo4j_db as neo4j_mod
+from app.core.institution_config import get_institution_config
+from app.services import embedding as embedding_mod
+from app.services.llm_service import llm_service
 
 log = structlog.get_logger()
 
+_TOP_K = 5
+_EXCERPT_CHARS = 500
+
 
 class RAGService:
-    def __init__(self) -> None:
-        self.client = None
-        if settings.GROQ_API_KEY:
-            try:
-                import groq
-                self.client = groq.Groq(api_key=settings.GROQ_API_KEY)
-                log.info("Groq client initialized")
-            except Exception as e:
-                log.error("Failed to initialize Groq client", error=str(e))
-
-    def query(self, user_query: str) -> str:
-        if not self.client:
-            return "LLM not configured. Please set GROQ_API_KEY in your .env file."
-
-        # 1. Embed query
+    def retrieve(self, question: str, *, public_only: bool, k: int = _TOP_K) -> list[dict[str, Any]]:
+        """Top-k evidence excerpts for ``question``, restricted to public evidence if asked."""
+        emb = embedding_mod.embedding_service
+        collection = getattr(chroma_mod.chroma_conn, "collection", None)
+        if not collection or not getattr(emb, "is_available", False):
+            return []
         try:
-            query_embedding = embedding_service.embed_texts([user_query])[0]
-        except RuntimeError as e:
-            log.warning("Embedding unavailable for query", error=str(e))
-            query_embedding = None
+            vector = emb.embed_texts([question])[0]
+            where: Optional[dict] = {"visibility": "public"} if public_only else None
+            res = collection.query(query_embeddings=[vector], n_results=k, where=where)
+        except Exception as e:
+            log.warning("Vector retrieval failed", error=str(e))
+            return []
 
-        # 2. ChromaDB similarity search (top-5)
-        context_chunks: list[str] = []
-        if query_embedding and chroma_conn.collection:
-            try:
-                results = chroma_conn.collection.query(
-                    query_embeddings=[query_embedding],
-                    n_results=5,
-                )
-                if results and results["documents"]:
-                    context_chunks = results["documents"][0]
-            except Exception as e:
-                log.warning("ChromaDB query failed", error=str(e))
+        docs = (res.get("documents") or [[]])[0]
+        metas = (res.get("metadatas") or [[]])[0] or [{}] * len(docs)
+        sources, seen = [], set()
+        for doc, meta in zip(docs, metas):
+            meta = meta or {}
+            if not doc or doc in seen:
+                continue
+            if public_only and meta.get("visibility") != "public":
+                continue  # defence in depth: never trust the store's filter alone
+            seen.add(doc)
+            sources.append(
+                {
+                    "ref": len(sources) + 1,
+                    "source_type": meta.get("source_type") or None,
+                    "source_ref": meta.get("source_ref") or None,
+                    "visibility": meta.get("visibility") or "internal",
+                    "excerpt": doc[:_EXCERPT_CHARS],
+                }
+            )
+        return sources
 
-        # 3. Graph context (known entities)
-        graph_context = ""
+    def _graph_context(self) -> str:
         try:
-            res = neo4j_conn.execute_query(
+            rows = neo4j_mod.neo4j_conn.execute_query(
                 "MATCH (n) RETURN n.name AS name, labels(n)[0] AS type LIMIT 15"
             )
-            entities = [
-                f"{r['name']} ({r['type']})" for r in res if r.get("name")
-            ]
-            if entities:
-                graph_context = "Known entities in the institutional graph: " + ", ".join(entities)
+            entities = [f"{r['name']} ({r['type']})" for r in rows if r.get("name")]
+            return ("Known entities in the institutional graph: " + ", ".join(entities)) if entities else ""
         except Exception as e:
             log.warning("Graph context fetch failed", error=str(e))
+            return ""
 
-        system_prompt = (
-            f"You are {get_company_config().name}, an institutional knowledge assistant. "
-            "Answer the user's question using ONLY the context provided below. "
-            "If the answer is not in the context, say so clearly — do not guess.\n\n"
-            "--- Context Documents ---\n"
-            + "\n\n".join(f"[{i+1}] {c}" for i, c in enumerate(context_chunks))
-            + ("\n\n--- Institutional Graph ---\n" + graph_context if graph_context else "")
-        )
+    def answer(self, question: str, *, public_only: bool, purpose: str = "answer") -> dict[str, Any]:
+        """Return ``{"answer": str, "sources": [...]}`` grounded in retrieved evidence.
 
-        try:
-            completion = self.client.chat.completions.create(
-                messages=[
-                    {"role": "system", "content": system_prompt},
-                    {"role": "user", "content": user_query},
-                ],
-                model=settings.LLM_MODEL,
-                max_tokens=1024,
-                temperature=0.2,
+        ``purpose="ticket_draft"`` writes a reply for a staff member to review and send,
+        marking gaps in [brackets] instead of telling the reader to raise a ticket.
+        """
+        sources = self.retrieve(question, public_only=public_only)
+        if not llm_service.is_available:
+            return {"answer": "The language model is not configured (set GROQ_API_KEY).", "sources": sources}
+
+        audience = "a student" if public_only else "a faculty or staff member"
+        # Label each excerpt with where it came from (meeting title / document name) so the
+        # model can connect "the Academic Council meeting" to an utterance that never names it.
+        context = "\n\n".join(
+            f"[{s['ref']}] ({s.get('source_type') or 'source'}: {s.get('source_ref') or 'untitled'}) {s['excerpt']}"
+            for s in sources
+        ) or "(no matching documents)"
+        graph = "" if public_only else self._graph_context()
+        if purpose == "ticket_draft":
+            task = (
+                f"You draft help-desk replies for {get_institution_config().name}. A faculty member "
+                "will review and edit your draft before it is sent to the person who raised the "
+                "ticket. Use ONLY the numbered context below and cite it inline like [1]. Where the "
+                "context lacks something needed, write a short holding reply and mark each missing "
+                "fact as [TO CONFIRM: ...] for staff. Never invent policy, dates, or names, and do "
+                "not quote internal deliberations verbatim.\n\n"
             )
-            return completion.choices[0].message.content
-        except Exception as e:
-            log.error("Groq API call failed", error=str(e))
-            raise
+        else:
+            task = (
+                f"You are the {get_institution_config().name} assistant, answering {audience}. "
+                "Answer using ONLY the numbered context below and cite it inline like [1]. Each "
+                "item states where it came from (meeting title or document name). If the context "
+                "does not contain the answer, say so plainly and suggest raising a help-desk "
+                "ticket — never guess or invent policy, dates, or names.\n\n"
+            )
+        system = (
+            task
+            + f"--- Context ---\n{context}"
+            + (f"\n\n--- Institutional Graph ---\n{graph}" if graph else "")
+        )
+        text = llm_service.complete(system, question, max_tokens=1024, temperature=0.2)
+        return {"answer": text, "sources": sources}
 
 
 rag_service = RAGService()
