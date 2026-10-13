@@ -186,8 +186,11 @@ sidebar only hides what the API would refuse anyway.
 
 ## 6. Loading the demo data
 
-All bundled data is **synthetic** — it demonstrates the platform and is not an
-official DJSCE record. People are pre-seeded from [`institution.yaml`](../institution.yaml)
+Committee data (meetings, people, internal procedures in `mock_institutional_data/`
+and `institution.yaml`) is **synthetic** and not an official DJSCE record. It is combined
+with authentic public information from the college website (`djsce_public_data/kb/`,
+26 files, each citing its source URL and retrieval date 2026-10-13; see
+[`djsce_public_data/README.md`](../djsce_public_data/README.md) and `sources.csv`). People are pre-seeded from [`institution.yaml`](../institution.yaml)
 (sign in as `admin@example.com` / `demo123`, or any listed member).
 
 With the stack running and `GROQ_API_KEY` set, load the dataset in
@@ -202,8 +205,10 @@ python ingest_institutional.py --approve  # also auto-approve extracted procedur
 The loader logs in, posts the committee transcripts (→ **Meetings** +
 **Commitments**), uploads `doc_*.txt` as **internal** documents and everything in
 `public/` (department FAQs, curriculum, outcomes — from the student-chatbot
-mini-project, contact details removed) as **public** documents, waits for the
-worker, then triggers procedure extraction.
+mini-project, contact details removed) as **public** documents, uploads every file in
+`djsce_public_data/kb/` (admissions, departments, exam-manual rules, placements,
+facilities, governance) as **public** documents, waits for the worker, then triggers
+procedure extraction (internal fragments only).
 
 **Suggested demo path:** sign in as the **Student** → Help Desk quick question →
 raise a ticket → sign in as **Faculty** → Help Desk Queue (review AI draft, reply) →

@@ -22,8 +22,11 @@ The **software** lives in the rest of the repository (`backend/`, `frontend/`,
    next to its source (for example `01_ipd_report/IPD_Report_v1.pdf`).
 2. **Never invent numbers.** Every metric in the report or poster must come from a
    run we can reproduce. Put `TBD` until then, and note where the number came from.
-3. **The data is synthetic.** All meetings, people and procedures in the demo are
-   fictional. Say so in every document; never present them as official DJSCE records.
+3. **Data is mixed: synthetic + public website.** Meetings, people and internal procedures
+   are fictional — say so in every document and never present them as official DJSCE records.
+   Public knowledge in `djsce_public_data/` is authentic information published on https://www.djsce.ac.in;
+   cite it by URL and retrieval date, call it "published on the public website" (not official
+   policy), and acknowledge use of public website content.
 4. **Figures** go in `01_ipd_report/figures/` with a source file (diagram code,
    screenshot date) so anyone can regenerate them.
 5. **Pull before you write, commit small, push often.** One topic per commit, for

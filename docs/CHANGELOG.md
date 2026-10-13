@@ -8,6 +8,14 @@ Format: `## YYYY-MM-DD — title` then bullets of what/why.
 
 ---
 
+## 2026-10-13 — Authentic public website knowledge base
+- Added `djsce_public_data/kb/` (26 files: admissions, 9 departments, exam-manual rules, placements,
+  facilities, governance) from https://www.djsce.ac.in, retrieved 2026-10-13. Each file/Q&A cites its URL;
+  index `djsce_public_data/sources.csv`; crawl rules in `djsce_public_data/README.md` (robots.txt, 1 req/s,
+  public pages only, no personal contact data). Ingested as `visibility=public` by `ingest_institutional.py`.
+- Data story is now "synthetic committee records + authentic public website information".
+- Removed the mini-project's generic policy file from `public/`: it contradicted the official Exam Manual.
+
 ## 2026-10-13 — Knowledge graph fixed; laya triage engine; evaluation harness
 - **Graph was empty (0 edges):** nothing ever created relationships, and meetings never reached Neo4j. Now
   `(Document)-[:MENTIONS]->`, `(Employee)-[:ATTENDED]->(Meeting)`, `(Meeting)-[:MENTIONS]->(Project)`; Document and

@@ -98,7 +98,7 @@ flowchart LR
 | Frontend | Next.js 16, React 19, TypeScript, Tailwind CSS |
 | Backend | FastAPI (Python 3.11), JWT auth, role-based access |
 | Data | PostgreSQL (records), ChromaDB + sentence-transformers (semantic search), Neo4j (graph) |
-| AI | Large language model via Groq for extraction, synthesis, triage and answers; spaCy NER |
+| AI | Large language model via Groq for extraction, synthesis, triage and answers; spaCy NER; optional laya classifier for triage (compared in evaluation) |
 | Jobs | Celery + Redis (background ingestion, daily follow-ups, nightly extraction and freshness scan) |
 | Deployment | Docker Compose (8 services); ngrok for remote demos |
 
@@ -129,8 +129,10 @@ flowchart LR
 | Knowledge graph, audit log, Docker deployment, remote demo | ✅ working |
 | Automated tests | ✅ 120 backend tests; frontend type-check and lint clean |
 | Per-department access (CE vs IT) | ⬜ planned |
-| Quantitative evaluation (answer accuracy, triage accuracy, latency) | ⬜ planned — no numbers claimed yet |
-| Real institutional data | ⛔ out of scope: all demo data is **synthetic** |
+| Knowledge graph edges (documents, meetings, people, bodies) | ✅ working |
+| Evaluation harness (triage incl. laya, Q&A, visibility, commitments) | ✅ run 1 baseline recorded; run 2 TBD |
+| Data | Synthetic committee records + authentic public website information (26 files, URL-cited) |
+| Real internal institutional records | ⛔ out of scope: committee data is **synthetic** |
 
 ## 8. What we will measure (evaluation plan)
 
@@ -169,7 +171,9 @@ flowchart LR
   procedures, tickets), not just chat.
 - **"What if the AI is wrong?"** Nothing the AI produces reaches a student or becomes an
   approved procedure without a human; contradicting evidence marks procedures stale.
-- **"Is the data real?"** No. All meetings, people and procedures are synthetic; public
-  department facts come from our earlier mini-project with personal contact details removed.
+- **"Is the data real?"** Partly. Meetings, people and internal procedures are synthetic.
+  Student-facing public knowledge is authentic information published on the college website
+  (https://www.djsce.ac.in), cited by URL and retrieval date (2026-10-13); public pages only, no personal
+  contact data. We acknowledge use of public website content.
 - **"Can students see committee discussions?"** No — their retrieval only searches
   *public* knowledge, and this is covered by automated tests.

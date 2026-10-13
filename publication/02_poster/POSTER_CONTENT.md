@@ -52,4 +52,4 @@ Student question → Instant answer → Ticket → AI triage + draft → Faculty
 - Next: per-department access, notices feed, NBA/NAAC evidence tracker
 
 ### Footer
-"All data shown is synthetic demonstration data." · QR → repository / demo link
+"Synthetic committee records combined with authentic public college-website information (djsce.ac.in), cited by URL and retrieval date." · QR → repository / demo link

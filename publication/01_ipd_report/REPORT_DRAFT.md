@@ -35,8 +35,9 @@ search itself. Students use a Help Desk that answers from public department info
 and escalates unresolved queries as tickets, which are triaged by a constrained AI
 classifier with a deterministic fallback and answered by faculty from an AI-drafted,
 cited reply. The system is implemented with FastAPI, Next.js, PostgreSQL, ChromaDB, Neo4j
-and Celery, deployed with Docker, and covered by ⟨120⟩ automated tests. Evaluation on a
-synthetic institutional dataset reports triage accuracy of TBD, grounded-answer rate of
+and Celery, deployed with Docker, and covered by ⟨120⟩ automated tests. Evaluation on synthetic
+committee records combined with authentic public college-website information (cited by
+URL and retrieval date) reports triage accuracy of TBD, grounded-answer rate of
 TBD and zero/TBD visibility leaks across TBD adversarial queries. ⟨Finalize after §7.⟩
 
 ### List of abbreviations (start)
@@ -126,7 +127,9 @@ retrieval, meetings → accountability, constrained triage with deterministic fa
 ### 4.4 Scope
 In scope: transcript and document ingestion (.txt/.pdf/.docx), extraction, procedures,
 Q&A, help desk, graph, audit, four roles. Out of scope: live meeting recording, ERP
-integration, real student/staff data, per-department access (planned).
+integration, real internal records or student/staff data (committee data is synthetic), per-department
+access (planned). Public knowledge is a snapshot of the public website (https://www.djsce.ac.in,
+retrieved 2026-10-13), public pages only, no personal contact data.
 
 ## 5. Proposed Design
 
@@ -136,6 +139,8 @@ integration, real student/staff data, per-department access (planned).
 - Sentence-transformer embeddings (`BAAI/bge-large-en-v1.5`) + ChromaDB for retrieval.
 - spaCy NER for graph entities.
 - Keyword classifier as a deterministic triage fallback.
+- laya (non-generative classifier, `laya==0.3.21`) as an optional compared triage engine
+  (`TRIAGE_ENGINES`); default remains LLM → keyword.
 - ⟨Justify each against alternatives: fine-tuning, local LLM, BM25, etc.⟩
 
 ### 5.2 System architecture
@@ -184,10 +189,12 @@ ALGORITHM TriageTicket(subject, description)
 |---|---|---|
 | Committee transcripts | synthetic Academic Council, IQAC, exam moderation, lab readiness | 4 |
 | Internal documents | synthetic proposals and guidelines | 3 |
-| Public knowledge | CE department FAQs (60 Q&A) + IT department overview | 2 documents |
-| Triage evaluation set | labelled synthetic student queries | TBD (~100) |
-| Q&A evaluation set | questions with known source passages | TBD |
-| Adversarial visibility set | student questions targeting internal content | TBD |
+| Public knowledge (mini-project) | CE department FAQs + IT department overview | 2 documents |
+| Public website knowledge base | authentic information from https://www.djsce.ac.in (admissions, departments, exam manual, placements, facilities, governance), each file and Q&A cited by URL, retrieved 2026-10-13 | 26 files, 6 sections |
+| Triage evaluation set | labelled student queries | 96 queries |
+| Q&A evaluation set | questions with known source passages | 25 (13 student + 12 staff) |
+| Adversarial visibility set | student questions targeting internal content | 20 |
+| Commitments gold set | expected commitments from transcripts | 9 across 4 transcripts |
 
 ### 7.2 Test cases — TBD (functional cases per feature + role-access matrix)
 ### 7.3 Parameter tuning — top-k, chunk size, temperature, model choice: TBD

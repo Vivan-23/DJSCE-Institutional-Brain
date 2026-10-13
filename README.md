@@ -5,9 +5,12 @@ It captures what committees, departments and faculty decide and agree to do — 
 reference documents and a per-member assistant — and turns it into searchable, evidence-backed
 institutional knowledge: decisions, tracked commitments, documented procedures, and a knowledge graph.
 
-> ⚠️ **Demonstration data.** Every meeting, document, person and procedure bundled in this repository
-> (`mock_institutional_data/`, `institution.yaml`) is **synthetic**. Nothing here is an official DJSCE record,
-> decision or approved policy.
+> ⚠️ **Demonstration data.** Synthetic committee records combined with authentic public college-website
+> information, cited by URL and retrieval date. Every meeting, internal document, person and procedure in
+> `mock_institutional_data/` and `institution.yaml` is **synthetic** — not an official DJSCE record, decision or
+> approved policy. `djsce_public_data/kb/` holds information published on the public website
+> (https://www.djsce.ac.in, retrieved 2026-10-13); each file and Q&A cites its source URL (index: `djsce_public_data/sources.csv`,
+> crawl rules: `djsce_public_data/README.md`). It is ingested as **public** knowledge for students.
 
 Built on the open-source *Company Brain* architecture and adapted for a college setting.
 
@@ -134,6 +137,11 @@ Interactive docs: http://localhost:8001/docs
 - Slack / database connectors are credential-aware stubs; the `manual` connector accepts pushed items.
 - Visibility is two-level (public / internal); per-department or per-committee scoping is not implemented yet.
 - Help-desk replies are always written or approved by staff; the AI never answers a ticket on its own.
+- Committee data is synthetic; public website content is a snapshot (retrieved 2026-10-13) and may go stale.
+- Evaluation harness in `evaluation/` (`docker compose --profile eval run --rm evaluator`); results in
+  `publication/01_ipd_report/results/`. An optional non-generative **laya** triage engine (`TRIAGE_ENGINES`,
+  installed only in the `evaluator` service) was compared; it was less accurate than the LLM in run 1, so the
+  default stays `llm,keyword`.
 
 ## Tests
 

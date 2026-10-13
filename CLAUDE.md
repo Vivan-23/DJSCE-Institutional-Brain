@@ -10,8 +10,9 @@ Setup/run procedures: [`docs/USAGE.md`](docs/USAGE.md). Per-institution customiz
 Captures institutional knowledge (committee transcripts, documents, a Faculty Desk PA) → extracts decisions /
 commitments / procedures ("skills") → human review/approval → cited RAG assistant + knowledge graph, kept fresh.
 Students use a Help Desk: instant answers from *public* knowledge, or tickets that AI triages/drafts and staff answer.
-Adapt the existing architecture with minimal change; don't rebuild it. All bundled data is **synthetic** —
-never label it as official DJSCE policy (avoid statuses that imply real ratification).
+Adapt the existing architecture with minimal change; don't rebuild it. Data is **mixed**: committee records, people
+and internal procedures are **synthetic** (never label them official DJSCE policy or imply real ratification);
+`djsce_public_data/kb/` is authentic public website content, cited per file by URL + retrieval date, ingested as public.
 
 ## Repo / git
 - Layout: **development** = `backend/`, `frontend/`, `docs/`, `mock_institutional_data/`, root scripts;
@@ -35,7 +36,7 @@ python -m pytest tests/test_skills.py::test_name -q   # single test
 cd frontend && npm run lint && npx tsc --noEmit
 
 # Load synthetic data through the real API pipeline (stack must be running)
-python ingest_institutional.py [--approve]   # transcripts, doc_* (internal), public/ (student-visible)
+python ingest_institutional.py [--approve]   # transcripts, doc_* (internal), public/ + djsce_public_data/kb (student-visible)
 
 ./start_public_share.ps1   # ngrok tunnel to :3000 (frontend proxies /api → backend)
 
