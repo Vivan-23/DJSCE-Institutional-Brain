@@ -1,0 +1,192 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>DJSCE Institutional Brain — Project Brief</title>
+<style>
+  :root {
+    --ink: #1c2430; --quiet: #5b6675; --rule: #dfe3e8; --bg: #ffffff; --panel: #f6f8fa;
+    --accent: #1f6feb; --accent-tint: #e8f0fe; --good: #1a7f37; --warn: #9a6700;
+    color-scheme: light;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root { --ink: #e6edf3; --quiet: #9aa5b1; --rule: #30363d; --bg: #0d1117; --panel: #161b22;
+            --accent: #58a6ff; --accent-tint: #13233a; --good: #3fb950; --warn: #d29922; color-scheme: dark; }
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink);
+         font: 16px/1.6 "Segoe UI", system-ui, -apple-system, Roboto, sans-serif; }
+  main { max-width: 860px; margin: 0 auto; padding: 48px 20px 80px; }
+  h1 { font-size: 2rem; line-height: 1.2; margin: 0 0 6px; }
+  h2 { font-size: 1.25rem; margin: 44px 0 10px; padding-top: 12px; border-top: 1px solid var(--rule); }
+  .byline { color: var(--quiet); margin: 0 0 28px; font-size: .95rem; }
+  .lead { font-size: 1.1rem; }
+  .note { background: var(--panel); border-left: 3px solid var(--warn); padding: 10px 14px; border-radius: 6px; font-size: .95rem; }
+  table { width: 100%; border-collapse: collapse; margin: 12px 0; font-size: .95rem; }
+  th, td { text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--rule); vertical-align: top; }
+  th { color: var(--quiet); font-weight: 600; font-size: .85rem; text-transform: uppercase; letter-spacing: .03em; }
+  .tablewrap { overflow-x: auto; }
+  ol, ul { padding-left: 1.3rem; }
+  li { margin: 4px 0; }
+  .figure { overflow-x: auto; margin: 16px 0 6px; }
+  .figure svg { width: 100%; min-width: 640px; height: auto; display: block; }
+  .caption { color: var(--quiet); font-size: .9rem; }
+  .status-ok { color: var(--good); font-weight: 600; }
+  .status-plan { color: var(--quiet); font-weight: 600; }
+  code { background: var(--panel); padding: 1px 5px; border-radius: 4px; font-size: .9em; }
+  footer { margin-top: 56px; color: var(--quiet); font-size: .85rem; border-top: 1px solid var(--rule); padding-top: 14px; }
+  @media print { h2 { break-after: avoid; } .figure svg { min-width: 0; } }
+</style>
+</head>
+<body>
+<main>
+
+<h1>DJSCE Institutional Brain — Project Brief</h1>
+<p class="byline">For our project guide · last updated 13 Oct 2026</p>
+
+<p class="lead">DJSCE Institutional Brain turns a college's committee meetings and documents into trustworthy, reviewable knowledge.
+It uses AI to extract decisions, commitments (who agreed to do what, by when) and step-by-step procedures,
+sends every AI output through human review, and serves the result through a cited Q&amp;A assistant for staff and
+a Student Help Desk for students. Access is enforced by role, so internal deliberations never reach students.</p>
+
+<p class="note">All meetings, people and procedures in the demo are <strong>synthetic</strong>. Nothing shown is an official DJSCE record or approved policy.</p>
+
+<h2>At a glance</h2>
+<div class="tablewrap"><table>
+  <tr><th>Course</th><td>Innovative Product Development (IPD), multi-semester project</td></tr>
+  <tr><th>Department</th><td>Computer Engineering, D. J. Sanghvi College of Engineering</td></tr>
+  <tr><th>Team</th><td>⟨names and roll numbers⟩</td></tr>
+  <tr><th>Guide</th><td>⟨guide name⟩</td></tr>
+  <tr><th>Repository</th><td>github.com/Vivan-23/DJSCE-Institutional-Brain (private)</td></tr>
+</table></div>
+
+<h2>The problem</h2>
+<p>Knowledge in a college is scattered, so action items go untracked and students wait on offices for simple answers.</p>
+<div class="tablewrap"><table>
+  <tr><th>Who</th><th>Pain today</th></tr>
+  <tr><td>Committee coordinators</td><td>Minutes are written by hand; action items are forgotten by the next meeting</td></tr>
+  <tr><td>Faculty</td><td>Procedures (exam moderation, lab readiness, curriculum review) are re-learned each cycle</td></tr>
+  <tr><td>Students</td><td>Routine questions need a visit or an email; queries go untracked</td></tr>
+  <tr><td>Accreditation (NBA/NAAC)</td><td>Evidence for decisions is hard to assemble after the fact</td></tr>
+</table></div>
+<p>Generic chatbots don't fix this: they answer from the open internet, can invent policy, can't show sources and don't know who may see what.</p>
+
+<h2>What the system does</h2>
+<ol>
+  <li><strong>Meeting intelligence:</strong> a committee transcript becomes a summary, participants, decisions and commitments with owners and due dates.</li>
+  <li><strong>Commitment tracking:</strong> action items move through open, in progress, blocked and done; a Faculty Desk assistant follows up in plain language.</li>
+  <li><strong>Procedure synthesis:</strong> related evidence becomes a structured procedure whose every step cites its source; a coordinator approves it.</li>
+  <li><strong>Freshness:</strong> new evidence that contradicts an approved procedure flags it stale for review.</li>
+  <li><strong>Cited Q&amp;A:</strong> answers use only indexed institutional knowledge and list the excerpts used.</li>
+  <li><strong>Student Help Desk:</strong> instant answers from public department information, or a ticket that AI triages, routes and drafts a reply for; a faculty member sends the reply.</li>
+  <li><strong>Knowledge graph and audit trail:</strong> people, meetings, documents and committees are linked in a graph; every AI action and approval is logged.</li>
+</ol>
+
+<h2>Users and access</h2>
+<p>Permissions are enforced in the backend, not just hidden in the interface.</p>
+<div class="tablewrap"><table>
+  <tr><th>Role</th><th>Sees and does</th></tr>
+  <tr><td>Student</td><td>Help Desk, own tickets, assistant over public knowledge only</td></tr>
+  <tr><td>Faculty</td><td>Meetings, commitments, Faculty Desk, procedures, graph, documents, ticket queue</td></tr>
+  <tr><td>Committee Coordinator</td><td>Everything above, plus approving procedures, running extraction and the audit log</td></tr>
+  <tr><td>System Administrator</td><td>Everything</td></tr>
+</table></div>
+<p>Every indexed excerpt is labelled internal or public. For students the vector search itself is restricted to public knowledge, and results are re-checked.</p>
+
+<h2>Architecture</h2>
+<div class="figure">
+<svg viewBox="0 0 760 330" role="img" aria-label="All knowledge flows into one store; people approve what AI produces" font-family="Segoe UI, system-ui, sans-serif" font-size="13">
+  <defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#8b949e"/></marker></defs>
+  <text x="24" y="34" font-size="15" font-weight="600" fill="currentColor">All knowledge flows into one store; people approve what AI produces</text>
+  <g font-size="11.5" fill="#8b949e"><text x="24" y="62">Sources</text><text x="202" y="62">AI processing</text><text x="380" y="62">Stores</text><text x="558" y="62">People and outputs</text></g>
+  <g fill="none" stroke="#8b949e" stroke-width="1.25">
+    <path d="M178 110H200" marker-end="url(#arrow)"/><path d="M178 190H200" marker-end="url(#arrow)"/><path d="M178 270H200" marker-end="url(#arrow)"/>
+    <path d="M356 110H378" marker-end="url(#arrow)"/><path d="M356 190H378" marker-end="url(#arrow)"/><path d="M356 270H378" marker-end="url(#arrow)"/>
+    <path d="M534 110H556" marker-end="url(#arrow)"/><path d="M534 190H556" marker-end="url(#arrow)"/><path d="M534 270H556" marker-end="url(#arrow)"/>
+  </g>
+  <g fill="none" stroke="#8b949e" stroke-width="1.25">
+    <rect x="24" y="82" width="154" height="56" rx="8"/><rect x="24" y="162" width="154" height="56" rx="8"/><rect x="24" y="242" width="154" height="56" rx="8"/>
+    <rect x="202" y="82" width="154" height="56" rx="8"/><rect x="202" y="162" width="154" height="56" rx="8"/><rect x="202" y="242" width="154" height="56" rx="8"/>
+    <rect x="558" y="82" width="154" height="56" rx="8"/><rect x="558" y="162" width="154" height="56" rx="8"/><rect x="558" y="242" width="154" height="56" rx="8"/>
+  </g>
+  <rect x="380" y="74" width="154" height="232" rx="8" fill="#1f6feb" fill-opacity="0.12" stroke="#1f6feb" stroke-width="2"/>
+  <g stroke="#8b949e" stroke-opacity="0.5"><line x1="396" x2="518" y1="150" y2="150"/><line x1="396" x2="518" y1="230" y2="230"/></g>
+  <g text-anchor="middle" fill="currentColor">
+    <text x="101" y="106" font-weight="600">Transcripts</text><text x="101" y="124" font-size="11.5" fill="#8b949e">committee meetings</text>
+    <text x="101" y="186" font-weight="600">Documents</text><text x="101" y="204" font-size="11.5" fill="#8b949e">SOPs, circulars, FAQs</text>
+    <text x="101" y="266" font-weight="600">Student queries</text><text x="101" y="284" font-size="11.5" fill="#8b949e">help desk, chat</text>
+    <text x="279" y="106" font-weight="600">LLM extraction</text><text x="279" y="124" font-size="11.5" fill="#8b949e">decisions, owners</text>
+    <text x="279" y="186" font-weight="600">Chunk, embed, NER</text><text x="279" y="204" font-size="11.5" fill="#8b949e">+ graph entities</text>
+    <text x="279" y="266" font-weight="600">Triage, retrieval</text><text x="279" y="284" font-size="11.5" fill="#8b949e">public only: students</text>
+    <text x="457" y="106" font-weight="600">PostgreSQL</text><text x="457" y="124" font-size="11.5">records, tickets</text>
+    <text x="457" y="186" font-weight="600">ChromaDB</text><text x="457" y="204" font-size="11.5">internal / public</text>
+    <text x="457" y="266" font-weight="600">Neo4j</text><text x="457" y="284" font-size="11.5">people, meetings, bodies</text>
+    <text x="635" y="106" font-weight="600">Review, approve</text><text x="635" y="124" font-size="11.5" fill="#8b949e">procedures</text>
+    <text x="635" y="186" font-weight="600">Cited answers</text><text x="635" y="204" font-size="11.5" fill="#8b949e">sources listed</text>
+    <text x="635" y="266" font-weight="600">Faculty reply</text><text x="635" y="284" font-size="11.5" fill="#8b949e">draft edited, sent</text>
+  </g>
+</svg>
+</div>
+<p class="caption">Every source ends in one store, and every output on the right passes a person or lists its sources.</p>
+<div class="tablewrap"><table>
+  <tr><th>Layer</th><th>Technology</th></tr>
+  <tr><td>Frontend</td><td>Next.js 16, React 19, TypeScript, Tailwind CSS</td></tr>
+  <tr><td>Backend</td><td>FastAPI (Python 3.11), JWT auth, role-based access</td></tr>
+  <tr><td>Data</td><td>PostgreSQL, ChromaDB with sentence-transformer embeddings, Neo4j</td></tr>
+  <tr><td>AI</td><td>LLM via Groq for extraction, synthesis, triage and answers; spaCy NER; optional laya classifier for triage</td></tr>
+  <tr><td>Jobs and deployment</td><td>Celery and Redis background jobs; Docker Compose, 8 services</td></tr>
+</table></div>
+
+<h2>What is new</h2>
+<ol>
+  <li><strong>Evidence-first AI:</strong> every answer, procedure and ticket draft carries the excerpts it came from, kept apart from the AI's wording.</li>
+  <li><strong>Human in the loop by design:</strong> procedures need coordinator approval and ticket replies need a faculty member to send them.</li>
+  <li><strong>Access-aware retrieval:</strong> visibility is enforced inside vector search, which most retrieval demos ignore.</li>
+  <li><strong>From meetings to accountability:</strong> commitments are extracted with owners and dates and followed up conversationally.</li>
+  <li><strong>Constrained triage with fallback:</strong> the classifier may only pick configured categories; a deterministic keyword classifier from our earlier student-chatbot mini-project takes over when it can't.</li>
+</ol>
+
+<h2>Status and evaluation</h2>
+<div class="tablewrap"><table>
+  <tr><th>Area</th><th>Status</th></tr>
+  <tr><td>Transcripts → decisions and commitments, commitment tracking, Faculty Desk</td><td class="status-ok">Working</td></tr>
+  <tr><td>Procedure synthesis with citations, approval, freshness scan</td><td class="status-ok">Working</td></tr>
+  <tr><td>Cited Q&amp;A with role-filtered retrieval</td><td class="status-ok">Working</td></tr>
+  <tr><td>Student role, Help Desk tickets, AI triage, draft and human reply</td><td class="status-ok">Working</td></tr>
+  <tr><td>Knowledge graph, audit log, Docker deployment, remote demo</td><td class="status-ok">Working</td></tr>
+  <tr><td>Automated tests</td><td class="status-ok">134 backend tests passing</td></tr>
+  <tr><td>Per-department access (CE vs IT)</td><td class="status-plan">Planned</td></tr>
+</table></div>
+<p id="results"><strong>Evaluation results:</strong> the evaluation harness is running; measured numbers will be added here from <code>publication/01_ipd_report/results/RESULTS.md</code>.</p>
+
+<h2>Roadmap</h2>
+<ol>
+  <li>Report the evaluation results.</li>
+  <li>Per-department and per-committee visibility.</li>
+  <li>Notices and circulars feed with AI summaries per role, plus academic-calendar reminders.</li>
+  <li>NBA/NAAC evidence tracker linking decisions and documents to criteria.</li>
+</ol>
+
+<h2>Five-minute demo</h2>
+<ol>
+  <li>Student login, Help Desk: ask "Which electives are offered in Semester VI?" and get a cited answer from public information.</li>
+  <li>Raise a ticket about re-evaluation; it is routed to the Examination Cell.</li>
+  <li>Faculty login, Help Desk Queue: review the AI triage and cited draft, edit, send.</li>
+  <li>Back as the student: the reply appears under My tickets.</li>
+  <li>Coordinator login: open a meeting's extracted decisions and commitments, then a procedure's evidence, and approve it.</li>
+  <li>Ask the staff assistant about a council decision and get an answer with sources.</li>
+</ol>
+
+<h2>Questions a reviewer may ask</h2>
+<ul>
+  <li><strong>Isn't this just ChatGPT on documents?</strong> No. Answers come only from indexed institutional sources and cite them, outputs pass human review, access is enforced per role inside retrieval, and the system produces structured records such as commitments, procedures and tickets.</li>
+  <li><strong>What if the AI is wrong?</strong> Nothing it produces reaches a student or becomes an approved procedure without a human, and contradicting evidence marks procedures stale.</li>
+  <li><strong>Is the data real?</strong> No. All meetings, people and procedures are synthetic; public department facts come from our mini-project with personal contact details removed.</li>
+  <li><strong>Can students see committee discussions?</strong> No. Their retrieval searches only public knowledge, which automated tests and the evaluation check.</li>
+</ul>
+
+<footer>Source: <code>publication/00_project_brief/PROJECT_BRIEF.md</code> in the project repository. Synthetic demonstration data only.</footer>
+</main>
+</body>
+</html>
