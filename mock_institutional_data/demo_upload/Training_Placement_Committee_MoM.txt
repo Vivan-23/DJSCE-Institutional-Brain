@@ -1,0 +1,18 @@
+[DEMONSTRATION PROTOTYPE · SYNTHETIC INSTITUTIONAL RECORD]
+Training and Placement Committee Meeting: Campus Recruitment Drive Planning 2026-27
+Date: October 15, 2026
+Attendees: Dr. Aditi Rao, Prof. Karan Shah, Prof. Pooja Verma, Dr. Rohan Mehta
+
+Dr. Aditi Rao: Good afternoon. The agenda today is planning the campus recruitment drive for the final-year Computer Engineering and Information Technology batches, and the pre-placement training schedule.
+Prof. Karan Shah: Twelve companies have confirmed so far. Four more are expected to confirm by the end of this month, including two product companies that want students with cloud and data skills.
+Dr. Rohan Mehta: Students have asked for mock interviews again this year. Last year's feedback said the aptitude sessions started too late, only two weeks before the first drive.
+Dr. Aditi Rao: Decision: Pre-placement aptitude and coding training will start on November 2 and run for four weeks, three sessions per week.
+Prof. Pooja Verma: Lab 4 can host the online coding assessments. The new Gigabit switch is installed, so we can run sixty students at a time.
+Dr. Aditi Rao: Decision: All online coding assessments for the drive will be conducted in Lab 4 with a faculty invigilator present.
+Prof. Karan Shah: We also need a clear eligibility rule. Several companies have asked for a minimum CGPA of 6.5 with no active backlogs.
+Dr. Aditi Rao: Decision: The default eligibility criterion is a CGPA of 6.5 or above with no active backlogs, unless a company specifies otherwise.
+Dr. Rohan Mehta: I will prepare the mock interview panel list with at least eight faculty members by October 22.
+Prof. Karan Shah: I will send the consolidated company list and drive calendar to the Help Desk and the department offices by October 20.
+Prof. Pooja Verma: I will run a load test of the assessment platform in Lab 4 with sixty machines by October 24.
+Dr. Aditi Rao: I will publish the eligibility rules and training schedule as a notice to final-year students by October 18.
+Dr. Aditi Rao: Thank you everyone. We will review progress in the next meeting on October 29.
