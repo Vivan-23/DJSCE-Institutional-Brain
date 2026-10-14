@@ -3,6 +3,7 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { apiFetch } from '@/lib/api';
 import { formatDateTime } from '@/lib/format';
 import SourceList, { type Source } from '@/components/knowledge/SourceList';
+import HowToGuides from '@/components/helpdesk/HowToGuides';
 import { TICKET_STATUS, TicketBadge, type TicketStatus } from '@/components/helpdesk/TicketBadge';
 
 interface Category {
@@ -198,6 +199,8 @@ export default function HelpDeskPage() {
       </section>
 
       {/* Raise */}
+      <HowToGuides />
+
       <section id="raise-ticket" className="glass-panel p-5 space-y-3" aria-labelledby="raise-heading">
         <h2 id="raise-heading" className="text-sm font-semibold text-slate-200 uppercase tracking-wider">Raise a ticket</h2>
         <p className="text-[11px] text-slate-400">

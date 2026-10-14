@@ -338,6 +338,63 @@ def seed_demo_progress() -> None:
     print(f"[OK] Updated {changed} sample task(s): in progress, blocked and awaiting confirmation")
 
 
+# Governance settings for the sample procedures, matched by a word in the procedure name:
+# (keyword, owning office, help-desk category, student-facing?)
+DEMO_PROCEDURE_SETTINGS = [
+    ("revaluation", "Examination Cell", "examinations", True),
+    ("photocopy", "Examination Cell", "examinations", True),
+    ("event", "Student Activities Council", "general", True),
+    ("requisition", "Department Laboratory Office", "facilities", False),
+    ("equipment", "Department Laboratory Office", "facilities", False),
+    ("practical", "Examination Cell", "examinations", False),
+    ("laborator", "Laboratory In-charge", "facilities", False),
+    ("feedback", "IQAC", "academics", False),
+    ("elective", "Board of Studies", "academics", False),
+]
+
+
+def seed_procedure_settings(token: str) -> None:
+    """Give approved sample procedures an owning office and category; student-facing where it helps students.
+    Settings-only edits keep the approval; student summaries are drafted by the AI when re-approved."""
+    headers = {"Authorization": f"Bearer {token}"}
+    r = requests.get(f"{API}/api/v1/skills", headers=headers)
+    if r.status_code != 200:
+        return
+    updated = 0
+    for s in r.json():
+        if s.get("owner_office"):
+            continue
+        match = next((m for m in DEMO_PROCEDURE_SETTINGS if m[0] in s["name"].lower()), None)
+        if not match:
+            continue
+        _, office, category, public = match
+        body = {"owner_office": office, "category": category}
+        if public:
+            body["visibility"] = "public"
+        requests.patch(f"{API}/api/v1/skills/{s['id']}", headers=headers, json=body)
+        if public and s["status"] == "approved":
+            # Re-approve so the student summary is drafted and published (keeps the same version).
+            detail = requests.get(f"{API}/api/v1/skills/{s['id']}", headers=headers).json()
+            if not detail.get("student_summary"):
+                requests.patch(f"{API}/api/v1/skills/{s['id']}", headers=headers,
+                               json={"student_summary": _student_summary(detail)})
+        updated += 1
+    print(f"[OK] Set owner office / category on {updated} procedure(s)")
+
+
+def _student_summary(detail: dict) -> str:
+    """A short student-facing line built from the procedure itself (no AI call, nothing invented)."""
+    pre = "; ".join(detail.get("preconditions") or [])
+    first = (detail.get("steps") or [""])[0]
+    owner = detail.get("owner_office") or "the responsible office"
+    text = f"{detail['name']}: contact {owner}."
+    if pre:
+        text += f" Before you apply: {pre}."
+    if first:
+        text += f" It starts with: {first}"
+    return text
+
+
 def print_summary(token: str) -> None:
     headers = {"Authorization": f"Bearer {token}"}
     def count_res(path):
@@ -368,6 +425,7 @@ def main() -> None:
     wait_for_processing(token, expected_meetings=posted)
     wait_for_documents(token, expected=documents)
     extract_skills(token, approve=approve)
+    seed_procedure_settings(token)
     if "--no-demo-tickets" not in sys.argv:
         seed_demo_tickets()
         seed_demo_notices()

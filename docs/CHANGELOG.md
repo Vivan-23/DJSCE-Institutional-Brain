@@ -8,6 +8,21 @@ Format: `## YYYY-MM-DD — title` then bullets of what/why.
 
 ---
 
+## 2026-10-14 — Procedures (SOPs): governance, versions, and the assistant cites them
+- **Assistant uses approved procedures**: on approval a procedure is indexed (`source_type="procedure"`,
+  `Fragment.skill_id`) and retrieval searches procedures separately, putting one first when it is at least as close
+  as the third-best ordinary hit; prompts tell the model approved procedures outrank meeting discussion. Ticket
+  drafts too. Stale, rejected and retired procedures are removed from search. Use counts recorded.
+- Owner office + **review-by date** (default 1 year; shown on the owner's calendar, Active Feed reminder when due).
+- **Versions**: `SkillVersion` snapshot per approval; editing an approved procedure's content opens version n+1 as a
+  draft while version n stays live; "what changed" diff on the page.
+- Visibility (staff only / student-facing with a plain student summary — internal steps never reach students),
+  department scope, category. Students see approved student-facing ones as **How-to guides** on the Help Desk.
+- Reject needs a reason; stale shows the reason and the contradicting excerpts; retire; write procedures by hand;
+  "helpful / wrong" feedback (3 wrong → needs review); DOCX/PDF export and a handbook of all approved procedures.
+- **Schema**: migration `0003_procedure_governance` (backfills approval and review dates); approved procedures from
+  before are published on startup (`publish_missing`).
+
 ## 2026-10-14 — My Work: task progress, confirmation and check-in updates
 - `Commitment` gains `progress` (0-100), `remaining`, `blocked_reason`, `assigned_by(_user_id)`, `department`,
   `marked_done_at`, `confirmed_at/by`; `CommitmentUpdate` gains `progress`, `actor`. Migration `0002_task_progress`

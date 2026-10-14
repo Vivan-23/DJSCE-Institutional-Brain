@@ -31,6 +31,7 @@ const TYPE_LABEL: Record<string, string> = {
   document: 'Document',
   checkin: 'Faculty check-in',
   followup: 'Follow-up reply',
+  procedure: 'Approved procedure',
 };
 
 /**

@@ -78,6 +78,7 @@ tests/             pytest suite. conftest.py mocks all external services.
 | `analytics_service.py` | `analytics_service` | Computed on read from Commitment/Meeting, Ticket, QueryLog, Fragment, Skill. Questions are grouped by normalized text; topic = offline keyword triage category. |
 | `calendar_service.py` | `calendar_service` | Merges `academic_calendar:` (institution.yaml) with commitment due dates; `post_reminders()` writes `deadline` ActiveInsights (idempotent) for items due within 3 days. |
 | `minutes_service.py` | `minutes_service` | Formal draft minutes from a stored meeting (attendees, summary, `Meeting.decisions`, commitments with owner/due/status) → DOCX (python-docx) or PDF (reportlab). No LLM call at export time. |
+| `procedure_service.py` | `procedure_service` | SOP governance: approve (freeze `SkillVersion`, owner office, review date, publish), `publish()` indexes approved procedures as `source_type="procedure"` fragments (`Fragment.skill_id`; staff full text, students only the summary), revisions, reject/retire, feedback flagging, use counts, DOCX/PDF export + handbook. |
 | `ticket_service.py` | `ticket_service` | Help desk: triage chain from `settings.TRIAGE_ENGINES` (default `llm,keyword`; optional `laya`, a non-generative classifier, abstains below 0.5 confidence) → keyword fallback; category/priority/`routed_to` from `institution.yaml`; staff-only AI draft (`rag_service.answer(purpose="ticket_draft")`); human reply; audited. |
 | `connectors/` | registry | Source-connector framework: `base.py` + `slack/db/manual` stubs + `registry.py`. |
 
@@ -93,7 +94,7 @@ tests/             pytest suite. conftest.py mocks all external services.
 | `transcripts.py` | `/transcripts` | 👥 Ingest transcript (202 → task) + list/get meetings. | `GET /{id}/minutes?format=docx|pdf` (Coordinator+) exports formal draft minutes.
 | `commitments.py` | `/commitments` | 👥 Tasks. `GET` (dept-scoped), `/mine`, `/my-work` (summary + own tasks; coordinators also get `awaiting_my_confirmation`), `/team` and `/assignable` (coordinator), `GET /{id}` (timeline + most-likely source line), `POST /{id}/progress` and `/done` (owner only), `/confirm` and `/send-back` (coordinator), `POST` create (coordinator), `PATCH` (owner: own statuses; coordinator: any status, due date, reassign). |
 | `pa.py` | `/pa` | 👥 followups (+reply), checkin (message/complete). |
-| `skills.py` | `/skills` | 👥 list / extract🔒 / get / patch🔒 / approve🔒 / reject🔒 / file / feedback. |
+| `skills.py` | `/skills` | Procedures (SOPs). Staff (dept-scoped): list/search, detail (+citations, feedback), `/versions`, `/file` (SKILL.md), `/export?format=`, `/handbook?format=`. Students: `/student` (approved, student-facing summaries). Coordinator: `POST` (write by hand), `/extract`, `PATCH` (content → new pending version; settings keep approval), `/approve`, `/reject` (reason required), `/retire`. `/feedback` (3 "wrong" → needs review). |
 | `sources.py` | `/sources` | 👥 list connectors / sync🔒. |
 | `audit.py` | `/audit` | audit trail🔒. |
 | `institution.py` | `/institution` | public branding (name, short code, full name) from `institution.yaml`. |
@@ -165,7 +166,7 @@ app/
   meetings/          Transcript upload + meeting list
   commitments/       My Work: own tasks by urgency, detail panel (progress, timeline), Waiting for me / Team / assign (coordinators)
   assistant/         Faculty Desk PA: follow-ups + end-of-day check-in chat
-  skills/            Skill review/approval + skill-file viewer
+  skills/            Procedures: search/filter, detail (governance, stale evidence), edit, versions + diff, approve/reject/retire, feedback, export
   chat/              RAG chat
   sources/           Data source upload
 ```
