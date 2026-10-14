@@ -191,6 +191,11 @@ class TicketService:
             )
             ticket.ai_draft_reply = result["answer"]
             ticket.ai_sources = json.dumps(result["sources"])
+            used = {s["skill_id"] for s in result["sources"] if s.get("skill_id")}
+            if used:
+                from app.services.procedure_service import procedure_service
+
+                procedure_service.record_use(db, used)
         except Exception as e:  # noqa: BLE001
             log.warning("Ticket draft generation failed", ticket_id=str(ticket.id), error=str(e))
 

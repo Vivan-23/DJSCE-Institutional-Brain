@@ -87,6 +87,8 @@ class Fragment(SQLModel, table=True):
     source_type: str = Field(index=True)  # transcript/document/checkin/followup/ticket/<connector>
     source_ref: Optional[str] = None  # permalink / external id / filename
     source_url: Optional[str] = None  # public web page the content was taken from (cited to students)
+    # Set for the searchable copy of an approved procedure (source_type="procedure").
+    skill_id: Optional[UUID] = Field(default=None, foreign_key="skill.id", index=True)
     # Who may retrieve this evidence: "internal" (staff only) or "public" (students too).
     visibility: str = Field(default="internal", index=True)
     # Owning department code, or "all" (institution-wide). Scopes retrieval for students/faculty.
@@ -160,11 +162,36 @@ class Skill(SQLModel, table=True):
     guardrails: str = Field(default="[]")      # JSON list
     escalation: Optional[str] = None
     owner_employee_id: Optional[UUID] = Field(default=None, foreign_key="employee.id")
-    status: str = Field(default="draft")  # draft / approved / stale / deprecated
+    status: str = Field(default="draft")  # draft (in review) / approved / stale / deprecated (retired) / rejected
     version: int = Field(default=1)
     last_verified_at: Optional[datetime] = None
+    # Ownership and review: the office that maintains it, and when it must be re-checked.
+    owner_office: Optional[str] = None
+    review_by: Optional[datetime] = None
+    approved_by: Optional[str] = None
+    approved_at: Optional[datetime] = None
+    # Who may see it: internal (staff) or public (students see student_summary only); department or "all".
+    visibility: str = Field(default="internal")
+    department: str = Field(default="all", index=True)
+    category: Optional[str] = None  # help-desk category key, e.g. "examinations"
+    student_summary: Optional[str] = None  # plain "what you need to do" text for students
+    origin: str = Field(default="extracted")  # extracted / manual
+    reject_reason: Optional[str] = None
+    stale_reason: Optional[str] = None
+    stale_evidence: str = Field(default="[]")  # JSON list of the excerpts that contradicted it
+    use_count: int = Field(default=0)  # answers / drafts that cited it
     created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
     updated_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+
+
+class SkillVersion(SQLModel, table=True):
+    """A frozen copy of a procedure each time a version is approved (history + "what changed")."""
+    id: UUID = Field(default_factory=uuid4, primary_key=True)
+    skill_id: UUID = Field(foreign_key="skill.id", index=True)
+    version: int
+    snapshot: str  # JSON of the procedure fields at approval
+    approved_by: Optional[str] = None
+    approved_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
 
 
 class SkillCitation(SQLModel, table=True):

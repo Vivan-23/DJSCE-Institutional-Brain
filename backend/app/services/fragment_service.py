@@ -41,6 +41,7 @@ class FragmentService:
         speaker: Optional[str] = None,
         department: str = ALL_DEPARTMENTS,
         source_url: Optional[str] = None,
+        skill_id: Optional[UUID] = None,
     ) -> Fragment:
         """Persist a fragment and best-effort index its embedding in ChromaDB."""
         if visibility not in VISIBILITIES:
@@ -53,6 +54,7 @@ class FragmentService:
                 "visibility": visibility,
                 "department": department,  # retrieval scope, filtered in the vector query
                 "source_url": source_url or "",
+                "skill_id": str(skill_id) if skill_id else "",  # set for an approved procedure's copy
                 "speaker": speaker or "",  # who said it (transcripts), for provenance in answers
             },
         )
@@ -67,6 +69,7 @@ class FragmentService:
             visibility=visibility,
             department=department,
             source_url=source_url,
+            skill_id=skill_id,
         )
         db.add(fragment)
         db.commit()
@@ -91,6 +94,21 @@ class FragmentService:
         except Exception as e:
             log.warning("Fragment embedding/index failed", error=str(e))
             return None
+
+    def delete_for_skill(self, db: Session, skill_id: UUID) -> int:
+        """Remove the searchable copy of a procedure (Postgres rows + Chroma vectors)."""
+        frags = list(db.exec(select(Fragment).where(Fragment.skill_id == skill_id)))
+        ids = [f.embedding_id for f in frags if f.embedding_id]
+        collection = getattr(chroma_mod.chroma_conn, "collection", None)
+        if ids and collection is not None:
+            try:
+                collection.delete(ids=ids)
+            except Exception as e:  # noqa: BLE001 - the rows are still removed; a stale vector is re-checked away
+                log.warning("Chroma delete failed", error=str(e))
+        for f in frags:
+            db.delete(f)
+        db.commit()
+        return len(frags)
 
     def recent(self, db: Session, *, limit: int = 200) -> list[Fragment]:
         return list(

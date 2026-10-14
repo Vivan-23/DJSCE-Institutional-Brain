@@ -17,7 +17,7 @@ import structlog
 from sqlmodel import Session, select
 
 from app.core.institution_config import ALL_DEPARTMENTS, get_institution_config
-from app.models.structured import ActiveInsight, Commitment, Employee, Meeting, User
+from app.models.structured import ActiveInsight, Commitment, Employee, Meeting, Skill, User
 
 log = structlog.get_logger()
 
@@ -98,6 +98,24 @@ class CalendarService:
             })
         return out
 
+    def reviews_for(self, db: Session, user: User, *, today: date, days: int) -> list[dict[str, Any]]:
+        """Procedures this user owns whose review date falls by ``today + days`` (overdue included)."""
+        emp = db.exec(select(Employee).where(Employee.user_id == user.id)).first()
+        if not emp:
+            return []
+        horizon = today + timedelta(days=days)
+        out = []
+        for s in db.exec(select(Skill).where(Skill.owner_employee_id == emp.id, Skill.review_by.is_not(None),
+                                             Skill.status.in_(("approved", "stale")))):
+            due = s.review_by.date()
+            if due > horizon:
+                continue
+            days_left = (due - today).days
+            out.append({"date": due.isoformat(), "end": None, "title": f"Review procedure: {s.name}",
+                        "kind": "review", "audience": "staff", "department": s.department, "source": "procedure",
+                        "skill_id": str(s.id), "days_left": days_left, "urgency": _urgency(days_left)})
+        return out
+
     def upcoming(
         self,
         db: Session,
@@ -112,6 +130,7 @@ class CalendarService:
         items = self.events_for(staff=staff, departments=departments, today=today, days=days)
         if staff:
             items += self.commitments_for(db, user, today=today, days=days)
+            items += self.reviews_for(db, user, today=today, days=days)
         return sorted(items, key=lambda i: (i["date"], i["source"] != "calendar"))
 
     def post_reminders(self, db: Session, today: Optional[date] = None) -> int:
@@ -134,6 +153,11 @@ class CalendarService:
                     f"Commitment due {c.due_date.date().isoformat()} ({_urgency(days_left)}): {c.description}",
                     "An open commitment from a meeting is due soon or overdue.",
                 ))
+        for s in db.exec(select(Skill).where(Skill.status == "approved", Skill.review_by.is_not(None))):
+            days_left = (s.review_by.date() - today).days
+            if days_left <= SOON_DAYS:
+                due.append((f"Procedure review due {s.review_by.date().isoformat()} ({_urgency(days_left)}): {s.name}",
+                            "Approved procedures are re-checked by their owner at least once a year."))
         created = 0
         for observation, why in due:
             if observation in existing:

@@ -21,6 +21,8 @@ log = structlog.get_logger()
 
 _TOP_K = 5
 _EXCERPT_CHARS = 500
+_PROCEDURE_CHARS = 1500  # an approved procedure is cited whole (steps + rules)
+_PROCEDURE_K = 2
 
 
 class RAGService:
@@ -43,6 +45,12 @@ class RAGService:
             where: Optional[dict] = (
                 None if not clauses else clauses[0] if len(clauses) == 1 else {"$and": clauses}
             )
+            # Approved procedures are searched on their own so a reviewed SOP can lead the context.
+            proc_where = {"$and": clauses + [{"source_type": "procedure"}]} if clauses else {"source_type": "procedure"}
+            try:
+                proc = collection.query(query_embeddings=[vector], n_results=_PROCEDURE_K, where=proc_where)
+            except Exception:  # noqa: BLE001 - no procedures indexed yet, or an older store
+                proc = {}
             res = collection.query(query_embeddings=[vector], n_results=k, where=where)
         except Exception as e:
             log.warning("Vector retrieval failed", error=str(e))
@@ -50,8 +58,18 @@ class RAGService:
 
         docs = (res.get("documents") or [[]])[0]
         metas = (res.get("metadatas") or [[]])[0] or [{}] * len(docs)
+        dists = (res.get("distances") or [[]])[0]
+        # A procedure leads only if it is at least as close as the third-best ordinary hit.
+        bar = sorted(dists)[min(2, len(dists) - 1)] if dists else None
+        lead_docs, lead_metas = [], []
+        if bar is not None and isinstance(proc, dict):
+            for d, m, dist in zip((proc.get("documents") or [[]])[0], (proc.get("metadatas") or [[]])[0] or [],
+                                  (proc.get("distances") or [[]])[0]):
+                if dist is not None and dist <= bar:
+                    lead_docs.append(d)
+                    lead_metas.append(m)
         sources, seen = [], set()
-        for doc, meta in zip(docs, metas):
+        for doc, meta in zip(lead_docs + list(docs), lead_metas + list(metas)):
             meta = meta or {}
             if not doc or doc in seen:
                 continue
@@ -59,7 +77,10 @@ class RAGService:
                 continue  # defence in depth: never trust the store's filter alone
             if departments is not None and meta.get("department") not in departments:
                 continue
+            if len(sources) >= k + _PROCEDURE_K:
+                break
             seen.add(doc)
+            is_procedure = meta.get("source_type") == "procedure"
             sources.append(
                 {
                     "ref": len(sources) + 1,
@@ -69,7 +90,8 @@ class RAGService:
                     "department": meta.get("department") or None,
                     "source_url": meta.get("source_url") or None,
                     "speaker": meta.get("speaker") or None,
-                    "excerpt": doc[:_EXCERPT_CHARS],
+                    "skill_id": meta.get("skill_id") or None,
+                    "excerpt": doc[:_PROCEDURE_CHARS if is_procedure else _EXCERPT_CHARS],
                 }
             )
         return sources
@@ -119,7 +141,8 @@ class RAGService:
                 "ticket. Use ONLY the numbered context below and cite it inline like [1]. Where the "
                 "context lacks something needed, write a short holding reply and mark each missing "
                 "fact as [TO CONFIRM: ...] for staff. Never invent policy, dates, or names, and do "
-                "not quote internal deliberations verbatim.\n\n"
+                "not quote internal deliberations verbatim. Items labelled 'Approved procedure' are the "
+                "institution's reviewed procedure: follow them over anything said in meetings.\n\n"
             )
         else:
             task = (
@@ -127,7 +150,8 @@ class RAGService:
                 "Answer using ONLY the numbered context below and cite it inline like [1]. Each "
                 "item states where it came from (meeting title or document name). If the context "
                 "does not contain the answer, say so plainly and suggest raising a help-desk "
-                "ticket — never guess or invent policy, dates, or names.\n\n"
+                "ticket — never guess or invent policy, dates, or names. Items labelled 'Approved procedure' "
+                "are the institution's reviewed procedure: prefer them over meeting discussion and say so.\n\n"
             )
         system = (
             task

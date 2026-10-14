@@ -20,6 +20,12 @@ async def lifespan(app: FastAPI):
         init_db()
         with Session(engine) as session:
             seed_institution(session)
+            try:  # approved procedures from before they were searchable get their copy once
+                from app.services.procedure_service import procedure_service
+
+                procedure_service.publish_missing(session)
+            except Exception as e:  # noqa: BLE001 - never block startup on indexing
+                log.warning("Publishing approved procedures failed", error=str(e))
     yield
 
 

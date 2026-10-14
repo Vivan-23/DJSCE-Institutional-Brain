@@ -53,5 +53,10 @@ def chat_endpoint(
     db.add(QueryLog(question=user_query[:500], role=current_user.role, department=current_user.department,
                     source_count=len(result["sources"])))
     db.commit()
+    used = {s["skill_id"] for s in result["sources"] if s.get("skill_id")}
+    if used:
+        from app.services.procedure_service import procedure_service
+
+        procedure_service.record_use(db, used)
     return {"response": result["answer"], "sources": result["sources"], "scope": "public" if public_only else "all",
             "departments": department_scope(current_user)}

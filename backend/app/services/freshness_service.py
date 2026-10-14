@@ -47,7 +47,7 @@ class FreshnessService:
                 continue
             verdict = self._detect_contradiction(skill, evidence)
             if verdict.get("contradicts"):
-                self._flag_stale(db, skill, verdict.get("reason", "New evidence contradicts this skill."))
+                self._flag_stale(db, skill, verdict.get("reason", "New evidence contradicts this skill."), evidence)
                 flagged += 1
         log.info("Freshness scan complete", approved=len(approved), flagged=flagged)
         return flagged
@@ -63,7 +63,7 @@ class FreshnessService:
             cutoff = cutoff.replace(tzinfo=timezone.utc)
         out: list[Fragment] = []
         for f in recent:
-            if f.id in cited:
+            if f.id in cited or f.source_type == "procedure":  # a procedure's own copy is not new evidence
                 continue
             occurred = f.occurred_at or f.created_at
             if occurred and occurred.tzinfo is None:
@@ -94,10 +94,18 @@ class FreshnessService:
         )
         return result if isinstance(result, dict) else default
 
-    def _flag_stale(self, db: Session, skill: Skill, reason: str) -> None:
+    def _flag_stale(self, db: Session, skill: Skill, reason: str, evidence: list[Fragment] = ()) -> None:
         skill.status = "stale"
+        skill.stale_reason = reason
+        skill.stale_evidence = json.dumps(
+            [{"source_ref": f.source_ref, "source_type": f.source_type, "content": f.content[:500]} for f in evidence][:5]
+        )
         skill.updated_at = datetime.now(timezone.utc)
         db.add(skill)
+        # A procedure under review must not be cited as approved.
+        from app.services.fragment_service import fragment_service
+
+        fragment_service.delete_for_skill(db, skill.id)
         insight = ActiveInsight(
             category="freshness",
             observation=f"Skill '{skill.name}' may be out of date: {reason}",

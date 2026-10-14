@@ -29,7 +29,7 @@ def test_engine():
     from app.models.structured import (  # noqa: F401
         User, Document, ProgressReport, ActiveInsight,
         Employee, Meeting, Fragment, Commitment, CommitmentUpdate,
-        CheckIn, Skill, SkillCitation, AuditLog, Ticket, QueryLog, Notice, NoticeRecipient,
+        CheckIn, Skill, SkillCitation, SkillVersion, AuditLog, Ticket, QueryLog, Notice, NoticeRecipient,
     )
     SQLModel.metadata.create_all(engine)
     yield engine
