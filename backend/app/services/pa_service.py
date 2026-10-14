@@ -55,7 +55,7 @@ _CHECKIN_SYSTEM = (
 def _checkin_instructions(commitments: list[Commitment]) -> str:
     listing = (
         "\n".join(
-            f'- id={c.id} | "{c.description}" (status: {c.status}, progress: {c.progress}%'
+            f'- id={c.id} | "{c.description}" (status: {c.status}, current progress: {c.progress}%'
             + (f", left: {c.remaining}" if c.remaining else "") + ")"
             for c in commitments
         )
@@ -82,8 +82,10 @@ Return JSON with this exact shape:
   ]
 }}
 Only include updates for commitments they actually talked about. Use [] when empty.
-Estimate progress only from what they said (e.g. "3 of 5 sets done" → 60); never raise it without a reason.
-"done" means they say the whole task is finished."""
+Progress: whenever they describe partial completion, give your best estimate of how much of the WHOLE task is
+now done (e.g. "3 of 5 sets done" → 60; "finished the syllabus, only the matrix for two units left" → about 75).
+Never lower it below the current progress unless they say work was undone; use null only if they mention the task
+without saying how far along it is. "done" means they say the whole task is finished."""
 
 
 class PAService:

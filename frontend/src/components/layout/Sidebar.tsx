@@ -16,7 +16,7 @@ const NAV: { href: string; label: string; staff: boolean; coordinator?: boolean;
   { href: '/calendar', label: 'Calendar & Deadlines', staff: false },
   { href: '/tickets', label: 'Help Desk Queue', staff: true },
   { href: '/meetings', label: 'Meetings & Minutes', staff: true },
-  { href: '/commitments', label: 'Action Commitments', staff: true },
+  { href: '/commitments', label: 'My Work & Tasks', staff: true },
   { href: '/relationships', label: 'Knowledge Graph', staff: true },
   { href: '/assistant', label: 'Faculty Desk (PA)', staff: true },
   { href: '/skills', label: 'Institutional Procedures', staff: true },

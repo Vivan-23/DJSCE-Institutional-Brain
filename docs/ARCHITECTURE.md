@@ -91,7 +91,7 @@ tests/             pytest suite. conftest.py mocks all external services.
 | `chat.py` | `/chat` | Grounded Q&A with `sources`; students get `public_only` retrieval. |
 | `graph.py` | `/graph` | 👥 `/data?limit=` (whole graph, bounded, `truncated` flag), `/neighbors/{id}?depth=` (a node's neighbourhood, for large graphs), `/stats`. Department-scoped: Document/Meeting nodes carry `department`. |
 | `transcripts.py` | `/transcripts` | 👥 Ingest transcript (202 → task) + list/get meetings. | `GET /{id}/minutes?format=docx|pdf` (Coordinator+) exports formal draft minutes.
-| `commitments.py` | `/commitments` | 👥 list / mine / patch status. |
+| `commitments.py` | `/commitments` | 👥 Tasks. `GET` (dept-scoped), `/mine`, `/my-work` (summary + own tasks; coordinators also get `awaiting_my_confirmation`), `/team` and `/assignable` (coordinator), `GET /{id}` (timeline + most-likely source line), `POST /{id}/progress` and `/done` (owner only), `/confirm` and `/send-back` (coordinator), `POST` create (coordinator), `PATCH` (owner: own statuses; coordinator: any status, due date, reassign). |
 | `pa.py` | `/pa` | 👥 followups (+reply), checkin (message/complete). |
 | `skills.py` | `/skills` | 👥 list / extract🔒 / get / patch🔒 / approve🔒 / reject🔒 / file / feedback. |
 | `sources.py` | `/sources` | 👥 list connectors / sync🔒. |
@@ -163,7 +163,7 @@ app/
   login/             Auth
   relationships/     Graph map
   meetings/          Transcript upload + meeting list
-  commitments/       Action items + status updates
+  commitments/       My Work: own tasks by urgency, detail panel (progress, timeline), Waiting for me / Team / assign (coordinators)
   assistant/         Faculty Desk PA: follow-ups + end-of-day check-in chat
   skills/            Skill review/approval + skill-file viewer
   chat/              RAG chat

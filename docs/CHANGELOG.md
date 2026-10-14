@@ -8,6 +8,20 @@ Format: `## YYYY-MM-DD — title` then bullets of what/why.
 
 ---
 
+## 2026-10-14 — My Work: task progress, confirmation and check-in updates
+- `Commitment` gains `progress` (0-100), `remaining`, `blocked_reason`, `assigned_by(_user_id)`, `department`,
+  `marked_done_at`, `confirmed_at/by`; `CommitmentUpdate` gains `progress`, `actor`. Migration `0002_task_progress`
+  (backfills department from the meeting) — applied live, no data lost.
+- New status `review`: the owner (or a check-in, or a follow-up reply) saying "done" means *awaiting confirmation*;
+  only a coordinator's **Confirm** sets `done`. **Send back** reopens it with a comment.
+- **Security fixes**: any faculty could change anyone's task (now owner-only, coordinators for everything else),
+  and the task list ignored departments (now scoped like meetings).
+- Faculty Desk check-in now estimates progress, what's left and blockers per task and shows what it changed;
+  uploader of a meeting recorded as "assigned by"; coordinators can create and reassign tasks; owner/assigner get
+  notices on assign / blocked / done / confirmed / sent back.
+- `/commitments` page is now **My Work** (sidebar "My Work & Tasks"); analytics adds blocked, to-confirm and
+  average progress. Demo loader records sample progress.
+
 ## 2026-10-14 — Alembic migrations: data survives code changes
 - `backend/migrations/` + `alembic.ini`; baseline `0001_baseline` = current schema. `init_db()` now runs
   `alembic upgrade head`; a database created before migrations existed is **stamped**, not re-created (verified live:

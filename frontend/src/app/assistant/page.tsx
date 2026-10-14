@@ -15,6 +15,23 @@ interface Turn {
   content: string;
 }
 
+/** What a check-in message changed, as returned by POST /pa/checkin/message. */
+interface AppliedUpdate {
+  commitment_id: string;
+  description?: string;
+  status: string | null;
+  progress?: number;
+  remaining?: string | null;
+  blocked_reason?: string | null;
+  summary: string | null;
+  new?: boolean;
+}
+
+const STATUS_WORD: Record<string, string> = {
+  open: 'not started', in_progress: 'in progress', blocked: 'blocked', review: 'done, awaiting confirmation',
+  done: 'completed', dropped: 'dropped',
+};
+
 interface CheckinState {
   id: string;
   date: string;
@@ -32,6 +49,7 @@ export default function AssistantPage() {
   const [message, setMessage] = useState('');
   const [sending, setSending] = useState(false);
   const [error, setError] = useState('');
+  const [lastUpdates, setLastUpdates] = useState<AppliedUpdate[]>([]);
 
   const scrollRef = useRef<HTMLDivElement>(null);
 
@@ -82,6 +100,7 @@ export default function AssistantPage() {
           ? { ...prev, conversation: [...prev.conversation, { role: 'assistant', content: data.reply }] }
           : prev,
       );
+      setLastUpdates((data.updates as AppliedUpdate[]) ?? []);
       loadFollowups();
     } catch {
       setError('Message failed to transmit to desk assistant.');
@@ -206,6 +225,38 @@ export default function AssistantPage() {
               </div>
             )}
           </div>
+
+          {lastUpdates.length > 0 && (
+            <div className="mx-3 mb-2 rounded-lg border border-emerald-500/30 bg-emerald-500/5 p-3 space-y-2" aria-label="Task updates">
+              <p className="text-[11px] uppercase tracking-wider font-semibold text-emerald-300">
+                Updated your tasks from this message
+              </p>
+              {lastUpdates.map((u) => (
+                <div key={u.commitment_id} className="text-xs text-slate-200">
+                  <div className="flex items-center justify-between gap-2">
+                    <span className="truncate">{u.new ? 'New task: ' : ''}{u.description ?? u.summary}</span>
+                    <span className="text-slate-400 shrink-0">
+                      {typeof u.progress === 'number' ? `${u.progress}% · ` : ''}
+                      {STATUS_WORD[u.status ?? ''] ?? u.status ?? ''}
+                    </span>
+                  </div>
+                  {typeof u.progress === 'number' && (
+                    <div className="h-1 mt-1 rounded bg-slate-800 overflow-hidden">
+                      <div className="h-full bg-emerald-500" style={{ width: `${u.progress}%` }} />
+                    </div>
+                  )}
+                  {(u.remaining || u.blocked_reason) && (
+                    <p className="text-[11px] text-slate-400 mt-0.5">
+                      {u.blocked_reason ? `Blocked: ${u.blocked_reason}` : `Left: ${u.remaining}`}
+                    </p>
+                  )}
+                </div>
+              ))}
+              <a href="/commitments" className="inline-block text-[11px] text-blue-300 hover:underline">
+                Not right? Correct it on My Work →
+              </a>
+            </div>
+          )}
 
           {error && (
             <p role="alert" className="text-rose-400 text-xs px-4 pb-1">

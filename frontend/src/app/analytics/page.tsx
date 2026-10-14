@@ -6,10 +6,13 @@ interface MeetingRow {
   meeting: string;
   department: string;
   open: number;
+  review: number;
+  blocked: number;
   done: number;
   dropped: number;
   overdue: number;
   total: number;
+  average_progress: number | null;
 }
 
 interface QuestionGroup {
@@ -162,6 +165,9 @@ export default function AnalyticsPage() {
                       <th className="py-1.5 pr-3 font-medium">Dept</th>
                       <th className="py-1.5 pr-3 font-medium text-right">Open</th>
                       <th className="py-1.5 pr-3 font-medium text-right">Overdue</th>
+                      <th className="py-1.5 pr-3 font-medium text-right">Blocked</th>
+                      <th className="py-1.5 pr-3 font-medium text-right">Avg progress</th>
+                      <th className="py-1.5 pr-3 font-medium text-right">To confirm</th>
                       <th className="py-1.5 pr-3 font-medium text-right">Done</th>
                       <th className="py-1.5 font-medium text-right">Total</th>
                     </tr>
@@ -173,6 +179,9 @@ export default function AnalyticsPage() {
                         <td className="py-1.5 pr-3 text-slate-400">{r.department}</td>
                         <td className="py-1.5 pr-3 text-right">{r.open}</td>
                         <td className={`py-1.5 pr-3 text-right ${r.overdue ? 'text-rose-300' : ''}`}>{r.overdue}</td>
+                        <td className={`py-1.5 pr-3 text-right ${r.blocked ? 'text-rose-300' : ''}`}>{r.blocked}</td>
+                        <td className="py-1.5 pr-3 text-right">{r.average_progress === null ? '—' : `${r.average_progress}%`}</td>
+                        <td className={`py-1.5 pr-3 text-right ${r.review ? 'text-amber-300' : ''}`}>{r.review}</td>
                         <td className="py-1.5 pr-3 text-right">{r.done}</td>
                         <td className="py-1.5 text-right">{r.total}</td>
                       </tr>

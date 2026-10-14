@@ -304,6 +304,40 @@ def seed_demo_notices() -> None:
     print(f"[OK] Sent {sent} sample notice(s)")
 
 
+# Per staff member: (progress %, what's left / blocker, action) for their first tasks, in order.
+# action: "progress" | "blocked" | "done" (→ awaiting a coordinator's confirmation)
+DEMO_PROGRESS = {
+    "karan.shah@example.com": [(60, "2 of 5 question paper sets still to moderate", "progress"), (100, None, "done")],
+    "pooja.verma@example.com": [(30, "waiting for the network vendor's site visit", "blocked")],
+    "rohan.mehta@example.com": [(80, "final check of the examiner list", "progress")],
+    "neha.iyer@example.com": [(45, "feedback analysis for two departments left", "progress")],
+}
+
+
+def seed_demo_progress() -> None:
+    """Give sample tasks realistic progress through the owners' own API (only tasks still at 0%)."""
+    print("Recording sample task progress…")
+    changed = 0
+    for email, plan in DEMO_PROGRESS.items():
+        headers = {"Authorization": f"Bearer {login(email, PASSWORD)}"}
+        r = requests.get(f"{API}/api/v1/commitments/my-work", headers=headers)
+        if r.status_code != 200:
+            continue
+        fresh = [t for t in r.json()["items"] if t["status"] == "open" and t["progress"] == 0]
+        for task, (pct, text, action) in zip(fresh, plan):
+            base = f"{API}/api/v1/commitments/{task['id']}"
+            if action == "done":
+                requests.post(f"{base}/done", headers=headers)
+            elif action == "blocked":
+                requests.post(f"{base}/progress", headers=headers, json={"progress": pct, "note": "Started"})
+                requests.post(f"{base}/progress", headers=headers, json={"status": "blocked", "blocked_reason": text})
+            else:
+                requests.post(f"{base}/progress", headers=headers,
+                              json={"progress": pct, "remaining": text, "note": "Update from the demo loader"})
+            changed += 1
+    print(f"[OK] Updated {changed} sample task(s): in progress, blocked and awaiting confirmation")
+
+
 def print_summary(token: str) -> None:
     headers = {"Authorization": f"Bearer {token}"}
     def count_res(path):
@@ -337,6 +371,7 @@ def main() -> None:
     if "--no-demo-tickets" not in sys.argv:
         seed_demo_tickets()
         seed_demo_notices()
+        seed_demo_progress()
     print_summary(token)
 
 
