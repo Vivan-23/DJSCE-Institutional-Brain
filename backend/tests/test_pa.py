@@ -111,7 +111,7 @@ class TestCheckin:
 
         db_session.expire_all()
         refreshed = db_session.get(Commitment, c.id)
-        assert refreshed.status == "done"
+        assert refreshed.status == "review"  # a check-in "done" awaits a coordinator's confirmation
         descriptions = {
             x.description for x in db_session.exec(
                 select(Commitment).where(Commitment.assignee_employee_id == emp.id)

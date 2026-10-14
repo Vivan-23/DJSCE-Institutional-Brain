@@ -47,7 +47,10 @@ def ingest_transcript(
     department = parse_department(req.department)
     from app.core.celery import process_transcript_task
     occurred = req.occurred_at.isoformat() if req.occurred_at else None
-    task = process_transcript_task.delay(text, req.title.strip(), req.source, department, occurred)
+    task = process_transcript_task.delay(
+        text, req.title.strip(), req.source, department, occurred,
+        current_user.full_name or current_user.email, str(current_user.id),
+    )
 
     log.info("Transcript queued", title=req.title, user=current_user.email, task_id=task.id)
     return {

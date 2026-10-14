@@ -36,15 +36,21 @@ class AnalyticsService:
             key = m.title if m else "Not linked to a meeting"
             row = rows.setdefault(key, {
                 "meeting": key, "department": m.department if m else "all",
-                "open": 0, "done": 0, "dropped": 0, "overdue": 0, "total": 0,
+                "open": 0, "review": 0, "done": 0, "dropped": 0, "overdue": 0, "blocked": 0, "total": 0,
+                "_progress": [],
             })
             row["total"] += 1
             if c.status in _OPEN:
                 row["open"] += 1
+                row["_progress"].append(c.progress)
+                row["blocked"] += c.status == "blocked"
                 if c.due_date and _aware(c.due_date) < now:
                     row["overdue"] += 1
-            elif c.status in ("done", "dropped"):
+            elif c.status in ("review", "done", "dropped"):
                 row[c.status] += 1
+        for row in rows.values():
+            p = row.pop("_progress")
+            row["average_progress"] = round(sum(p) / len(p)) if p else None
         return sorted(rows.values(), key=lambda r: (-r["open"], r["meeting"]))
 
     def tickets(self, db: Session, now: datetime) -> dict[str, Any]:

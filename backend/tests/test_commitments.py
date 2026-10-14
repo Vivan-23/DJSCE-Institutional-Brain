@@ -32,12 +32,15 @@ class TestCommitmentsAPI:
 
     def test_patch_status(self, client, db_session):
         c = _seed_commitment(db_session, "Finish docs", status="open")
+        # A faculty member who doesn't own the task may not change it…
         token = _register(client)
-        res = client.patch(
-            f"/api/v1/commitments/{c.id}",
-            json={"status": "done"},
-            headers={"Authorization": f"Bearer {token}"},
-        )
+        res = client.patch(f"/api/v1/commitments/{c.id}", json={"status": "done"},
+                           headers={"Authorization": f"Bearer {token}"})
+        assert res.status_code == 403
+        # …a coordinator may.
+        coord = register(client, "commit-coord@test.com", "Coord", role="manager")
+        res = client.patch(f"/api/v1/commitments/{c.id}", json={"status": "done"},
+                           headers={"Authorization": f"Bearer {coord}"})
         assert res.status_code == 200
         assert res.json()["status"] == "done"
 

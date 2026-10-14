@@ -105,6 +105,22 @@ class NoticeService:
                              metadata={"title": notice.title, "audience": aud, "recipients": len(users)})
         return notice, len(users)
 
+    def notify(self, db: Session, sender: User, users: list[User], title: str, body: str) -> Optional[Notice]:
+        """A system notice to specific people (task assigned, sent back, confirmed…). No audience rules."""
+        users = [u for u in users if u and u.is_active and u.id != sender.id]
+        if not users:
+            return None
+        notice = Notice(sender_user_id=sender.id, title=title[:200], body=body, priority="normal",
+                        audience=json.dumps({"roles": [], "departments": [], "years": [], "semesters": [],
+                                             "divisions": [], "users": [u.email for u in users]}))
+        db.add(notice)
+        db.commit()
+        db.refresh(notice)
+        for u in users:
+            db.add(NoticeRecipient(notice_id=notice.id, user_id=u.id))
+        db.commit()
+        return notice
+
     # ── reading ─────────────────────────────────────────────────────────────
     def _serialize(self, db: Session, n: Notice, **extra: Any) -> dict[str, Any]:
         sender = db.get(User, n.sender_user_id)

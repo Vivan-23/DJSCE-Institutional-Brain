@@ -17,6 +17,8 @@ from sqlmodel import Session, select
 from app.core.institution_config import get_institution_config
 from app.models.structured import Commitment, Employee, Meeting
 
+_OPEN = ("open", "in_progress", "blocked")
+
 DRAFT_NOTICE = (
     "Draft minutes generated automatically from the meeting transcript. Verify every "
     "decision and action item before circulating; this is not an approved record."
@@ -39,7 +41,8 @@ class MinutesService:
                 "description": c.description,
                 "owner": names.get(c.assignee_employee_id, "Unassigned"),
                 "due": c.due_date.date().isoformat() if c.due_date else "Not set",
-                "status": c.status.replace("_", " "),
+                "status": {"review": "done, awaiting confirmation", "done": "completed"}.get(
+                    c.status, c.status.replace("_", " ")) + (f" ({c.progress}%)" if c.status in _OPEN and c.progress else ""),
             }
             for c in db.exec(
                 select(Commitment).where(Commitment.source_meeting_id == meeting.id).order_by(Commitment.created_at)

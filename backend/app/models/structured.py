@@ -107,19 +107,34 @@ class Commitment(SQLModel, table=True):
     source_meeting_id: Optional[UUID] = Field(default=None, foreign_key="meeting.id")
     source_fragment_id: Optional[UUID] = Field(default=None, foreign_key="fragment.id")
     due_date: Optional[datetime] = None
-    status: str = Field(default="open")  # open / in_progress / blocked / done / dropped
+    # open / in_progress / blocked / review (owner says done, awaiting confirmation) / done (confirmed) / dropped
+    status: str = Field(default="open")
     last_followup_at: Optional[datetime] = None
     confidence: float = Field(default=0.7)
+    # Progress tracking (owner updates, or the Faculty Desk check-in estimates it).
+    progress: int = Field(default=0)  # 0-100
+    remaining: Optional[str] = None  # what is left, in a line
+    blocked_reason: Optional[str] = None
+    # Who assigned it: the coordinator who created it, or who uploaded the source meeting.
+    assigned_by: Optional[str] = None
+    assigned_by_user_id: Optional[UUID] = Field(default=None, foreign_key="user.id")
+    department: str = Field(default="all", index=True)  # scope; from the meeting or set on creation
+    marked_done_at: Optional[datetime] = None
+    confirmed_at: Optional[datetime] = None
+    confirmed_by: Optional[str] = None
     created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
 
 
 class CommitmentUpdate(SQLModel, table=True):
+    """One entry in a commitment's timeline: a check-in, follow-up reply, note or status change."""
     id: UUID = Field(default_factory=uuid4, primary_key=True)
     commitment_id: UUID = Field(foreign_key="commitment.id", index=True)
-    raw_text: str  # the employee's own words
+    raw_text: str  # the person's own words (or a description of the action)
     structured_summary: Optional[str] = None
     status_change: Optional[str] = None  # new status, if the update changed it
-    source: str = Field(default="checkin")  # checkin / followup
+    progress: Optional[int] = None  # new progress, if the update changed it
+    actor: Optional[str] = None  # who made the update
+    source: str = Field(default="checkin")  # checkin / followup / owner / coordinator / note
     created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
 
 

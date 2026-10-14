@@ -115,7 +115,8 @@ def process_document_task(text: str, filename: str, visibility: str = "internal"
 
 @celery_app.task(name="app.core.celery.process_transcript")
 def process_transcript_task(
-    transcript: str, title: str, source: str = "upload", department: str = "all", occurred_at: str | None = None
+    transcript: str, title: str, source: str = "upload", department: str = "all", occurred_at: str | None = None,
+    uploaded_by: str | None = None, uploaded_by_user_id: str | None = None,
 ) -> dict:
     """
     Background transcript pipeline:
@@ -132,6 +133,7 @@ def process_transcript_task(
         result = transcript_service.ingest(
             session, transcript=transcript, title=title, source=source, department=department,
             occurred_at=datetime.fromisoformat(occurred_at) if occurred_at else None,
+            uploaded_by=uploaded_by, uploaded_by_user_id=uploaded_by_user_id,
         )
     log.info("Transcript processing complete", title=title, **{
         "commitments": result.get("commitments_created"),

@@ -53,6 +53,8 @@ class TranscriptService:
         occurred_at: Optional[datetime] = None,
         source: str = "upload",
         department: str = "all",
+        uploaded_by: Optional[str] = None,
+        uploaded_by_user_id: Optional[str] = None,
     ) -> dict:
         """
         Full pipeline: create Meeting -> extract -> store summary + Fragments +
@@ -83,7 +85,8 @@ class TranscriptService:
 
         # 4. Create commitments from the extraction
         commitments = commitment_service.create_from_meeting(
-            db, meeting, extracted.get("commitments") or []
+            db, meeting, extracted.get("commitments") or [],
+            assigned_by=uploaded_by, assigned_by_user_id=uploaded_by_user_id,
         )
 
         log.info(

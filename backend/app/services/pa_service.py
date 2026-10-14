@@ -54,7 +54,11 @@ _CHECKIN_SYSTEM = (
 
 def _checkin_instructions(commitments: list[Commitment]) -> str:
     listing = (
-        "\n".join(f'- id={c.id} | "{c.description}" (status: {c.status})' for c in commitments)
+        "\n".join(
+            f'- id={c.id} | "{c.description}" (status: {c.status}, progress: {c.progress}%'
+            + (f", left: {c.remaining}" if c.remaining else "") + ")"
+            for c in commitments
+        )
         or "(no open commitments on record)"
     )
     return f"""The employee's currently open commitments:
@@ -67,14 +71,19 @@ Return JSON with this exact shape:
     {{
       "commitment_id": "the id from the list above this update refers to",
       "status": "one of open/in_progress/blocked/done/dropped, or null if unchanged",
-      "summary": "one-line summary of the progress they described"
+      "summary": "one-line summary of the progress they described",
+      "progress": "estimated percent complete 0-100 after today, or null if they gave no basis for one",
+      "remaining": "what is still left to do, in a few words, or null",
+      "blocker": "what is blocking them, or null"
     }}
   ],
   "new_commitments": [
     {{ "description": "a new action item they mentioned that isn't in the list" }}
   ]
 }}
-Only include updates for commitments they actually talked about. Use [] when empty."""
+Only include updates for commitments they actually talked about. Use [] when empty.
+Estimate progress only from what they said (e.g. "3 of 5 sets done" → 60); never raise it without a reason.
+"done" means they say the whole task is finished."""
 
 
 class PAService:
@@ -273,15 +282,27 @@ class PAService:
             if status not in VALID_STATUSES:
                 status = None
             summary = (upd.get("summary") or "").strip() or None
+            progress = _percent(upd.get("progress"))
+            remaining = (upd.get("remaining") or "").strip() or None if isinstance(upd.get("remaining"), str) else None
+            blocker = (upd.get("blocker") or "").strip() or None if isinstance(upd.get("blocker"), str) else None
             commitment_service.record_update(
                 db,
                 UUID(cid),
                 raw_text=summary or "(check-in)",
                 structured_summary=summary,
                 status_change=status,
+                progress=progress,
+                remaining=remaining,
+                blocked_reason=blocker,
                 source="checkin",
+                actor=employee.display_name,
             )
-            applied.append({"commitment_id": cid, "status": status, "summary": summary})
+            after = db.get(Commitment, UUID(cid))
+            applied.append({
+                "commitment_id": cid, "description": after.description, "status": after.status,
+                "progress": after.progress, "remaining": after.remaining, "blocked_reason": after.blocked_reason,
+                "summary": summary,
+            })
 
         # New commitments the employee surfaced during the check-in.
         new_items = [
@@ -310,6 +331,14 @@ class PAService:
         db.commit()
         db.refresh(checkin)
         return checkin
+
+
+def _percent(value: Any) -> Optional[int]:
+    """An LLM-supplied percentage → int 0-100, or None if missing / not a number."""
+    try:
+        return max(0, min(100, int(round(float(str(value).rstrip("%"))))))
+    except (TypeError, ValueError):
+        return None
 
 
 def _load(raw: Optional[str], default: Any) -> Any:
