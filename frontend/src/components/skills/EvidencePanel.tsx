@@ -271,22 +271,22 @@ export default function EvidencePanel({ citations }: EvidencePanelProps) {
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 bg-slate-900/50 border border-slate-800 rounded-lg p-3.5">
         <div className="space-y-0.5">
           <div className="flex items-center gap-2 flex-wrap">
-            <h3 className="text-xs uppercase tracking-wider font-semibold text-slate-200">
+            <h3 className="text-xs font-semibold text-slate-200">
               Evidence &amp; Source Documents
             </h3>
-            <span className="text-[11px] px-2 py-0.5 rounded-full bg-blue-500/10 border border-blue-500/30 text-blue-300 font-mono font-medium">
+            <span className="text-[12px] px-2 py-0.5 rounded-full bg-blue-500/10 border border-blue-500/30 text-blue-300 font-mono font-medium">
               {stats.uniqueExcerpts} unique {stats.uniqueExcerpts === 1 ? 'excerpt' : 'excerpts'}
             </span>
             {stats.duplicateCount > 0 && (
-              <span className="text-[10px] px-2 py-0.5 rounded-full bg-slate-800 border border-slate-700 text-slate-300 font-medium">
+              <span className="text-[11px] px-2 py-0.5 rounded-full bg-slate-800 border border-slate-700 text-slate-300 font-medium">
                 {stats.duplicateCount} duplicate {stats.duplicateCount === 1 ? 'ref' : 'refs'} grouped
               </span>
             )}
-            <span className="text-[10px] text-slate-500">
+            <span className="text-[11px] text-slate-500">
               ({stats.totalCitations} raw {stats.totalCitations === 1 ? 'citation' : 'citations'} total)
             </span>
           </div>
-          <p className="text-[11px] text-slate-400">
+          <p className="text-[12px] text-slate-400">
             Explore the verified source excerpts used to synthesize this procedure.
           </p>
         </div>
@@ -297,7 +297,7 @@ export default function EvidencePanel({ citations }: EvidencePanelProps) {
           aria-expanded={isExpanded}
         >
           <span>{isExpanded ? 'Hide Evidence' : 'View Evidence'}</span>
-          <span className={`text-[10px] transition-transform ${isExpanded ? 'rotate-180' : ''}`}>
+          <span className={`text-[11px] transition-transform ${isExpanded ? 'rotate-180' : ''}`}>
             ▼
           </span>
         </button>
@@ -331,7 +331,7 @@ export default function EvidencePanel({ citations }: EvidencePanelProps) {
             <div className="flex flex-wrap gap-1.5 items-center">
               <button
                 onClick={() => setSelectedCategory('all')}
-                className={`text-[11px] px-2.5 py-1 rounded-full border transition-colors cursor-pointer ${
+                className={`text-[12px] px-2.5 py-1 rounded-full border transition-colors cursor-pointer ${
                   selectedCategory === 'all'
                     ? 'bg-blue-500/20 border-blue-500/40 text-blue-300 font-medium'
                     : 'border-slate-800 text-slate-400 hover:text-slate-200 hover:bg-slate-900/60'
@@ -343,7 +343,7 @@ export default function EvidencePanel({ citations }: EvidencePanelProps) {
                 <button
                   key={g.key}
                   onClick={() => setSelectedCategory(g.key)}
-                  className={`text-[11px] px-2.5 py-1 rounded-full border transition-colors cursor-pointer ${
+                  className={`text-[12px] px-2.5 py-1 rounded-full border transition-colors cursor-pointer ${
                     selectedCategory === g.key
                       ? 'bg-blue-500/20 border-blue-500/40 text-blue-300 font-medium'
                       : 'border-slate-800 text-slate-400 hover:text-slate-200 hover:bg-slate-900/60'
@@ -357,7 +357,7 @@ export default function EvidencePanel({ citations }: EvidencePanelProps) {
 
           {/* Results Summary if filtered */}
           {(searchQuery || selectedCategory !== 'all') && (
-            <div className="text-[11px] text-slate-400 flex items-center justify-between">
+            <div className="text-[12px] text-slate-400 flex items-center justify-between">
               <span>
                 Showing {totalFilteredExcerpts} of {stats.uniqueExcerpts} unique evidence excerpts
               </span>
@@ -385,10 +385,10 @@ export default function EvidencePanel({ citations }: EvidencePanelProps) {
                   {/* Source Group Header */}
                   <div className="flex items-center justify-between pb-1 border-b border-slate-800">
                     <div className="flex items-center gap-2">
-                      <span className={`text-[10px] uppercase tracking-wider font-semibold px-2 py-0.5 rounded border ${group.badgeStyle}`}>
+                      <span className={`text-[11px] font-semibold px-2 py-0.5 rounded border ${group.badgeStyle}`}>
                         {group.label}
                       </span>
-                      <span className="text-[11px] text-slate-400">
+                      <span className="text-[12px] text-slate-400">
                         {group.items.length} {group.items.length === 1 ? 'excerpt' : 'excerpts'}
                         {group.totalReferences > group.items.length && (
                           <span className="text-slate-500 ml-1">
@@ -397,7 +397,7 @@ export default function EvidencePanel({ citations }: EvidencePanelProps) {
                         )}
                       </span>
                     </div>
-                    <span className="text-[10px] text-slate-500 hidden sm:inline">
+                    <span className="text-[11px] text-slate-500 hidden sm:inline">
                       {group.description}
                     </span>
                   </div>
@@ -419,27 +419,27 @@ export default function EvidencePanel({ citations }: EvidencePanelProps) {
                           <div className="flex items-start justify-between gap-2 flex-wrap">
                             <div className="flex items-center gap-1.5 flex-wrap">
                               {/* Source Type Badge */}
-                              <span className="text-[10px] font-medium text-slate-400 bg-slate-800/80 px-1.5 py-0.5 rounded">
+                              <span className="text-[11px] font-medium text-slate-400 bg-slate-800/80 px-1.5 py-0.5 rounded">
                                 {item.sourceTypes.join(', ') || 'Stored Record'}
                               </span>
 
                               {/* Multi-reference indicator */}
                               {hasDuplicates && (
-                                <span className="text-[10px] font-medium text-blue-300 bg-blue-500/15 border border-blue-500/30 px-1.5 py-0.5 rounded">
+                                <span className="text-[11px] font-medium text-blue-300 bg-blue-500/15 border border-blue-500/30 px-1.5 py-0.5 rounded">
                                   {item.citations.length} supporting references
                                 </span>
                               )}
 
                               {/* Element / Target Section Mapping */}
                               {item.elements.length > 0 && (
-                                <span className="text-[10px] font-medium text-amber-300/90 bg-amber-500/10 border border-amber-500/20 px-1.5 py-0.5 rounded">
+                                <span className="text-[11px] font-medium text-amber-300/90 bg-amber-500/10 border border-amber-500/20 px-1.5 py-0.5 rounded">
                                   Supports: {item.elements.join(', ')}
                                 </span>
                               )}
 
                               {/* Source Reference if present */}
                               {item.sourceRefs.length > 0 && (
-                                <span className="text-[10px] font-mono text-slate-400 bg-slate-800/60 px-1.5 py-0.5 rounded truncate max-w-xs" title={item.sourceRefs.join(', ')}>
+                                <span className="text-[11px] font-mono text-slate-400 bg-slate-800/60 px-1.5 py-0.5 rounded truncate max-w-xs" title={item.sourceRefs.join(', ')}>
                                   Ref: {item.sourceRefs.join(', ')}
                                 </span>
                               )}
@@ -449,14 +449,14 @@ export default function EvidencePanel({ citations }: EvidencePanelProps) {
                             <div className="flex items-center gap-1 shrink-0">
                               <button
                                 onClick={() => handleCopy(item.id, item.displayExcerpt)}
-                                className="text-[11px] px-2 py-0.5 rounded bg-slate-800 hover:bg-slate-700 text-slate-300 transition-colors cursor-pointer"
+                                className="text-[12px] px-2 py-0.5 rounded bg-slate-800 hover:bg-slate-700 text-slate-300 transition-colors cursor-pointer"
                                 title="Copy excerpt to clipboard"
                               >
                                 {copiedId === item.id ? 'Copied ✓' : 'Copy'}
                               </button>
                               <button
                                 onClick={() => toggleProvenance(item.id)}
-                                className={`text-[11px] px-2 py-0.5 rounded border transition-colors cursor-pointer ${
+                                className={`text-[12px] px-2 py-0.5 rounded border transition-colors cursor-pointer ${
                                   isProvOpen
                                     ? 'bg-blue-600/20 border-blue-500/40 text-blue-300'
                                     : 'bg-slate-800/60 border-slate-700 text-slate-400 hover:text-slate-200'
@@ -483,7 +483,7 @@ export default function EvidencePanel({ citations }: EvidencePanelProps) {
                             {isLong && (
                               <button
                                 onClick={() => toggleExcerptExpand(item.id)}
-                                className="text-[11px] text-blue-400 hover:underline mt-1 cursor-pointer inline-block"
+                                className="text-[12px] text-blue-400 hover:underline mt-1 cursor-pointer inline-block"
                               >
                                 {isOpen ? 'Show less' : 'Show full excerpt'}
                               </button>
@@ -493,7 +493,7 @@ export default function EvidencePanel({ citations }: EvidencePanelProps) {
                           {/* Technical Provenance Drawer */}
                           {isProvOpen && (
                             <div className="pt-2.5 mt-2 border-t border-slate-800/80 bg-slate-950/60 -mx-3 -mb-3 p-3 rounded-b-md space-y-2">
-                              <div className="flex items-center justify-between text-[10px] text-slate-400 uppercase tracking-wider font-semibold">
+                              <div className="flex items-center justify-between text-[11px] text-slate-400 font-semibold">
                                 <span>Underlying Citations &amp; Ingestion Metadata</span>
                                 <span>{item.citations.length} raw {item.citations.length === 1 ? 'record' : 'records'}</span>
                               </div>
@@ -502,17 +502,17 @@ export default function EvidencePanel({ citations }: EvidencePanelProps) {
                                 {item.citations.map((c, idx) => (
                                   <div
                                     key={c.citation_id || idx}
-                                    className="p-2 rounded bg-slate-900 border border-slate-800/80 text-[11px] font-mono text-slate-400 space-y-0.5"
+                                    className="p-2 rounded bg-slate-900 border border-slate-800/80 text-[12px] font-mono text-slate-400 space-y-0.5"
                                   >
                                     <div className="flex items-center justify-between flex-wrap gap-1">
                                       <span className="text-blue-400 font-sans font-medium">
                                         Citation #{idx + 1}
                                       </span>
-                                      <span className="text-[10px] text-slate-500">
+                                      <span className="text-[11px] text-slate-500">
                                         ID: {c.citation_id}
                                       </span>
                                     </div>
-                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-2 gap-y-0.5 text-[10px] pt-1 border-t border-slate-800/60">
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-2 gap-y-0.5 text-[11px] pt-1 border-t border-slate-800/60">
                                       <div>
                                         <span className="text-slate-500">Fragment ID: </span>
                                         <span className="text-slate-300">{c.fragment_id}</span>
@@ -549,8 +549,8 @@ export default function EvidencePanel({ citations }: EvidencePanelProps) {
           )}
 
           {/* Trust and Governance Safeguard Footer */}
-          <div className="p-2.5 rounded bg-slate-900/40 border border-slate-800/80 text-[11px] text-slate-400 flex items-start gap-2">
-            <span className="text-blue-400 text-xs shrink-0 font-bold">ℹ</span>
+          <div className="p-2.5 rounded bg-slate-900/40 border border-slate-800/80 text-[12px] text-slate-400 flex items-start gap-2">
+            <span className="text-blue-400 text-xs shrink-0 font-semibold">ℹ</span>
             <p>
               <strong className="text-slate-300 font-medium">Source Traceability: </strong>
               Citations identify stored meeting transcripts and reference documents used during AI procedure synthesis. Citations verify archival provenance and evidentiary basis, not statutory college council ratification.

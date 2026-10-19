@@ -53,7 +53,7 @@ export default function InsightCard({ insight, onDismiss }: Props) {
       {/* Header row */}
       <div className="flex justify-between items-start gap-4">
         <span
-          className={`text-[11px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded border ${badgeConfig.style}`}
+          className={`text-[12px] font-semibold px-2 py-0.5 rounded border ${badgeConfig.style}`}
         >
           {badgeConfig.label}
         </span>
@@ -82,7 +82,7 @@ export default function InsightCard({ insight, onDismiss }: Props) {
       {/* Suggested institutional actions */}
       {actions.length > 0 && (
         <div className="mt-1 pt-3 border-t border-slate-800/80">
-          <h4 className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider mb-2">
+          <h4 className="text-[12px] font-semibold text-slate-400 mb-2">
             Recommended Follow-Up Steps
           </h4>
           <ul className="space-y-1.5">
@@ -98,7 +98,7 @@ export default function InsightCard({ insight, onDismiss }: Props) {
 
       {/* Timestamp */}
       {insight.created_at && (
-        <p className="text-[11px] text-slate-400 mt-0.5">
+        <p className="text-[12px] text-slate-400 mt-0.5">
           Observed on{' '}
           {formatDateTime(insight.created_at)}
         </p>

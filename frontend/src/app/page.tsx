@@ -96,7 +96,7 @@ export default function Dashboard() {
       <div>
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div>
-            <h1 className="text-2xl md:text-3xl font-bold text-slate-100 tracking-tight">
+            <h1 className="text-xl md:text-2xl font-semibold text-slate-100 tracking-[-0.02em]">
               Institutional Governance Intelligence
             </h1>
             <p className="text-slate-400 text-sm mt-1">
@@ -121,31 +121,31 @@ export default function Dashboard() {
           <div className="glass-panel p-4 flex flex-col justify-between">
             <span className="text-xs font-medium text-slate-400">Active Insights</span>
             <div className="mt-2 flex items-baseline gap-2">
-              <span className="text-2xl font-bold text-slate-100">{metrics.totalInsights}</span>
-              <span className="text-[11px] text-slate-400">system flags</span>
+              <span className="text-2xl font-semibold text-slate-100">{metrics.totalInsights}</span>
+              <span className="text-[12px] text-slate-400">system flags</span>
             </div>
           </div>
           <div className="glass-panel p-4 flex flex-col justify-between">
             <span className="text-xs font-medium text-slate-400">Pending Commitments</span>
             <div className="mt-2 flex items-baseline gap-2">
-              <span className="text-2xl font-bold text-blue-400">{metrics.openCommitments}</span>
+              <span className="text-2xl font-semibold text-blue-400">{metrics.openCommitments}</span>
               {metrics.blockedCommitments > 0 && (
-                <span className="text-[11px] text-rose-400 font-medium">({metrics.blockedCommitments} blocked)</span>
+                <span className="text-[12px] text-rose-400 font-medium">({metrics.blockedCommitments} blocked)</span>
               )}
             </div>
           </div>
           <div className="glass-panel p-4 flex flex-col justify-between">
             <span className="text-xs font-medium text-slate-400">Committee Records</span>
             <div className="mt-2 flex items-baseline gap-2">
-              <span className="text-2xl font-bold text-slate-100">{metrics.totalMeetings}</span>
-              <span className="text-[11px] text-slate-400">indexed</span>
+              <span className="text-2xl font-semibold text-slate-100">{metrics.totalMeetings}</span>
+              <span className="text-[12px] text-slate-400">indexed</span>
             </div>
           </div>
           <div className="glass-panel p-4 flex flex-col justify-between">
             <span className="text-xs font-medium text-slate-400">Institutional Procedures</span>
             <div className="mt-2 flex items-baseline gap-2">
-              <span className="text-2xl font-bold text-emerald-400">{metrics.totalProcedures}</span>
-              <span className="text-[11px] text-slate-400">SOPs</span>
+              <span className="text-2xl font-semibold text-emerald-400">{metrics.totalProcedures}</span>
+              <span className="text-[12px] text-slate-400">SOPs</span>
             </div>
           </div>
         </section>
@@ -227,7 +227,7 @@ export default function Dashboard() {
         <div className="space-y-6">
           {/* Quick Navigation Panel */}
           <div className="glass-panel p-5 space-y-3">
-            <h3 className="text-xs font-semibold text-slate-300 uppercase tracking-wider">
+            <h3 className="text-xs font-semibold text-slate-300">
               Workspaces &amp; Decision Tools
             </h3>
             <div className="grid grid-cols-1 gap-2 text-xs">
@@ -237,7 +237,7 @@ export default function Dashboard() {
               >
                 <div>
                   <p className="font-medium text-slate-200 group-hover:text-blue-400 transition-colors">Institutional Assistant</p>
-                  <p className="text-[11px] text-slate-400">Query decisions, syllabus &amp; records</p>
+                  <p className="text-[12px] text-slate-400">Query decisions, syllabus &amp; records</p>
                 </div>
                 <span className="text-slate-500 group-hover:text-blue-400">→</span>
               </Link>
@@ -247,7 +247,7 @@ export default function Dashboard() {
               >
                 <div>
                   <p className="font-medium text-slate-200 group-hover:text-blue-400 transition-colors">Minutes &amp; Meetings</p>
-                  <p className="text-[11px] text-slate-400">Upload &amp; extract action points</p>
+                  <p className="text-[12px] text-slate-400">Upload &amp; extract action points</p>
                 </div>
                 <span className="text-slate-500 group-hover:text-blue-400">→</span>
               </Link>
@@ -257,7 +257,7 @@ export default function Dashboard() {
               >
                 <div>
                   <p className="font-medium text-slate-200 group-hover:text-blue-400 transition-colors">Action Commitments</p>
-                  <p className="text-[11px] text-slate-400">Track assigned deliverables &amp; deadlines</p>
+                  <p className="text-[12px] text-slate-400">Track assigned deliverables &amp; deadlines</p>
                 </div>
                 <span className="text-slate-500 group-hover:text-blue-400">→</span>
               </Link>
@@ -267,7 +267,7 @@ export default function Dashboard() {
               >
                 <div>
                   <p className="font-medium text-slate-200 group-hover:text-blue-400 transition-colors">Institutional Procedures</p>
-                  <p className="text-[11px] text-slate-400">Review synthesized SOPs</p>
+                  <p className="text-[12px] text-slate-400">Review synthesized SOPs</p>
                 </div>
                 <span className="text-slate-500 group-hover:text-blue-400">→</span>
               </Link>
@@ -278,10 +278,10 @@ export default function Dashboard() {
           {recentCommitments.length > 0 && (
             <div className="glass-panel p-5 space-y-3">
               <div className="flex items-center justify-between">
-                <h3 className="text-xs font-semibold text-slate-300 uppercase tracking-wider">
+                <h3 className="text-xs font-semibold text-slate-300">
                   Upcoming Responsibilities
                 </h3>
-                <Link href="/commitments" className="text-[11px] text-blue-400 hover:underline">
+                <Link href="/commitments" className="text-[12px] text-blue-400 hover:underline">
                   View all
                 </Link>
               </div>
@@ -289,14 +289,14 @@ export default function Dashboard() {
                 {recentCommitments.map((c) => (
                   <div key={c.id} className="p-2.5 rounded bg-slate-900/60 border border-slate-800/80 text-xs space-y-1">
                     <p className="font-medium text-slate-200 line-clamp-2">{c.description}</p>
-                    <div className="flex items-center justify-between text-[11px] text-slate-400 pt-1">
+                    <div className="flex items-center justify-between text-[12px] text-slate-400 pt-1">
                       <span>{c.assignee || 'Unassigned'}</span>
-                      <span className={`px-1.5 py-0.5 rounded text-[10px] font-semibold uppercase ${
+                      <span className={`px-1.5 py-0.5 rounded text-[11px] font-semibold ${
                         c.status === 'blocked' ? 'bg-rose-500/10 text-rose-400' :
                         c.status === 'in_progress' ? 'bg-amber-500/10 text-amber-400' :
                         'bg-blue-500/10 text-blue-400'
                       }`}>
-                        {c.status}
+                        {c.status.replace(/_/g, ' ')}
                       </span>
                     </div>
                   </div>
@@ -309,10 +309,10 @@ export default function Dashboard() {
           {recentMeetings.length > 0 && (
             <div className="glass-panel p-5 space-y-3">
               <div className="flex items-center justify-between">
-                <h3 className="text-xs font-semibold text-slate-300 uppercase tracking-wider">
+                <h3 className="text-xs font-semibold text-slate-300">
                   Recent Committee Records
                 </h3>
-                <Link href="/meetings" className="text-[11px] text-blue-400 hover:underline">
+                <Link href="/meetings" className="text-[12px] text-blue-400 hover:underline">
                   View all
                 </Link>
               </div>
@@ -321,9 +321,9 @@ export default function Dashboard() {
                   <div key={m.id} className="p-2.5 rounded bg-slate-900/60 border border-slate-800/80 text-xs space-y-1">
                     <p className="font-medium text-slate-200 truncate">{m.title}</p>
                     {m.summary && (
-                      <p className="text-[11px] text-slate-400 line-clamp-2">{m.summary}</p>
+                      <p className="text-[12px] text-slate-400 line-clamp-2">{m.summary}</p>
                     )}
-                    <p className="text-[10px] text-slate-500 pt-0.5">
+                    <p className="text-[11px] text-slate-500 pt-0.5">
                       {formatDate(m.occurred_at)}
                     </p>
                   </div>

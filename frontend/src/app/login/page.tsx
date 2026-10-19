@@ -76,19 +76,19 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 flex flex-col items-center justify-center p-4">
-      <div className="glass-panel p-8 w-full max-w-md border border-slate-800 shadow-xl space-y-6">
+    <div className="min-h-full bg-[radial-gradient(ellipse_at_top,rgba(94,106,210,0.12),transparent_60%)] flex flex-col items-center justify-center p-4">
+      <div className="glass-panel p-8 w-full max-w-sm shadow-2xl space-y-6">
         {/* Institutional Logo & Identity */}
         <div className="text-center">
-          <div className="w-14 h-14 rounded-xl bg-blue-600/15 border border-blue-500/40 flex items-center justify-center mx-auto mb-3 shadow-xs">
-            <span className="text-blue-400 font-bold text-xl tracking-wider">{institution.short_code}</span>
+          <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-blue-500 to-blue-700 flex items-center justify-center mx-auto mb-4 shadow-[inset_0_1px_0_rgba(255,255,255,0.2),0_8px_24px_rgba(94,106,210,0.35)]">
+            <span className="text-white font-semibold text-[11px]">{institution.short_code}</span>
           </div>
-          <h1 className="text-xl font-bold text-slate-100 tracking-tight">{institution.name}</h1>
+          <h1 className="text-xl font-semibold text-slate-100 tracking-tight">{institution.name}</h1>
           <p className="text-slate-400 text-xs mt-1">
             Institutional Knowledge, Governance Intelligence &amp; Decision Support
           </p>
-          <div className="mt-2.5 inline-block px-2.5 py-0.5 rounded bg-slate-900 border border-slate-800 text-[10px] text-amber-400 font-medium">
-            DEMONSTRATION PROTOTYPE · NOT AN OFFICIAL COLLEGE SYSTEM
+          <div className="mt-2.5 inline-block px-2.5 py-0.5 rounded bg-slate-900 border border-slate-800 text-[12px] text-amber-400 font-medium">
+            Demonstration prototype · not an official college system
           </div>
         </div>
 
@@ -203,14 +203,14 @@ export default function LoginPage() {
 
           {mode === 'login' && (
             <div className="space-y-1.5">
-              <p className="text-[11px] text-slate-500 text-center">Sign in as a demo user (synthetic accounts):</p>
+              <p className="text-[12px] text-slate-500 text-center">Sign in as a demo user (synthetic accounts):</p>
               <div className="grid grid-cols-2 gap-1.5">
                 {DEMO_USERS.map((u) => (
                   <button
                     key={u.email}
                     type="button"
                     onClick={() => fillDemo(u.email)}
-                    className="bg-slate-800/80 text-slate-300 py-2 rounded-md hover:bg-slate-700/80 transition-colors text-[11px] border border-slate-700 cursor-pointer"
+                    className="bg-slate-800/80 text-slate-300 py-2 rounded-md hover:bg-slate-700/80 transition-colors text-[12px] border border-slate-700 cursor-pointer"
                   >
                     {u.label}
                   </button>
@@ -221,7 +221,7 @@ export default function LoginPage() {
         </form>
 
         {mode === 'login' && (
-          <p className="text-center text-slate-500 text-[11px]">
+          <p className="text-center text-slate-500 text-[12px]">
             All demo accounts use the password <span className="text-slate-300 font-mono">demo123</span>
           </p>
         )}

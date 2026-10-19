@@ -28,7 +28,7 @@ export default function RelationshipsPage() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-2xl md:text-3xl font-bold text-slate-100 tracking-tight">
+          <h1 className="text-xl md:text-2xl font-semibold text-slate-100 tracking-[-0.02em]">
             Institutional Knowledge Graph
           </h1>
           <p className="text-slate-400 text-xs sm:text-sm mt-1">
@@ -78,7 +78,7 @@ export default function RelationshipsPage() {
           </span>
         </div>
 
-        <p className="text-[11px] text-slate-400 max-w-sm sm:text-right">
+        <p className="text-[12px] text-slate-400 max-w-sm sm:text-right">
           People attend meetings; documents and meetings mention the bodies they concern. Names come from meeting speakers and spaCy NER (people only with a title or roster match).
         </p>
       </div>

@@ -86,7 +86,7 @@ function ListSection({ title, items, numbered }: { title: string; items: string[
   if (!items?.length) return null;
   return (
     <div>
-      <h3 className="text-[11px] uppercase tracking-wider font-semibold text-slate-400 mb-1.5">{title}</h3>
+      <h3 className="text-[12px] font-semibold text-slate-400 mb-1.5">{title}</h3>
       <ol className={numbered ? 'list-decimal list-inside space-y-1' : 'space-y-1'}>
         {items.map((s, i) => (
           <li key={i} className="text-xs sm:text-sm text-slate-300 leading-relaxed">
@@ -204,7 +204,7 @@ function NewProcedure({ onCreated }: { onCreated: (id: string) => void }) {
   return (
     <form onSubmit={submit} className="glass-panel p-4 space-y-2" aria-label="Write a procedure">
       <p className="text-sm font-semibold text-slate-100">Write a procedure</p>
-      <p className="text-[11px] text-slate-400">It starts as a draft and goes through the same review as extracted procedures.</p>
+      <p className="text-[12px] text-slate-400">It starts as a draft and goes through the same review as extracted procedures.</p>
       <input required className={field} placeholder="Name (e.g. Issue a bonafide certificate)" value={f.name} onChange={(e) => setF({ ...f, name: e.target.value })} />
       <input className={field} placeholder="What it is for" value={f.description} onChange={(e) => setF({ ...f, description: e.target.value })} />
       <input className={field} placeholder="When it applies" value={f.trigger} onChange={(e) => setF({ ...f, trigger: e.target.value })} />
@@ -294,7 +294,7 @@ export default function SkillsPage() {
     <main className="p-4 sm:p-6 md:p-10 max-w-7xl mx-auto space-y-5">
       <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
         <div>
-          <h1 className="text-2xl md:text-3xl font-bold text-slate-100 tracking-tight">Institutional Procedures &amp; SOPs</h1>
+          <h1 className="text-xl md:text-2xl font-semibold text-slate-100 tracking-[-0.02em]">Institutional Procedures &amp; SOPs</h1>
           <p className="text-slate-400 text-xs sm:text-sm mt-1">
             How things are done here: reviewed, versioned procedures with an owning office and a review date. Approved
             procedures are what the assistant cites first.
@@ -318,7 +318,7 @@ export default function SkillsPage() {
         </div>
       </div>
 
-      <p className="text-[11px] text-slate-500">
+      <p className="text-[12px] text-slate-500">
         Demonstration content: procedures here are synthetic and are not official DJSCE regulations.
       </p>
       {msg && <div role="status" className="p-3 rounded bg-blue-500/10 border border-blue-500/30 text-blue-300 text-xs">{msg}</div>}
@@ -353,15 +353,15 @@ export default function SkillsPage() {
               <button type="button" onClick={() => void openDetail(s.id)}
                 className={`w-full text-left glass-panel p-3.5 border cursor-pointer ${openId === s.id ? 'border-blue-500/50' : 'border-transparent'}`}>
                 <div className="flex flex-wrap items-center gap-2">
-                  <span className={`text-[10px] font-semibold uppercase px-2 py-0.5 rounded-full border ${STATUS_STYLE[s.status]}`}>{s.status_label}</span>
-                  <span className="text-[11px] text-slate-400">v{s.version}</span>
-                  {s.visibility === 'public' && <span className="text-[10px] px-1.5 py-px rounded border border-emerald-500/30 text-emerald-300">Student-facing</span>}
-                  {s.department !== 'all' && <span className="text-[10px] text-slate-400">{s.department}</span>}
-                  {reviewOverdue(s) && <span className="text-[10px] text-rose-300">review overdue</span>}
+                  <span className={`text-[11px] font-semibold px-2 py-0.5 rounded-full border ${STATUS_STYLE[s.status]}`}>{s.status_label}</span>
+                  <span className="text-[12px] text-slate-400">v{s.version}</span>
+                  {s.visibility === 'public' && <span className="text-[11px] px-1.5 py-px rounded border border-emerald-500/30 text-emerald-300">Student-facing</span>}
+                  {s.department !== 'all' && <span className="text-[11px] text-slate-400">{s.department}</span>}
+                  {reviewOverdue(s) && <span className="text-[11px] text-rose-300">review overdue</span>}
                 </div>
                 <p className="mt-1 text-sm font-semibold text-slate-100">{s.name}</p>
                 <p className="text-xs text-slate-400 line-clamp-2">{s.description}</p>
-                <p className="mt-1 text-[11px] text-slate-500">
+                <p className="mt-1 text-[12px] text-slate-500">
                   {s.owner_office ?? 'No owning office'}{s.review_by ? ` · review by ${formatDate(s.review_by)}` : ''}
                   {s.use_count ? ` · cited ${s.use_count}×` : ''}{s.origin === 'manual' ? ' · written by hand' : ''}
                 </p>
@@ -405,13 +405,13 @@ export default function SkillsPage() {
                       return (
                         <div key={v.version} className="border-l-2 border-slate-700 pl-3 space-y-1">
                           <p className="text-slate-200 font-semibold">Version {v.version}</p>
-                          <p className="text-[11px] text-slate-500">Approved by {v.approved_by ?? '—'} · {formatDateTime(v.approved_at)}</p>
+                          <p className="text-[12px] text-slate-500">Approved by {v.approved_by ?? '—'} · {formatDateTime(v.approved_at)}</p>
                           {prev ? (
                             LIST_FIELDS.map((lf) => (
                               <Diff key={lf.key} label={lf.label} before={(prev.snapshot[lf.key] as string[]) ?? []}
                                 after={(v.snapshot[lf.key] as string[]) ?? []} />
                             ))
-                          ) : <p className="text-[11px] text-slate-500">First approved version.</p>}
+                          ) : <p className="text-[12px] text-slate-500">First approved version.</p>}
                         </div>
                       );
                     })}
@@ -436,7 +436,7 @@ export default function SkillsPage() {
                         {d.stale_evidence.map((e, i) => (
                           <p key={i} className="text-slate-300">“{e.content}” <span className="text-slate-500">({e.source_ref ?? e.source_type})</span></p>
                         ))}
-                        <p className="text-[11px] text-slate-500">It is not cited by the assistant until it is approved again.</p>
+                        <p className="text-[12px] text-slate-500">It is not cited by the assistant until it is approved again.</p>
                       </div>
                     )}
                     {d.status === 'rejected' && d.reject_reason && (
@@ -449,7 +449,7 @@ export default function SkillsPage() {
                     {d.escalation && <p><span className="text-slate-500">Escalation: </span><span className="text-slate-200">{d.escalation}</span></p>}
                     {d.visibility === 'public' && (
                       <div className="p-3 rounded border border-emerald-500/30 bg-emerald-500/5">
-                        <p className="text-[11px] uppercase tracking-wider text-emerald-300 font-semibold mb-1">What students see</p>
+                        <p className="text-[12px] text-emerald-300 font-semibold mb-1">What students see</p>
                         <p className="text-slate-200">{d.student_summary ?? 'Drafted automatically when approved.'}</p>
                       </div>
                     )}

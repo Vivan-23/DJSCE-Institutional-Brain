@@ -52,9 +52,9 @@ const RANGES = [7, 30, 90];
 function Stat({ label, value, hint }: { label: string; value: React.ReactNode; hint?: string }) {
   return (
     <div className="glass-panel p-4">
-      <p className="text-[11px] uppercase tracking-wider text-slate-400">{label}</p>
-      <p className="text-2xl font-bold text-slate-100 mt-1">{value}</p>
-      {hint && <p className="text-[11px] text-slate-500 mt-0.5">{hint}</p>}
+      <p className="text-[12px] text-slate-400">{label}</p>
+      <p className="text-2xl font-semibold text-slate-100 mt-1">{value}</p>
+      {hint && <p className="text-[12px] text-slate-500 mt-0.5">{hint}</p>}
     </div>
   );
 }
@@ -112,7 +112,7 @@ export default function AnalyticsPage() {
   return (
     <main className="p-4 sm:p-6 md:p-10 max-w-7xl mx-auto space-y-5">
       <div>
-        <h1 className="text-2xl md:text-3xl font-bold text-slate-100 tracking-tight">Analytics</h1>
+        <h1 className="text-xl md:text-2xl font-semibold text-slate-100 tracking-[-0.02em]">Analytics</h1>
         <p className="text-slate-400 text-xs sm:text-sm mt-1">
           Open commitments per committee, help-desk resolution times and what people ask the assistant.
         </p>
@@ -224,7 +224,7 @@ export default function AnalyticsPage() {
                   ))}
                 </ul>
               )}
-              <p className="text-[11px] text-slate-500">Add documents that answer these, then mark them public if students ask them.</p>
+              <p className="text-[12px] text-slate-500">Add documents that answer these, then mark them public if students ask them.</p>
             </Panel>
             <Panel title="Questions by topic">
               <Bars data={q.by_topic} color="bg-violet-500/70" />

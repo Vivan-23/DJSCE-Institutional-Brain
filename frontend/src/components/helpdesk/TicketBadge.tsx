@@ -30,6 +30,6 @@ export const PRIORITY_STYLE: Record<string, string> = {
 export function TicketBadge({ status }: { status: TicketStatus }) {
   const s = TICKET_STATUS[status] ?? TICKET_STATUS.open;
   return (
-    <span className={`shrink-0 text-[11px] font-semibold px-2.5 py-0.5 rounded-full border ${s.style}`}>{s.label}</span>
+    <span className={`shrink-0 text-[12px] font-semibold px-2.5 py-0.5 rounded-full border ${s.style}`}>{s.label}</span>
   );
 }

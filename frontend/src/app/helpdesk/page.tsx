@@ -126,7 +126,7 @@ export default function HelpDeskPage() {
   return (
     <main className="p-4 sm:p-6 md:p-10 max-w-5xl mx-auto space-y-6">
       <div>
-        <h1 className="text-2xl md:text-3xl font-bold text-slate-100 tracking-tight">Student Help Desk</h1>
+        <h1 className="text-xl md:text-2xl font-semibold text-slate-100 tracking-[-0.02em]">Student Help Desk</h1>
         <p className="text-slate-400 text-xs sm:text-sm mt-1">
           Get instant answers from published department information, or raise a ticket that a faculty member reviews and answers.
         </p>
@@ -134,7 +134,7 @@ export default function HelpDeskPage() {
 
       {/* Ask */}
       <section className="glass-panel p-5 space-y-4" aria-labelledby="ask-heading">
-        <h2 id="ask-heading" className="text-sm font-semibold text-slate-200 uppercase tracking-wider">Ask a question</h2>
+        <h2 id="ask-heading" className="text-sm font-semibold text-slate-200">Ask a question</h2>
         <form
           className="flex gap-2"
           onSubmit={(e) => {
@@ -163,7 +163,7 @@ export default function HelpDeskPage() {
           {categories.map((c) => (
             <div key={c.key} className="rounded-lg border border-slate-800 bg-slate-900/50 p-3">
               <p className="text-xs font-semibold text-slate-200">{c.label}</p>
-              <p className="text-[10px] text-slate-500 mb-2">Handled by {c.routed_to}</p>
+              <p className="text-[11px] text-slate-500 mb-2">Handled by {c.routed_to}</p>
               <div className="flex flex-col gap-1">
                 {c.quick_questions.map((q) => (
                   <button
@@ -171,7 +171,7 @@ export default function HelpDeskPage() {
                     type="button"
                     onClick={() => ask(q)}
                     disabled={asking}
-                    className="text-left text-[11px] text-blue-300 hover:text-blue-200 disabled:opacity-50 cursor-pointer"
+                    className="text-left text-[12px] text-blue-300 hover:text-blue-200 disabled:opacity-50 cursor-pointer"
                   >
                     {q}
                   </button>
@@ -183,14 +183,14 @@ export default function HelpDeskPage() {
 
         {answer && (
           <div className="rounded-lg border border-slate-800 bg-slate-950/70 p-4" aria-live="polite">
-            <p className="text-[10px] font-semibold uppercase tracking-wider text-blue-400 mb-1">AI answer · public information only</p>
-            <p className="text-[11px] text-slate-400 mb-2">{answer.question}</p>
+            <p className="text-[11px] font-semibold text-blue-400 mb-1">AI answer · public information only</p>
+            <p className="text-[12px] text-slate-400 mb-2">{answer.question}</p>
             <p className="text-xs sm:text-sm text-slate-200 whitespace-pre-wrap leading-relaxed">{answer.text}</p>
             <SourceList sources={answer.sources} />
             <button
               type="button"
               onClick={escalate}
-              className="mt-3 text-[11px] font-semibold text-amber-300 hover:text-amber-200 cursor-pointer"
+              className="mt-3 text-[12px] font-semibold text-amber-300 hover:text-amber-200 cursor-pointer"
             >
               Not answered? Raise a ticket with this question →
             </button>
@@ -202,8 +202,8 @@ export default function HelpDeskPage() {
       <HowToGuides />
 
       <section id="raise-ticket" className="glass-panel p-5 space-y-3" aria-labelledby="raise-heading">
-        <h2 id="raise-heading" className="text-sm font-semibold text-slate-200 uppercase tracking-wider">Raise a ticket</h2>
-        <p className="text-[11px] text-slate-400">
+        <h2 id="raise-heading" className="text-sm font-semibold text-slate-200">Raise a ticket</h2>
+        <p className="text-[12px] text-slate-400">
           AI suggests a category and the responsible office; a faculty member writes the reply.
         </p>
         <form onSubmit={submit} className="space-y-2.5">
@@ -246,7 +246,7 @@ export default function HelpDeskPage() {
 
       {/* Mine */}
       <section className="glass-panel p-5 space-y-3" aria-labelledby="mine-heading">
-        <h2 id="mine-heading" className="text-sm font-semibold text-slate-200 uppercase tracking-wider">
+        <h2 id="mine-heading" className="text-sm font-semibold text-slate-200">
           My tickets ({tickets.length})
         </h2>
         {tickets.length === 0 ? (
@@ -258,7 +258,7 @@ export default function HelpDeskPage() {
                 <div className="flex flex-wrap items-start justify-between gap-2">
                   <div className="min-w-0">
                     <p className="text-sm font-medium text-slate-100">{t.subject}</p>
-                    <p className="text-[10px] text-slate-500 mt-0.5">
+                    <p className="text-[11px] text-slate-500 mt-0.5">
                       {labelFor(t.category)} · {t.routed_to} · {formatDateTime(t.created_at)}
                     </p>
                   </div>
@@ -267,19 +267,19 @@ export default function HelpDeskPage() {
                 <p className="text-xs text-slate-400 mt-2 whitespace-pre-wrap">{t.description}</p>
                 {t.reply ? (
                   <div className="mt-3 rounded border border-emerald-500/20 bg-emerald-500/5 p-2.5">
-                    <p className="text-[10px] font-semibold uppercase tracking-wider text-emerald-300">
+                    <p className="text-[11px] font-semibold text-emerald-300">
                       Reply from faculty · {formatDateTime(t.replied_at)}
                     </p>
                     <p className="text-xs text-slate-200 mt-1 whitespace-pre-wrap">{t.reply}</p>
                   </div>
                 ) : (
-                  <p className="mt-2 text-[11px] text-slate-500">{TICKET_STATUS.open.hint}</p>
+                  <p className="mt-2 text-[12px] text-slate-500">{TICKET_STATUS.open.hint}</p>
                 )}
                 {t.status !== 'closed' && (
                   <button
                     type="button"
                     onClick={() => closeTicket(t.id)}
-                    className="mt-2 text-[11px] text-slate-400 hover:text-slate-200 cursor-pointer"
+                    className="mt-2 text-[12px] text-slate-400 hover:text-slate-200 cursor-pointer"
                   >
                     Mark as resolved
                   </button>

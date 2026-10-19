@@ -187,7 +187,7 @@ export default function MeetingsPage() {
     <main className="p-6 md:p-10 max-w-4xl mx-auto space-y-8">
       {/* Header */}
       <div>
-        <h1 className="text-2xl md:text-3xl font-bold text-slate-100 tracking-tight">
+        <h1 className="text-xl md:text-2xl font-semibold text-slate-100 tracking-[-0.02em]">
           Minutes &amp; Committee Meetings
         </h1>
         <p className="text-slate-400 text-xs sm:text-sm mt-1">
@@ -198,17 +198,17 @@ export default function MeetingsPage() {
       {/* Submission Form */}
       <section className="glass-panel p-5 sm:p-6 space-y-4">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 border-b border-slate-800 pb-3">
-          <h2 className="text-sm font-semibold text-slate-200 uppercase tracking-wider">
+          <h2 className="text-sm font-semibold text-slate-200">
             Record Minutes of Meeting (MoM)
           </h2>
           <div className="flex items-center gap-1.5 flex-wrap">
-            <span className="text-[11px] text-slate-500 font-medium mr-1">Load Demo Scenario:</span>
+            <span className="text-[12px] text-slate-500 font-medium mr-1">Load Demo Scenario:</span>
             {SAMPLE_TEMPLATES.map((sample, idx) => (
               <button
                 key={idx}
                 type="button"
                 onClick={() => handleSelectSample(sample)}
-                className="px-2 py-1 rounded bg-slate-900 hover:bg-slate-800 text-[11px] text-blue-400 border border-slate-800 hover:border-slate-700 transition-colors cursor-pointer"
+                className="px-2 py-1 rounded bg-slate-900 hover:bg-slate-800 text-[12px] text-blue-400 border border-slate-800 hover:border-slate-700 transition-colors cursor-pointer"
               >
                 {sample.name}
               </button>
@@ -267,7 +267,7 @@ export default function MeetingsPage() {
               rows={8}
               className="w-full bg-slate-900/90 border border-slate-700/80 rounded-lg px-3.5 py-2 text-xs sm:text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:border-blue-500 font-mono resize-y"
             />
-            <p className="text-[11px] text-slate-400 mt-1">
+            <p className="text-[12px] text-slate-400 mt-1">
               {transcript.length.toLocaleString()} characters · The intelligence engine automatically parses speakers, decisions, and actionable commitments with owners and due dates.
             </p>
           </div>
@@ -297,7 +297,7 @@ export default function MeetingsPage() {
       {/* Ingested Meetings List */}
       <section className="space-y-4">
         <div className="flex items-center justify-between border-b border-slate-800 pb-2">
-          <h2 className="text-sm font-semibold text-slate-200 uppercase tracking-wider">
+          <h2 className="text-sm font-semibold text-slate-200">
             Indexed Committee Proceedings ({meetings.length})
           </h2>
           <button
@@ -338,7 +338,7 @@ export default function MeetingsPage() {
                         <p className="text-slate-100 font-semibold text-sm truncate">
                           {m.title}
                         </p>
-                        <p className="text-[11px] text-slate-400 mt-0.5">
+                        <p className="text-[12px] text-slate-400 mt-0.5">
                           Conducted: {formatDateTime(m.occurred_at)} · Source: {m.source}
                         </p>
                         {m.summary && (
@@ -366,7 +366,7 @@ export default function MeetingsPage() {
                         <>
                           {detail.summary && (
                             <div>
-                              <h3 className="text-[11px] uppercase tracking-wider font-semibold text-slate-400 mb-1">
+                              <h3 className="text-[12px] font-semibold text-slate-400 mb-1">
                                 Executive Summary
                               </h3>
                               <p className="text-xs sm:text-sm text-slate-200 whitespace-pre-wrap leading-relaxed">
@@ -377,7 +377,7 @@ export default function MeetingsPage() {
 
                           {detail.participants.length > 0 && (
                             <div>
-                              <h3 className="text-[11px] uppercase tracking-wider font-semibold text-slate-400 mb-1.5">
+                              <h3 className="text-[12px] font-semibold text-slate-400 mb-1.5">
                                 Verified Attendees &amp; Committee Members
                               </h3>
                               <div className="flex flex-wrap gap-1.5">
@@ -395,7 +395,7 @@ export default function MeetingsPage() {
 
                           {detail.decisions.length > 0 && (
                             <div>
-                              <h3 className="text-[11px] uppercase tracking-wider font-semibold text-slate-400 mb-1">
+                              <h3 className="text-[12px] font-semibold text-slate-400 mb-1">
                                 Decisions
                               </h3>
                               <ol className="list-decimal list-inside space-y-0.5 text-xs sm:text-sm text-slate-200">
@@ -408,7 +408,7 @@ export default function MeetingsPage() {
 
                           {canExport && (
                             <div className="flex flex-wrap items-center gap-2">
-                              <span className="text-[11px] uppercase tracking-wider font-semibold text-slate-400">
+                              <span className="text-[12px] font-semibold text-slate-400">
                                 Formal minutes
                               </span>
                               {(['docx', 'pdf'] as const).map((f) => (
@@ -426,7 +426,7 @@ export default function MeetingsPage() {
                           )}
 
                           <details className="group pt-1">
-                            <summary className="text-[11px] uppercase tracking-wider text-slate-400 cursor-pointer hover:text-slate-300 select-none font-semibold">
+                            <summary className="text-[12px] text-slate-400 cursor-pointer hover:text-slate-300 select-none font-semibold">
                               View Raw Minutes / Transcript
                             </summary>
                             <pre className="mt-2 text-xs text-slate-400 whitespace-pre-wrap font-mono max-h-72 overflow-y-auto bg-slate-900/90 rounded p-3 border border-slate-800 leading-relaxed">

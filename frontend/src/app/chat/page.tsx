@@ -89,14 +89,14 @@ export default function ChatPage() {
       <div className="mb-3 shrink-0">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-xl sm:text-2xl font-bold text-slate-100 tracking-tight">
+            <h1 className="text-xl sm:text-2xl font-semibold text-slate-100 tracking-[-0.02em]">
               Institutional Knowledge Assistant
             </h1>
             <p className="text-xs sm:text-sm text-slate-400 mt-0.5">
               Ask questions about institutional documents, committee decisions, procedures and assigned responsibilities.
             </p>
           </div>
-          <span className="hidden sm:inline-block px-2.5 py-1 rounded text-[11px] font-semibold uppercase tracking-wider bg-blue-500/10 text-blue-400 border border-blue-500/30">
+          <span className="hidden sm:inline-block px-2.5 py-1 rounded text-[12px] font-semibold bg-blue-500/10 text-blue-400 border border-blue-500/30">
             {studentScope ? 'Public knowledge only' : 'RAG Grounded'}
           </span>
         </div>
@@ -104,7 +104,7 @@ export default function ChatPage() {
 
       {/* Suggested prompts strip */}
       <div className="mb-3 shrink-0">
-        <p className="text-[11px] font-medium text-slate-400 uppercase tracking-wider mb-1.5">
+        <p className="text-[12px] font-medium text-slate-400 mb-1.5">
           Suggested Institutional Inquiries
         </p>
         <div className="flex flex-wrap gap-1.5">
@@ -136,7 +136,7 @@ export default function ChatPage() {
               }`}
             >
               {msg.role === 'assistant' && (
-                <div className="flex items-center gap-1.5 mb-1.5 text-[10px] font-semibold uppercase tracking-wider text-blue-400">
+                <div className="flex items-center gap-1.5 mb-1.5 text-[11px] font-semibold text-blue-400">
                   <span className="w-1.5 h-1.5 rounded-full bg-blue-400 inline-block" />
                   Institutional Assistant
                 </div>

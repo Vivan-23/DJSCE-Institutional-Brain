@@ -45,7 +45,7 @@ function describe(a: AudienceSpec): string {
 }
 
 const chip = (on: boolean) =>
-  `px-2 py-0.5 rounded border text-[11px] cursor-pointer ${
+  `px-2 py-0.5 rounded border text-[12px] cursor-pointer ${
     on ? 'bg-blue-600/20 border-blue-500/50 text-blue-200' : 'border-slate-700 text-slate-400 hover:text-slate-200'
   }`;
 
@@ -157,7 +157,7 @@ export default function NoticesPage() {
   return (
     <main className="p-4 sm:p-6 md:p-10 max-w-5xl mx-auto space-y-5">
       <div>
-        <h1 className="text-2xl md:text-3xl font-bold text-slate-100 tracking-tight">Notices</h1>
+        <h1 className="text-xl md:text-2xl font-semibold text-slate-100 tracking-[-0.02em]">Notices</h1>
         <p className="text-slate-400 text-xs sm:text-sm mt-1">
           {staff
             ? 'Read notices addressed to you, or send one to students filtered by department, year, semester and division.'
@@ -195,10 +195,10 @@ export default function NoticesPage() {
                     {n.title}
                   </p>
                   {n.priority === 'urgent' && (
-                    <span className="text-[10px] px-2 py-0.5 rounded border border-rose-500/40 text-rose-300">Urgent</span>
+                    <span className="text-[11px] px-2 py-0.5 rounded border border-rose-500/40 text-rose-300">Urgent</span>
                   )}
                 </div>
-                <p className="text-[11px] text-slate-500 mt-0.5">
+                <p className="text-[12px] text-slate-500 mt-0.5">
                   {n.sender ?? 'Unknown'} · {formatDateTime(n.created_at)}
                   {n.expires_at ? ` · until ${formatDateTime(n.expires_at)}` : ''}
                 </p>
@@ -219,9 +219,9 @@ export default function NoticesPage() {
             className="w-full bg-slate-900 border border-slate-700/80 rounded px-3 py-2 text-sm text-slate-100 focus:outline-none focus:border-blue-500" />
 
           <fieldset className="space-y-2">
-            <legend className="text-[11px] uppercase tracking-wider text-slate-400 font-semibold mb-1">Who receives it</legend>
+            <legend className="text-[12px] text-slate-400 font-semibold mb-1">Who receives it</legend>
             <div className="flex flex-wrap gap-1.5 items-center">
-              <span className="text-[11px] text-slate-400 w-24">Recipients</span>
+              <span className="text-[12px] text-slate-400 w-24">Recipients</span>
               {(['student', 'employee'] as Role[]).map((r) => (
                 <button type="button" key={r} className={chip(aud.roles.includes(r))}
                   onClick={() => setAud({ ...aud, roles: toggle(aud.roles, r).length ? toggle(aud.roles, r) : aud.roles })}>
@@ -230,7 +230,7 @@ export default function NoticesPage() {
               ))}
             </div>
             <div className="flex flex-wrap gap-1.5 items-center">
-              <span className="text-[11px] text-slate-400 w-24">Department</span>
+              <span className="text-[12px] text-slate-400 w-24">Department</span>
               {anyDept ? (
                 departments.map((d) => (
                   <button type="button" key={d.code} title={d.name} className={chip(aud.departments.includes(d.code))}
@@ -239,12 +239,12 @@ export default function NoticesPage() {
                   </button>
                 ))
               ) : (
-                <span className="text-[11px] text-slate-300">{me?.department ?? '—'} (faculty send to their own department)</span>
+                <span className="text-[12px] text-slate-300">{me?.department ?? '—'} (faculty send to their own department)</span>
               )}
-              {anyDept && aud.departments.length === 0 && <span className="text-[11px] text-slate-500">none selected = all</span>}
+              {anyDept && aud.departments.length === 0 && <span className="text-[12px] text-slate-500">none selected = all</span>}
             </div>
             <div className="flex flex-wrap gap-1.5 items-center">
-              <span className="text-[11px] text-slate-400 w-24">Year</span>
+              <span className="text-[12px] text-slate-400 w-24">Year</span>
               {YEARS.map((y) => (
                 <button type="button" key={y.n} className={chip(aud.years.includes(y.n))}
                   onClick={() => setAud({ ...aud, years: toggle(aud.years, y.n) })}>
@@ -253,7 +253,7 @@ export default function NoticesPage() {
               ))}
             </div>
             <div className="flex flex-wrap gap-1.5 items-center">
-              <span className="text-[11px] text-slate-400 w-24">Semester</span>
+              <span className="text-[12px] text-slate-400 w-24">Semester</span>
               {[1, 2, 3, 4, 5, 6, 7, 8].map((s) => (
                 <button type="button" key={s} className={chip(aud.semesters.includes(s))}
                   onClick={() => setAud({ ...aud, semesters: toggle(aud.semesters, s) })}>
@@ -261,7 +261,7 @@ export default function NoticesPage() {
                 </button>
               ))}
             </div>
-            <label className="flex flex-wrap gap-1.5 items-center text-[11px] text-slate-400">
+            <label className="flex flex-wrap gap-1.5 items-center text-[12px] text-slate-400">
               <span className="w-24">Division</span>
               <input value={divisionText} onChange={(e) => setDivisionText(e.target.value)} placeholder="e.g. A, B (blank = all)"
                 className="bg-slate-900 border border-slate-700/80 rounded px-2 py-1 text-xs text-slate-100 focus:outline-none focus:border-blue-500" />
@@ -297,11 +297,11 @@ export default function NoticesPage() {
             <li key={n.id} className="glass-panel p-3">
               <div className="flex items-start justify-between gap-2">
                 <p className="text-sm text-slate-100 font-medium">{n.title}</p>
-                <span className="text-[11px] text-slate-300 whitespace-nowrap">
+                <span className="text-[12px] text-slate-300 whitespace-nowrap">
                   {n.read} of {n.recipients} read
                 </span>
               </div>
-              <p className="text-[11px] text-slate-500 mt-0.5">
+              <p className="text-[12px] text-slate-500 mt-0.5">
                 {describe(n.audience)} · {n.sender} · {formatDateTime(n.created_at)}
                 {n.priority === 'urgent' ? ' · urgent' : ''}
               </p>

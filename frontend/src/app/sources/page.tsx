@@ -52,7 +52,7 @@ export default function SourcesPage() {
     <main className="p-6 md:p-10 max-w-3xl mx-auto space-y-6">
       {/* Header */}
       <div>
-        <h1 className="text-2xl md:text-3xl font-bold text-slate-100 tracking-tight">
+        <h1 className="text-xl md:text-2xl font-semibold text-slate-100 tracking-[-0.02em]">
           Document Repositories &amp; Ingestion
         </h1>
         <p className="text-slate-400 text-xs sm:text-sm mt-1">
@@ -63,7 +63,7 @@ export default function SourcesPage() {
       {/* File Upload Panel */}
       <section className="glass-panel p-6 space-y-4">
         <div>
-          <h2 className="text-sm font-semibold text-slate-200 uppercase tracking-wider mb-1">
+          <h2 className="text-sm font-semibold text-slate-200 mb-1">
             Upload Institutional Working Document
           </h2>
           <p className="text-xs text-slate-400">
@@ -85,7 +85,7 @@ export default function SourcesPage() {
               {file ? (
                 <>
                   <p className="text-blue-300 text-xs sm:text-sm font-semibold">{file.name}</p>
-                  <p className="text-slate-400 text-[11px] mt-1 font-mono">
+                  <p className="text-slate-400 text-[12px] mt-1 font-mono">
                     {(file.size / 1024).toFixed(1)} KB · Ready to queue
                   </p>
                 </>
@@ -94,7 +94,7 @@ export default function SourcesPage() {
                   <p className="text-slate-300 text-xs sm:text-sm font-medium">
                     Select institutional document to ingest
                   </p>
-                  <p className="text-slate-500 text-[11px] mt-1 font-mono">
+                  <p className="text-slate-500 text-[12px] mt-1 font-mono">
                     .txt · .pdf · .docx up to 10 MB
                   </p>
                 </>
@@ -169,7 +169,7 @@ export default function SourcesPage() {
           <div className="p-3.5 rounded-lg bg-emerald-500/10 border border-emerald-500/30 text-emerald-300 text-xs space-y-1">
             <p className="font-semibold">✓ {result.filename} queued successfully</p>
             <p className="text-emerald-400/80">{result.message}</p>
-            <p className="text-[10px] text-slate-500 font-mono">Task ID: {result.task_id}</p>
+            <p className="text-[11px] text-slate-500 font-mono">Task ID: {result.task_id}</p>
           </div>
         )}
         {status === 'error' && (
@@ -181,21 +181,21 @@ export default function SourcesPage() {
 
       {/* Institutional Ingestion Pipeline Description */}
       <section className="glass-panel p-5 space-y-3">
-        <h2 className="text-xs font-semibold text-slate-300 uppercase tracking-wider">
+        <h2 className="text-xs font-semibold text-slate-300">
           Multi-Database Ingestion Architecture
         </h2>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-3 text-xs">
           <div className="p-3 rounded bg-slate-900/60 border border-slate-800 space-y-1">
             <p className="font-semibold text-slate-200">Relational Store</p>
-            <p className="text-slate-400 text-[11px]">PostgreSQL persists structured document provenance, title, and timestamp metadata.</p>
+            <p className="text-slate-400 text-[12px]">PostgreSQL persists structured document provenance, title, and timestamp metadata.</p>
           </div>
           <div className="p-3 rounded bg-slate-900/60 border border-slate-800 space-y-1">
             <p className="font-semibold text-slate-200">Semantic Vectors</p>
-            <p className="text-slate-400 text-[11px]">ChromaDB indexes chunked passages embedded via BAAI/bge-large for RAG search.</p>
+            <p className="text-slate-400 text-[12px]">ChromaDB indexes chunked passages embedded via BAAI/bge-large for RAG search.</p>
           </div>
           <div className="p-3 rounded bg-slate-900/60 border border-slate-800 space-y-1">
             <p className="font-semibold text-slate-200">Knowledge Graph</p>
-            <p className="text-slate-400 text-[11px]">Neo4j links named faculty and committee entities extracted by spaCy NER.</p>
+            <p className="text-slate-400 text-[12px]">Neo4j links named faculty and committee entities extracted by spaCy NER.</p>
           </div>
         </div>
       </section>

@@ -8,6 +8,17 @@ Format: `## YYYY-MM-DD — title` then bullets of what/why.
 
 ---
 
+## 2026-10-19 — Linear-inspired visual refresh (frontend only)
+- **Theme via tokens, not class rewrites**: `app/globals.css` retunes Tailwind's `slate` scale to neutral near-black
+  greys and `blue` to an indigo accent (#5e6ad2), plus softer emerald/amber/rose. Every page picks this up from its
+  existing classes, so keep using `slate-*`/`blue-*` for new UI. Font is Inter (`app/layout.tsx`).
+- **Shell**: content sits in an inset rounded panel (`#0f1011`) on the darker app background; single slim
+  demo-prototype bar (the duplicate sidebar disclaimer was removed; the bar and login notice remain).
+- **Sidebar** (`components/layout/Sidebar.tsx`): grouped sections (Help Desk / Knowledge / Campus / Admin), stroke
+  icons, shorter labels, compact 28px rows. Role filtering unchanged.
+- **Typography sweep**: smaller semibold page titles, sentence-case labels (no `uppercase tracking-wider`), no
+  `font-bold`, 10/11px text bumped to 11/12px. Raw statuses like `in_progress` render with spaces.
+
 ## 2026-10-14 — Procedures (SOPs): governance, versions, and the assistant cites them
 - **Assistant uses approved procedures**: on approval a procedure is indexed (`source_type="procedure"`,
   `Fragment.skill_id`) and retrieval searches procedures separately, putting one first when it is at least as close

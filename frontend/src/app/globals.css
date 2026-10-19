@@ -1,20 +1,56 @@
 @import "tailwindcss";
 
-/* Design tokens for DJSCE Institutional Brain */
+/* Design tokens for DJSCE Institutional Brain — Linear-inspired.
+   The slate and blue scales are retuned here (neutral near-black greys, indigo accent) so every
+   page picks up the look from its existing utility classes. */
 @theme {
-  --color-primary: hsl(217.2 91.2% 59.8%);
-  --color-primary-foreground: hsl(222.2 47.4% 11.2%);
-  --color-navy: hsl(222 47% 14%);
-  --color-navy-border: hsl(217 33% 20%);
-  --color-warning: hsl(38 92% 50%);
-  --color-danger: hsl(0 84.2% 60.2%);
-  --color-success: hsl(152 76% 40%);
+  --font-sans: var(--font-inter), -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-mono: var(--font-geist-mono), ui-monospace, SFMono-Regular, Menlo, monospace;
+
+  --color-slate-50: #f7f8f8;
+  --color-slate-100: #f7f8f8;
+  --color-slate-200: #e2e4e7;
+  --color-slate-300: #d0d6e0;
+  --color-slate-400: #8a8f98;
+  --color-slate-500: #686d76;
+  --color-slate-600: #4a4d54;
+  --color-slate-700: #2e3035;
+  --color-slate-800: #232428;
+  --color-slate-900: #141516;
+  --color-slate-950: #08090a;
+
+  --color-blue-100: #e0e2ff;
+  --color-blue-200: #c7cbff;
+  --color-blue-300: #a9b0ff;
+  --color-blue-400: #8f97ff;
+  --color-blue-500: #7170ff;
+  --color-blue-600: #5e6ad2;
+  --color-blue-700: #4f58b5;
+  --color-blue-800: #3d4490;
+  --color-blue-900: #2a2f66;
+  --color-blue-950: #1a1d40;
+
+  --color-emerald-300: #7fd1a8;
+  --color-emerald-400: #4cb782;
+  --color-emerald-500: #3fa673;
+  --color-amber-300: #f5d77a;
+  --color-amber-400: #f2c94c;
+  --color-amber-500: #e2a93b;
+  --color-rose-300: #f39a9a;
+  --color-rose-400: #eb5757;
+  --color-rose-500: #e04848;
+
+  --color-primary: #5e6ad2;
+  --color-warning: #f2c94c;
+  --color-danger: #eb5757;
+  --color-success: #4cb782;
 }
 
 :root {
-  --background: 222 47% 6%;
-  --foreground: 210 40% 98%;
-  --border: 217 30% 18%;
+  --background: #08090a;
+  --surface: #0f1011;
+  --foreground: #f7f8f8;
+  --border: #232428;
   --radius: 0.5rem;
 }
 
@@ -24,9 +60,10 @@ html {
 }
 
 body {
-  background-color: hsl(var(--background));
-  color: hsl(var(--foreground));
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  background-color: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-sans);
+  font-feature-settings: "cv01", "ss03";
   margin: 0;
   padding: 0;
   -webkit-font-smoothing: antialiased;
@@ -34,47 +71,53 @@ body {
   min-height: 100%;
 }
 
-/* Custom smooth dark scrollbar for modern browsers */
+::selection {
+  background: rgba(94, 106, 210, 0.4);
+}
+
+/* Thin, quiet scrollbars */
 ::-webkit-scrollbar {
-  width: 7px;
-  height: 7px;
+  width: 8px;
+  height: 8px;
 }
 
 ::-webkit-scrollbar-track {
-  background: rgba(15, 23, 42, 0.6);
+  background: transparent;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: rgba(51, 65, 85, 0.65);
+  background: rgba(255, 255, 255, 0.08);
   border-radius: 9999px;
-  border: 1px solid rgba(15, 23, 42, 0.4);
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(71, 85, 105, 0.9);
+  background: rgba(255, 255, 255, 0.16);
 }
 
-/* Firefox scrollbar standard */
 * {
   scrollbar-width: thin;
-  scrollbar-color: rgba(51, 65, 85, 0.65) rgba(15, 23, 42, 0.6);
+  scrollbar-color: rgba(255, 255, 255, 0.1) transparent;
 }
 
-/* Institutional Card and Panel styles: crisp, restrained, enterprise-grade */
-.glass-panel {
-  background: rgba(15, 23, 42, 0.8);
-  backdrop-filter: blur(8px);
-  border: 1px solid rgba(51, 65, 85, 0.65);
-  border-radius: var(--radius);
-}
-
+/* Panels: flat surfaces with hairline borders and a faint top highlight */
+.glass-panel,
 .academic-panel {
-  background: rgba(15, 23, 42, 0.92);
-  border: 1px solid rgba(51, 65, 85, 0.75);
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.07);
   border-radius: var(--radius);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.03);
 }
 
 .demo-banner {
-  background: rgba(30, 41, 59, 0.9);
-  border-bottom: 1px solid rgba(51, 65, 85, 0.85);
+  background: transparent;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+/* Inputs: consistent focus ring in the accent colour */
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible {
+  outline: none;
+  border-color: #5e6ad2 !important;
+  box-shadow: 0 0 0 3px rgba(94, 106, 210, 0.2);
 }

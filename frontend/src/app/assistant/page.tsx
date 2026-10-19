@@ -136,7 +136,7 @@ export default function AssistantPage() {
     <main className="p-6 md:p-10 max-w-3xl mx-auto space-y-8">
       {/* Header */}
       <div>
-        <h1 className="text-2xl md:text-3xl font-bold text-slate-100 tracking-tight">
+        <h1 className="text-xl md:text-2xl font-semibold text-slate-100 tracking-[-0.02em]">
           Faculty Desk &amp; Daily Debrief
         </h1>
         <p className="text-slate-400 text-xs sm:text-sm mt-1">
@@ -146,7 +146,7 @@ export default function AssistantPage() {
 
       {/* Follow-ups */}
       <section className="space-y-3">
-        <h2 className="text-xs font-semibold text-slate-300 uppercase tracking-wider">
+        <h2 className="text-xs font-semibold text-slate-300">
           Pending Follow-ups &amp; Inquiries ({followups.length})
         </h2>
         {followups.length === 0 ? (
@@ -158,7 +158,7 @@ export default function AssistantPage() {
             {followups.map((f) => (
               <li key={f.commitment_id} className="glass-panel p-4 space-y-2">
                 <p className="text-xs sm:text-sm text-slate-200 font-medium">{f.message}</p>
-                <p className="text-[11px] text-slate-400">
+                <p className="text-[12px] text-slate-400">
                   Regarding deliverable: <strong className="text-slate-300">{f.description}</strong> · Status: {f.status}
                 </p>
                 <div className="mt-2 flex gap-2">
@@ -188,11 +188,11 @@ export default function AssistantPage() {
       {/* End-of-day check-in */}
       <section className="space-y-3">
         <div className="flex items-center justify-between">
-          <h2 className="text-xs font-semibold text-slate-300 uppercase tracking-wider">
+          <h2 className="text-xs font-semibold text-slate-300">
             Faculty End-of-Day Conversational Debrief
           </h2>
           {checkin?.completed && (
-            <span className="text-[11px] px-2 py-0.5 rounded-full bg-emerald-500/15 border border-emerald-500/30 text-emerald-300 font-semibold">
+            <span className="text-[12px] px-2 py-0.5 rounded-full bg-emerald-500/15 border border-emerald-500/30 text-emerald-300 font-semibold">
               Today&apos;s Debrief Recorded
             </span>
           )}
@@ -228,7 +228,7 @@ export default function AssistantPage() {
 
           {lastUpdates.length > 0 && (
             <div className="mx-3 mb-2 rounded-lg border border-emerald-500/30 bg-emerald-500/5 p-3 space-y-2" aria-label="Task updates">
-              <p className="text-[11px] uppercase tracking-wider font-semibold text-emerald-300">
+              <p className="text-[12px] font-semibold text-emerald-300">
                 Updated your tasks from this message
               </p>
               {lastUpdates.map((u) => (
@@ -246,13 +246,13 @@ export default function AssistantPage() {
                     </div>
                   )}
                   {(u.remaining || u.blocked_reason) && (
-                    <p className="text-[11px] text-slate-400 mt-0.5">
+                    <p className="text-[12px] text-slate-400 mt-0.5">
                       {u.blocked_reason ? `Blocked: ${u.blocked_reason}` : `Left: ${u.remaining}`}
                     </p>
                   )}
                 </div>
               ))}
-              <a href="/commitments" className="inline-block text-[11px] text-blue-300 hover:underline">
+              <a href="/commitments" className="inline-block text-[12px] text-blue-300 hover:underline">
                 Not right? Correct it on My Work →
               </a>
             </div>

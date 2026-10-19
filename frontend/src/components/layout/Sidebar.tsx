@@ -8,22 +8,74 @@ import { clearMe, isCoordinatorRole, isStaffRole, ROLE_LABEL, useMe } from '@/li
 
 // `staff: true` items are hidden from students; `coordinator: true` items need Committee
 // Coordinator or above. Cosmetic only: the backend refuses these requests anyway.
-const NAV: { href: string; label: string; staff: boolean; coordinator?: boolean; admin?: boolean }[] = [
-  { href: '/', label: 'Governance Overview', staff: true },
-  { href: '/helpdesk', label: 'Student Help Desk', staff: false },
-  { href: '/chat', label: 'Institutional Assistant', staff: false },
-  { href: '/notices', label: 'Notices', staff: false },
-  { href: '/calendar', label: 'Calendar & Deadlines', staff: false },
-  { href: '/tickets', label: 'Help Desk Queue', staff: true },
-  { href: '/meetings', label: 'Meetings & Minutes', staff: true },
-  { href: '/commitments', label: 'My Work & Tasks', staff: true },
-  { href: '/relationships', label: 'Knowledge Graph', staff: true },
-  { href: '/assistant', label: 'Faculty Desk (PA)', staff: true },
-  { href: '/skills', label: 'Institutional Procedures', staff: true },
-  { href: '/sources', label: 'Document Repositories', staff: true },
-  { href: '/analytics', label: 'Analytics', staff: true, coordinator: true },
-  { href: '/admin/users', label: 'Users', staff: true, coordinator: true, admin: true },
+type NavItem = { href: string; label: string; icon: string; staff: boolean; coordinator?: boolean; admin?: boolean };
+
+// 24x24 stroke icon paths (lucide-style).
+const ICON = {
+  home: 'M3 10.5 12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z',
+  check: 'M9 11l3 3 8-8M20 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11',
+  coffee: 'M17 8h1a4 4 0 0 1 0 8h-1M3 8h14v9a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4zM6 2v3M10 2v3M14 2v3',
+  lifebuoy: 'M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18zM12 16a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM4.9 4.9l4.3 4.3M14.8 14.8l4.3 4.3M14.8 9.2l4.3-4.3M4.9 19.1l4.3-4.3',
+  inbox: 'M22 12h-6l-2 3h-4l-2-3H2M5.5 5h13L22 12v6a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2v-6z',
+  sparkle: 'M12 3l1.9 5.1L19 10l-5.1 1.9L12 17l-1.9-5.1L5 10l5.1-1.9zM19 15l.8 2.2L22 18l-2.2.8L19 21l-.8-2.2L16 18l2.2-.8z',
+  users: 'M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2M9 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM22 21v-2a4 4 0 0 0-3-3.9M16 3.1a4 4 0 0 1 0 7.8',
+  book: 'M4 19.5A2.5 2.5 0 0 1 6.5 17H20V3H6.5A2.5 2.5 0 0 0 4 5.5zM4 19.5A2.5 2.5 0 0 0 6.5 22H20v-5',
+  file: 'M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8zM14 3v5h5M9 13h6M9 17h6',
+  graph: 'M6 7a2 2 0 1 0 0-4 2 2 0 0 0 0 4zM18 9a2 2 0 1 0 0-4 2 2 0 0 0 0 4zM12 21a2 2 0 1 0 0-4 2 2 0 0 0 0 4zM7.5 6.2l9 1.6M7 6.8l4.2 10.4M17.2 8.8l-4.4 8.4',
+  bell: 'M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9M13.7 21a2 2 0 0 1-3.4 0',
+  calendar: 'M5 4h14a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2zM16 2v4M8 2v4M3 10h18',
+  chart: 'M3 3v18h18M8 17V11M13 17V7M18 17v-4',
+  shield: 'M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z',
+};
+
+const NAV_GROUPS: { title?: string; items: NavItem[] }[] = [
+  {
+    items: [
+      { href: '/', label: 'Overview', icon: ICON.home, staff: true },
+      { href: '/commitments', label: 'My Work', icon: ICON.check, staff: true },
+      { href: '/assistant', label: 'Faculty Desk', icon: ICON.coffee, staff: true },
+    ],
+  },
+  {
+    title: 'Help Desk',
+    items: [
+      { href: '/helpdesk', label: 'Student Help Desk', icon: ICON.lifebuoy, staff: false },
+      { href: '/tickets', label: 'Ticket Queue', icon: ICON.inbox, staff: true },
+      { href: '/chat', label: 'Assistant', icon: ICON.sparkle, staff: false },
+    ],
+  },
+  {
+    title: 'Knowledge',
+    items: [
+      { href: '/meetings', label: 'Meetings', icon: ICON.users, staff: true },
+      { href: '/skills', label: 'Procedures', icon: ICON.book, staff: true },
+      { href: '/sources', label: 'Documents', icon: ICON.file, staff: true },
+      { href: '/relationships', label: 'Knowledge Graph', icon: ICON.graph, staff: true },
+    ],
+  },
+  {
+    title: 'Campus',
+    items: [
+      { href: '/notices', label: 'Notices', icon: ICON.bell, staff: false },
+      { href: '/calendar', label: 'Calendar', icon: ICON.calendar, staff: false },
+    ],
+  },
+  {
+    title: 'Admin',
+    items: [
+      { href: '/analytics', label: 'Analytics', icon: ICON.chart, staff: true, coordinator: true },
+      { href: '/admin/users', label: 'Users', icon: ICON.shield, staff: true, coordinator: true, admin: true },
+    ],
+  },
 ];
+
+function NavIcon({ d }: { d: string }) {
+  return (
+    <svg className="w-4 h-4 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.75} strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <path d={d} />
+    </svg>
+  );
+}
 
 const subscribe = (cb: () => void) => {
   window.addEventListener('storage', cb);
@@ -43,9 +95,12 @@ export default function Sidebar() {
   const me = useMe(loggedIn);
   const staff = isStaffRole(me?.role);
   const coordinator = isCoordinatorRole(me?.role);
-  const nav = NAV.filter(
-    (item) => (!item.staff || staff) && (!item.coordinator || coordinator) && (!item.admin || me?.role === 'admin'),
-  );
+  const groups = NAV_GROUPS.map((g) => ({
+    ...g,
+    items: g.items.filter(
+      (item) => (!item.staff || staff) && (!item.coordinator || coordinator) && (!item.admin || me?.role === 'admin'),
+    ),
+  })).filter((g) => g.items.length > 0);
   const initials = (me?.full_name || me?.email || '?')
     .split(/[\s@.]+/)
     .filter(Boolean)
@@ -93,83 +148,82 @@ export default function Sidebar() {
 
   const navContent = (
     <>
-      {/* Institutional Brand Header */}
-      <div className="mb-6 pb-4 border-b border-slate-800/80">
-        <div className="flex items-center gap-3">
-          <div className="w-9 h-9 rounded-lg bg-blue-600/15 border border-blue-500/40 flex items-center justify-center shrink-0 shadow-xs">
-            <span className="text-blue-400 font-bold text-xs tracking-wider">{institution.short_code}</span>
-          </div>
-          <div className="min-w-0">
-            <h2 className="text-sm font-bold text-slate-100 tracking-tight leading-tight truncate">
-              {institution.name}
-            </h2>
-            <p className="text-[11px] text-slate-400 font-medium truncate mt-0.5">
-              {institution.full_name}
-            </p>
-          </div>
+      {/* Workspace header */}
+      <div className="flex items-center gap-2.5 px-2 pb-4">
+        <div className="w-6 h-6 rounded-md bg-gradient-to-br from-blue-500 to-blue-700 flex items-center justify-center shrink-0 shadow-[inset_0_1px_0_rgba(255,255,255,0.2)]">
+          <span className="text-white font-semibold text-[8px] tracking-tight">{institution.short_code}</span>
+        </div>
+        <div className="min-w-0">
+          <h2 className="text-[13px] font-medium text-slate-100 leading-tight truncate">{institution.name}</h2>
+          <p className="text-[11px] text-slate-500 truncate">{institution.full_name}</p>
         </div>
       </div>
 
-      {/* Navigation Links */}
-      <nav className="flex-1 space-y-1 overflow-y-auto pr-1" aria-label="Main navigation">
-        {nav.map(({ href, label }) => {
-          const active = pathname === href;
-          return (
-            <Link
-              key={href}
-              href={href}
-              onClick={() => setMobileOpen(false)}
-              className={`flex items-center px-3.5 py-2.5 rounded-md text-xs font-medium transition-all duration-150 ${
-                active
-                  ? 'bg-blue-600/15 text-blue-400 border border-blue-500/30 shadow-xs'
-                  : 'text-slate-400 hover:text-slate-200 hover:bg-slate-900/60'
-              }`}
-              aria-current={active ? 'page' : undefined}
-            >
-              {label}
-              {href === '/notices' && unread > 0 && (
-                <span className="ml-auto text-[10px] min-w-5 text-center px-1.5 py-px rounded-full bg-blue-600 text-white" aria-label={`${unread} unread`}>
-                  {unread}
-                </span>
-              )}
-            </Link>
-          );
-        })}
+      {/* Navigation */}
+      <nav className="flex-1 overflow-y-auto -mx-1 px-1 space-y-4" aria-label="Main navigation">
+        {groups.map((group, i) => (
+          <div key={group.title ?? i}>
+            {group.title && (
+              <p className="px-2 pb-1 text-[11px] font-medium text-slate-500">{group.title}</p>
+            )}
+            <div className="space-y-px">
+              {group.items.map(({ href, label, icon }) => {
+                const active = pathname === href;
+                return (
+                  <Link
+                    key={href}
+                    href={href}
+                    onClick={() => setMobileOpen(false)}
+                    className={`flex items-center gap-2.5 px-2 h-7 rounded-md text-[13px] transition-colors duration-100 ${
+                      active
+                        ? 'bg-white/[0.07] text-slate-100'
+                        : 'text-slate-400 hover:text-slate-200 hover:bg-white/[0.04]'
+                    }`}
+                    aria-current={active ? 'page' : undefined}
+                  >
+                    <span className={active ? 'text-slate-200' : 'text-slate-500'}><NavIcon d={icon} /></span>
+                    <span className="truncate">{label}</span>
+                    {href === '/notices' && unread > 0 && (
+                      <span className="ml-auto text-[11px] min-w-5 text-center px-1.5 rounded-full bg-blue-600 text-white leading-[18px]" aria-label={`${unread} unread`}>
+                        {unread}
+                      </span>
+                    )}
+                  </Link>
+                );
+              })}
+            </div>
+          </div>
+        ))}
       </nav>
 
-      {/* Institutional Prototype Notice & Session */}
-      <div className="mt-auto pt-4 border-t border-slate-800/80 space-y-3 shrink-0">
-        <div className="px-2.5 py-2 rounded bg-slate-900/60 border border-slate-800 text-[10px] text-slate-400 leading-relaxed">
-          <span className="font-semibold text-slate-300">DEMO PROTOTYPE</span>
-          <p className="mt-0.5 text-slate-400">Decision support &amp; governance intelligence testbed.</p>
-        </div>
-
+      {/* Session */}
+      <div className="mt-auto pt-3 shrink-0">
         {loggedIn ? (
-          <div className="flex items-center justify-between pt-1">
+          <div className="flex items-center justify-between gap-2 px-2 py-1.5 rounded-md hover:bg-white/[0.04] transition-colors">
             <div className="flex items-center gap-2.5 min-w-0">
-              <div className="w-7 h-7 rounded bg-slate-800 border border-slate-700 flex items-center justify-center text-[10px] font-bold text-blue-400 shrink-0">
+              <div className="w-6 h-6 rounded-full bg-slate-700 flex items-center justify-center text-[10px] font-semibold text-slate-200 shrink-0">
                 {initials}
               </div>
               <div className="min-w-0">
-                <p className="text-xs font-medium text-slate-200 truncate">{me?.full_name || me?.email || 'Signed in'}</p>
-                <p className="text-[10px] text-slate-400 truncate">{me ? ROLE_LABEL[me.role] ?? me.role : '…'}</p>
+                <p className="text-[13px] text-slate-200 truncate leading-tight">{me?.full_name || me?.email || 'Signed in'}</p>
+                <p className="text-[11px] text-slate-500 truncate">{me ? ROLE_LABEL[me.role] ?? me.role : '…'}</p>
               </div>
             </div>
             <button
               onClick={handleLogout}
-              className="text-[11px] text-slate-400 hover:text-rose-400 transition-colors px-1 py-0.5 cursor-pointer"
+              className="text-[12px] text-slate-500 hover:text-slate-200 transition-colors px-1 py-0.5 cursor-pointer whitespace-nowrap shrink-0"
               aria-label="Log out"
             >
-              Logout
+              Log out
             </button>
           </div>
         ) : (
           <Link
             href="/login"
             onClick={() => setMobileOpen(false)}
-            className="block text-xs text-center py-2 rounded bg-blue-600/20 border border-blue-500/40 text-blue-400 hover:bg-blue-600/30 transition-colors font-medium"
+            className="block text-[13px] text-center h-8 leading-8 rounded-md bg-blue-600 text-white hover:bg-blue-500 transition-colors font-medium"
           >
-            Sign in to Workspace →
+            Sign in
           </Link>
         )}
       </div>
@@ -179,7 +233,7 @@ export default function Sidebar() {
   return (
     <>
       {/* Mobile Top Header Bar (Shown only on screens < lg) */}
-      <div className="lg:hidden bg-slate-950 border-b border-slate-800 px-4 py-3 flex items-center justify-between z-20 shrink-0">
+      <div className="lg:hidden bg-slate-950 border-b border-slate-800 px-4 py-2.5 flex items-center justify-between z-20 shrink-0">
         <div className="flex items-center gap-2.5 min-w-0">
           <button
             type="button"
@@ -202,10 +256,10 @@ export default function Sidebar() {
             </svg>
           </button>
           <div className="flex items-center gap-2 min-w-0">
-            <div className="w-7 h-7 rounded bg-blue-600/20 border border-blue-500/40 flex items-center justify-center shrink-0">
-              <span className="text-blue-400 font-bold text-[10px]">{institution.short_code}</span>
+            <div className="w-6 h-6 rounded-md bg-gradient-to-br from-blue-500 to-blue-700 flex items-center justify-center shrink-0">
+              <span className="text-white font-semibold text-[8px]">{institution.short_code}</span>
             </div>
-            <span className="font-bold text-xs sm:text-sm text-slate-100 truncate">
+            <span className="font-medium text-[13px] text-slate-100 truncate">
               {institution.name}
             </span>
           </div>
@@ -214,9 +268,9 @@ export default function Sidebar() {
         {loggedIn && (
           <button
             onClick={handleLogout}
-            className="text-[11px] text-slate-400 hover:text-rose-400 transition-colors px-2 py-1"
+            className="text-[12px] text-slate-500 hover:text-slate-200 transition-colors px-2 py-1"
           >
-            Logout
+            Log out
           </button>
         )}
       </div>
@@ -236,9 +290,9 @@ export default function Sidebar() {
           />
 
           {/* Drawer content */}
-          <aside className="relative w-72 max-w-[85vw] h-full bg-slate-950 border-r border-slate-800 p-5 flex flex-col z-50 shadow-2xl">
+          <aside className="relative w-72 max-w-[85vw] h-full bg-slate-950 border-r border-slate-800 px-3 py-4 flex flex-col z-50 shadow-2xl">
             <div className="flex items-center justify-between mb-4 pb-2 border-b border-slate-800 lg:hidden">
-              <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider">Navigation Menu</span>
+              <span className="text-[12px] font-medium text-slate-500">Menu</span>
               <button
                 type="button"
                 onClick={() => setMobileOpen(false)}
@@ -254,7 +308,7 @@ export default function Sidebar() {
       )}
 
       {/* Desktop Persistent Sidebar (Fixed on lg and up) */}
-      <aside className="hidden lg:flex w-64 h-full bg-slate-950 border-r border-slate-800 flex-col p-5 shrink-0 z-10">
+      <aside className="hidden lg:flex w-60 h-full bg-slate-950 flex-col pl-3 pr-1 py-4 shrink-0 z-10">
         {navContent}
       </aside>
     </>

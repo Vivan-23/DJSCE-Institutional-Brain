@@ -41,7 +41,7 @@ const TYPE_LABEL: Record<string, string> = {
 export default function SourceList({ sources, warnInternal = false }: { sources: Source[]; warnInternal?: boolean }) {
   const [open, setOpen] = useState(false);
   if (!sources?.length) {
-    return <p className="mt-2 text-[10px] text-slate-500">No matching indexed sources were found for this answer.</p>;
+    return <p className="mt-2 text-[11px] text-slate-500">No matching indexed sources were found for this answer.</p>;
   }
   const internal = sources.filter((s) => s.visibility !== 'public').length;
 
@@ -50,14 +50,14 @@ export default function SourceList({ sources, warnInternal = false }: { sources:
       <button
         type="button"
         onClick={() => setOpen((v) => !v)}
-        className="text-[10px] font-semibold uppercase tracking-wider text-slate-400 hover:text-slate-200 cursor-pointer"
+        className="text-[11px] font-semibold text-slate-400 hover:text-slate-200 cursor-pointer"
         aria-expanded={open}
       >
         {open ? '▾' : '▸'} {sources.length} source{sources.length === 1 ? '' : 's'}
         {internal > 0 && <span className="ml-1.5 text-amber-400/90">· {internal} internal</span>}
       </button>
       {warnInternal && internal > 0 && (
-        <p className="mt-1 text-[10px] text-amber-300/90">
+        <p className="mt-1 text-[11px] text-amber-300/90">
           This draft uses staff-only sources. Check nothing internal is disclosed before replying to a student.
         </p>
       )}
@@ -65,7 +65,7 @@ export default function SourceList({ sources, warnInternal = false }: { sources:
         <ol className="mt-2 space-y-2">
           {sources.map((s) => (
             <li key={s.ref} className="rounded border border-slate-800 bg-slate-950/60 p-2.5">
-              <div className="flex flex-wrap items-center gap-1.5 text-[10px] text-slate-400 mb-1">
+              <div className="flex flex-wrap items-center gap-1.5 text-[11px] text-slate-400 mb-1">
                 <span className="font-mono text-blue-400">[{s.ref}]</span>
                 <span>{TYPE_LABEL[s.source_type ?? ''] ?? s.source_type ?? 'Source'}</span>
                 {s.source_ref && <span className="font-mono text-slate-500 truncate max-w-[16rem]">{s.source_ref}</span>}
@@ -79,13 +79,13 @@ export default function SourceList({ sources, warnInternal = false }: { sources:
                   {s.visibility === 'public' ? 'Public' : 'Internal'}
                 </span>
               </div>
-              <p className="text-[11px] text-slate-300 leading-relaxed whitespace-pre-wrap">{s.excerpt}</p>
+              <p className="text-[12px] text-slate-300 leading-relaxed whitespace-pre-wrap">{s.excerpt}</p>
               {safeUrl(s.source_url) && (
                 <a
                   href={safeUrl(s.source_url)!}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="mt-1 inline-block text-[10px] text-blue-400 hover:underline break-all"
+                  className="mt-1 inline-block text-[11px] text-blue-400 hover:underline break-all"
                 >
                   Official page: {readable(s.source_url!)}
                 </a>

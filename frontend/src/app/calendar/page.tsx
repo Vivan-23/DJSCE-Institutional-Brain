@@ -71,11 +71,11 @@ export default function CalendarPage() {
   return (
     <main className="p-4 sm:p-6 md:p-10 max-w-5xl mx-auto space-y-5">
       <div>
-        <h1 className="text-2xl md:text-3xl font-bold text-slate-100 tracking-tight">Academic Calendar &amp; Deadlines</h1>
+        <h1 className="text-xl md:text-2xl font-semibold text-slate-100 tracking-[-0.02em]">Academic Calendar &amp; Deadlines</h1>
         <p className="text-slate-400 text-xs sm:text-sm mt-1">
           Published academic dates for your department, plus your own commitments from meetings (faculty).
         </p>
-        {data?.note && <p className="text-amber-300/80 text-[11px] mt-2">{data.note}</p>}
+        {data?.note && <p className="text-amber-300/80 text-[12px] mt-2">{data.note}</p>}
       </div>
 
       <div className="flex flex-wrap items-center gap-1.5" role="tablist" aria-label="Date range">
@@ -120,11 +120,11 @@ export default function CalendarPage() {
             <div className="min-w-0 flex-1">
               <div className="flex flex-wrap items-center justify-between gap-2">
                 <p className="text-sm font-medium text-slate-100">{i.title}</p>
-                <span className={`text-[10px] px-2 py-0.5 rounded border ${URGENCY[i.urgency].style}`}>
+                <span className={`text-[11px] px-2 py-0.5 rounded border ${URGENCY[i.urgency].style}`}>
                   {URGENCY[i.urgency].label}
                 </span>
               </div>
-              <p className="text-[11px] text-slate-400 mt-0.5">
+              <p className="text-[12px] text-slate-400 mt-0.5">
                 {formatDate(i.date)}
                 {i.end ? ` – ${formatDate(i.end)}` : ''} · {when(i)} · {i.kind}
                 {i.department !== 'all' ? ` · ${i.department} only` : ''}
