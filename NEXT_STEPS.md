@@ -1,4 +1,22 @@
-# Where we left off — 14 Oct 2026
+# Where we left off — 19 Oct 2026
+
+## Update 19 Oct 2026
+
+- **UI refresh** (Linear-style): retuned colour tokens, Inter, inset shell, grouped sidebar with icons, shared
+  `Badge`/`EmptyState`, dense list rows, shorter page titles, chat-style Assistant and Faculty Desk, Meetings list
+  first. AI answers and ticket drafts render **bold** instead of raw `**`.
+- **Final evaluation run** (19 Oct, `openai/gpt-oss-120b`), all parts completed: triage LLM 90.6 % / keyword 57.3 % /
+  laya 51.0 %; Q&A (33) hit@5 100 %, correct 91 % (run 1: 71 %), cited 97 %; 0/20 visibility leaks; 0/10
+  department leaks; commitments P 1.00 R 1.00; p95 answer latency 10.0 s (target 10 s, narrowly missed).
+- **Publication final drafts**: report (all chapters, 16 figures, 20 verified references, Word export), poster
+  content, 12-slide outline + demo script, paper draft, brief (.md/.html) with results. Tools in
+  `evaluation/publication_tools/`. 235 backend tests passing.
+- **Still for the team**: see `publication/README.md` → "What only the team can finish".
+
+---
+
+*(Earlier notes from 14 Oct follow; sections 2–3 are superseded by the update above.)*
+
 
 Pick up from here next session. Development lives in `backend/`, `frontend/`, `docs/`, `evaluation/`;
 publication material lives in `publication/`. Everything below is committed on `main`.
@@ -100,11 +118,11 @@ drafts. The evaluation now retries and saves after each part, so it can be re-ru
 - [ ] Replace the synthetic `academic_calendar:` dates in `institution.yaml` with the official DJSCE calendar.
 
 **Report writing**
-- [ ] Literature survey (§3): 15+ real papers on retrieval-augmented question answering, hallucination,
+- [x] Literature survey (§3): 20 verified papers in `publication/01_ipd_report/references.md`; originally asked for 15+ real papers on retrieval-augmented question answering, hallucination,
       meeting action-item extraction, access control in AI retrieval, ticket triage. Share links and
       Claude can summarise and format the references; Claude won't invent citations.
 - [ ] Existing systems (§2.2): two or three real products per column of the comparison table, each with a source.
-- [ ] Screenshots for report Figures 6.x and the poster → `publication/01_ipd_report/figures/`.
+- [x] Screenshots for report Figures 6.x and the poster → `publication/01_ipd_report/figures/` (19 Oct).
 - [ ] Poster design (AVINYA template, college logos, team and guide names, QR code), using `POSTER_CONTENT.md`.
 
 **Team**

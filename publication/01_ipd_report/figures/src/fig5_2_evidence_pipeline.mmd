@@ -1,0 +1,14 @@
+flowchart TB
+  A[Transcript or document] --> B[Split into fragments<br/>speaker turns or chunks]
+  B --> C{Set visibility<br/>and department}
+  C -->|internal| D[Fragment row in PostgreSQL]
+  C -->|public| D
+  D --> E[Embedding BAAI/bge-large-en-v1.5<br/>stored in ChromaDB with same metadata]
+  D --> G[spaCy NER, evidence-gated<br/>entities into Neo4j]
+  Q[Question from user] --> H{Role?}
+  H -->|student| I[Vector query filtered to<br/>visibility = public and own dept + all]
+  H -->|staff| J[Vector query filtered to<br/>own dept + all, coordinators all]
+  E --> I & J
+  I --> K[Re-check every hit<br/>defence in depth]
+  J --> K
+  K --> L[LLM answer with numbered citations<br/>+ sources returned to UI]

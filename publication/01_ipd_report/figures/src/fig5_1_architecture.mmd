@@ -1,0 +1,21 @@
+flowchart TB
+  subgraph L1["1 · Sources"]
+    direction LR
+    T[Meeting transcripts] ~~~ D[Internal documents] ~~~ W[Public website KB<br/>djsce.ac.in] ~~~ S[Student questions<br/>and tickets]
+  end
+  subgraph L2["2 · Processing — FastAPI services + Celery workers, LLM via Groq"]
+    direction LR
+    X[Extraction:<br/>decisions, commitments] ~~~ P[Procedure synthesis<br/>+ freshness scan] ~~~ K[Ticket triage:<br/>LLM, keyword fallback]
+  end
+  subgraph L3["3 · Evidence layer — every item is a Fragment with visibility + department"]
+    direction LR
+    PG[(PostgreSQL<br/>records, audit)] ~~~ CH[(ChromaDB<br/>vectors)] ~~~ NJ[(Neo4j<br/>graph)]
+  end
+  subgraph L4["4 · Access-aware retrieval (RAG): role + department filter in the query, re-checked"]
+    R[Cited answers and drafts]
+  end
+  subgraph L5["5 · People — Next.js web app"]
+    direction LR
+    ST[Students:<br/>Help Desk, Assistant, Notices] ~~~ SF[Staff:<br/>Overview, My Work, Procedures,<br/>Ticket Queue, Graph, Analytics] ~~~ HR[Human review:<br/>approve procedures, send replies]
+  end
+  L1 --> L2 --> L3 --> L4 --> L5

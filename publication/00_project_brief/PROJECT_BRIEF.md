@@ -127,10 +127,10 @@ flowchart LR
 | Cited Q&A, role-filtered retrieval | ✅ working |
 | Student role, Help Desk tickets, AI triage + draft + human reply | ✅ working |
 | Knowledge graph, audit log, Docker deployment, remote demo | ✅ working |
-| Automated tests | ✅ 120 backend tests; frontend type-check and lint clean |
-| Per-department access (CE vs IT) | ⬜ planned |
+| Automated tests | ✅ 235 backend tests; frontend type-check and lint clean |
+| Per-department access (CE vs IT), notices, calendar, analytics, user admin | ✅ working |
 | Knowledge graph edges (documents, meetings, people, bodies) | ✅ working |
-| Evaluation harness (triage incl. laya, Q&A, visibility, commitments) | ✅ run 1 baseline recorded; run 2 TBD |
+| Evaluation harness (triage incl. laya, Q&A, visibility, departments, commitments) | ✅ final run 19 Oct 2026; run 1 kept as baseline |
 | Data | Synthetic committee records + authentic public website information (26 files, URL-cited) |
 | Real internal institutional records | ⛔ out of scope: committee data is **synthetic** |
 
@@ -144,11 +144,23 @@ flowchart LR
 | Is it fast enough? | Timed API calls | p50/p95 latency for answers and triage |
 | Is extraction useful? | Transcripts with hand-labelled commitments | precision/recall of extracted commitments |
 
+### Results (19 Oct 2026, `openai/gpt-oss-120b`, from `../01_ipd_report/results/RESULTS.md`)
+
+| Measure | Result |
+|---|---|
+| Ticket triage accuracy, 96 queries: LLM / keyword / laya | 90.6 % / 57.3 % / 51.0 % |
+| Q&A, 33 questions: correct source in top 5 | 100 % |
+| Q&A: answer correct (run 1: 71 %) | 91 % |
+| Internal evidence leaked to students, 20 adversarial queries | 0 |
+| Cross-department leaks, 10 queries | 0 |
+| Commitment extraction, 9 gold | precision 1.00, recall 1.00 |
+| p95 answer latency (target 10 s) | 10.0 s (student answers 7.8 s) |
+
 ## 9. Roadmap
 
-1. Evaluation harness and results for the report (section 8).
-2. Per-department and per-committee visibility.
-3. Notices/circulars feed with AI summaries per role; academic-calendar reminders.
+1. Per-committee confidentiality.
+2. Notice attachments and e-mail delivery; feedback on answers.
+3. Pilot with one department on consented real records.
 4. NBA/NAAC evidence tracker linking decisions and documents to criteria.
 5. Optional: fast non-generative triage classifier (laya) compared against the LLM.
 

@@ -1,0 +1,8 @@
+stateDiagram-v2
+  [*] --> draft: extracted from records / written by hand
+  draft --> approved: coordinator approves
+  draft --> rejected: coordinator rejects (reason)
+  approved --> stale: freshness scan finds contradiction
+  stale --> approved: re-reviewed (new version)
+  approved --> deprecated: retired
+  stale --> deprecated: retired

@@ -1,0 +1,17 @@
+sequenceDiagram
+  actor St as Student
+  participant HD as Help Desk
+  participant RAG as RAG (public only)
+  participant TR as Triage
+  participant Q as Staff queue
+  actor Fa as Faculty
+  St->>HD: Ask question
+  HD->>RAG: retrieve(public_only)
+  RAG-->>St: Cited answer from public knowledge
+  St->>HD: Not answered, raise ticket
+  HD->>TR: classify(subject, description)
+  TR-->>Q: category, priority, office (LLM, keyword fallback)
+  TR->>RAG: draft reply (staff scope)
+  RAG-->>Q: AI draft + sources (staff only)
+  Fa->>Q: Review, edit, send
+  Q-->>St: Human-written reply

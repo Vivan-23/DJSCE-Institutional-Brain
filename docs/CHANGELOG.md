@@ -8,6 +8,12 @@ Format: `## YYYY-MM-DD — title` then bullets of what/why.
 
 ---
 
+## 2026-10-19 — Final evaluation run and publication tools
+- Full evaluation completed (all parts) → `publication/01_ipd_report/results/RESULTS.md`; run 1 kept as baseline.
+- `evaluation/publication_tools/`: `fig7_1_triage.py` (chart from RESULTS.md) and `export_report_docx.py`
+  (report → Word with figures and references; needs `pypandoc-binary`). Kept here because `publication/` holds no code.
+- `frontend/src/lib/renderBold.tsx`: shared `**bold**` rendering for assistant answers and ticket drafts.
+
 ## 2026-10-19 — Visual refresh: Meetings, Documents, Assistant, Faculty Desk
 - **Assistant** (`app/chat`): open conversation canvas (assistant avatar + plain text, user bubbles), suggestion cards
   only before the first question, single composer with a "check the cited sources" note.

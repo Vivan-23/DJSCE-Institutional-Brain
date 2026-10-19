@@ -1,0 +1,164 @@
+{
+  "run_at": "2026-10-14 03:58 UTC",
+  "env": {
+    "llm_model": "openai/gpt-oss-120b",
+    "laya": "0.3.21"
+  },
+  "triage": {
+    "engines": {
+      "keyword": {
+        "n": 96,
+        "coverage": 1.0,
+        "accuracy": 0.573,
+        "accuracy_when_answered": 0.573,
+        "macro_f1": 0.586,
+        "urgency_f1": 0.533,
+        "recall_per_category": {
+          "academics": 0.688,
+          "examinations": 0.562,
+          "attendance": 0.5,
+          "facilities": 0.5,
+          "careers": 0.5,
+          "general": 0.688
+        },
+        "latency_p50_s": 0.0,
+        "latency_p95_s": 0.0
+      },
+      "llm": {
+        "n": 96,
+        "coverage": 1.0,
+        "accuracy": 0.906,
+        "accuracy_when_answered": 0.906,
+        "macro_f1": 0.905,
+        "urgency_f1": 1.0,
+        "recall_per_category": {
+          "academics": 1.0,
+          "examinations": 0.75,
+          "attendance": 0.75,
+          "facilities": 1.0,
+          "careers": 1.0,
+          "general": 0.938
+        },
+        "latency_p50_s": 1.131,
+        "latency_p95_s": 5.065
+      },
+      "laya": {
+        "n": 96,
+        "coverage": 0.667,
+        "accuracy": 0.51,
+        "accuracy_when_answered": 0.766,
+        "macro_f1": 0.563,
+        "urgency_f1": 0.533,
+        "recall_per_category": {
+          "academics": 0.625,
+          "examinations": 0.562,
+          "attendance": 0.188,
+          "facilities": 0.938,
+          "careers": 0.688,
+          "general": 0.062
+        },
+        "latency_p50_s": 1.371,
+        "latency_p95_s": 1.939
+      }
+    },
+    "chains": {
+      "llm→keyword": {
+        "n": 96,
+        "coverage": 1.0,
+        "accuracy": 0.906,
+        "accuracy_when_answered": 0.906,
+        "macro_f1": 0.905,
+        "urgency_f1": 1.0,
+        "recall_per_category": {
+          "academics": 1.0,
+          "examinations": 0.75,
+          "attendance": 0.75,
+          "facilities": 1.0,
+          "careers": 1.0,
+          "general": 0.938
+        },
+        "latency_p50_s": 1.131,
+        "latency_p95_s": 5.065
+      },
+      "laya→keyword": {
+        "n": 96,
+        "coverage": 1.0,
+        "accuracy": 0.688,
+        "accuracy_when_answered": 0.688,
+        "macro_f1": 0.684,
+        "urgency_f1": 0.533,
+        "recall_per_category": {
+          "academics": 0.75,
+          "examinations": 0.562,
+          "attendance": 0.438,
+          "facilities": 1.0,
+          "careers": 0.812,
+          "general": 0.562
+        },
+        "latency_p50_s": 1.371,
+        "latency_p95_s": 1.939
+      },
+      "laya→llm→keyword": {
+        "n": 96,
+        "coverage": 1.0,
+        "accuracy": 0.823,
+        "accuracy_when_answered": 0.823,
+        "macro_f1": 0.815,
+        "urgency_f1": 0.625,
+        "recall_per_category": {
+          "academics": 0.938,
+          "examinations": 0.75,
+          "attendance": 0.438,
+          "facilities": 1.0,
+          "careers": 0.938,
+          "general": 0.875
+        },
+        "latency_p50_s": 1.483,
+        "latency_p95_s": 4.482
+      }
+    },
+    "labels": [
+      "academics",
+      "examinations",
+      "attendance",
+      "facilities",
+      "careers",
+      "general"
+    ],
+    "top_confusions": {
+      "engine": "llm",
+      "pairs": [
+        [
+          "attendance",
+          "academics",
+          3
+        ],
+        [
+          "examinations",
+          "academics",
+          2
+        ],
+        [
+          "examinations",
+          "facilities",
+          1
+        ],
+        [
+          "examinations",
+          "attendance",
+          1
+        ],
+        [
+          "attendance",
+          "facilities",
+          1
+        ],
+        [
+          "general",
+          "facilities",
+          1
+        ]
+      ]
+    }
+  }
+}

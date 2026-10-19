@@ -7,11 +7,11 @@ The **software** lives in the rest of the repository (`backend/`, `frontend/`,
 
 | Folder | What goes in it | Status |
 |---|---|---|
-| [`00_project_brief/`](00_project_brief/) | One-document explanation of the project for the mentor/guide | ✅ first draft |
-| [`01_ipd_report/`](01_ipd_report/) | IPD report, chapter by chapter, following the department format | 🟡 outline + draft content |
-| [`02_poster/`](02_poster/) | AVINYA poster content (and the final PDF/PNG export) | 🟡 content draft |
-| [`03_presentation/`](03_presentation/) | Review / viva slide decks | ⬜ not started |
-| [`04_research_paper/`](04_research_paper/) | Conference/journal paper draft | ⬜ not started |
+| [`00_project_brief/`](00_project_brief/) | One-document explanation of the project for the mentor/guide | ✅ updated with final results |
+| [`01_ipd_report/`](01_ipd_report/) | IPD report, chapter by chapter, following the department format | ✅ final draft (`REPORT_DRAFT.md` + `IPD_Report_final_draft.docx`), 16 figures, 20 verified references |
+| [`02_poster/`](02_poster/) | AVINYA poster content (and the final PDF/PNG export) | ✅ final content; visual layout to do |
+| [`03_presentation/`](03_presentation/) | Review / viva slide decks | 🟡 12-slide outline + demo script; deck to build |
+| [`04_research_paper/`](04_research_paper/) | Conference/journal paper draft | 🟡 structured draft with results |
 | [`05_meetings_with_guide/`](05_meetings_with_guide/) | Dated notes of every guide meeting, decisions and action items | ⬜ template only |
 | [`references/`](references/) | Seniors' sample report and posters, papers we cite | ✅ samples added |
 
@@ -33,6 +33,18 @@ The **software** lives in the rest of the repository (`backend/`, `frontend/`,
    example `report: draft chapter 4 problem formulation`.
 6. Keep binary files (PDF/PPTX/images) small; large raw recordings belong in a
    shared drive, with only the link committed here.
+
+## What only the team can finish
+
+- Names, SAP IDs, guide, course number and academic year (every `⟨…⟩` placeholder).
+- Certificate, approval and declaration pages with signatures.
+- Two or three real products per column of the existing-systems table (report §2.2), each with a source.
+- Guide's confirmation of the objective targets (report §4.2) and written OK to use public djsce.ac.in content.
+- Poster visual layout (AVINYA template, logos, QR) and the slide deck itself.
+
+Numbers come from `01_ipd_report/results/RESULTS.md` (final run 19 Oct 2026). If you rerun the evaluation,
+update the report, poster, slides, paper and brief together, then re-export the Word file with
+`python evaluation/publication_tools/export_report_docx.py`.
 
 ## Reference samples from seniors
 

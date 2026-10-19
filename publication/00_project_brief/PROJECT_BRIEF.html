@@ -155,18 +155,28 @@ a Student Help Desk for students. Access is enforced by role, so internal delibe
   <tr><td>Cited Q&amp;A with role-filtered retrieval</td><td class="status-ok">Working</td></tr>
   <tr><td>Student role, Help Desk tickets, AI triage, draft and human reply</td><td class="status-ok">Working</td></tr>
   <tr><td>Knowledge graph, audit log, Docker deployment, remote demo</td><td class="status-ok">Working</td></tr>
-  <tr><td>Automated tests</td><td class="status-ok">134 backend tests passing</td></tr>
+  <tr><td>Automated tests</td><td class="status-ok">235 backend tests passing; frontend lint and type-check clean</td></tr>
   <tr><td>Knowledge graph edges (documents, meetings, people, bodies)</td><td class="status-ok">Working</td></tr>
-  <tr><td>Evaluation harness (triage incl. laya, Q&amp;A, visibility, commitments)</td><td class="status-ok">Run 1 baseline recorded; run 2 pending</td></tr>
-  <tr><td>Per-department access (CE vs IT)</td><td class="status-plan">Planned</td></tr>
+  <tr><td>Evaluation harness (triage incl. laya, Q&amp;A, visibility, commitments)</td><td class="status-ok">Final run 19 Oct 2026 (run 1 kept as baseline)</td></tr>
+  <tr><td>Per-department access (CE vs IT), notices, calendar, analytics, user admin</td><td class="status-ok">Working</td></tr>
 </table></div>
-<p id="results"><strong>Evaluation results:</strong> the evaluation harness is running; measured numbers will be added here from <code>publication/01_ipd_report/results/RESULTS.md</code>.</p>
+<p id="results"><strong>Evaluation results</strong> (19 Oct 2026, model <code>openai/gpt-oss-120b</code>; from <code>publication/01_ipd_report/results/RESULTS.md</code>):</p>
+<div class="tablewrap"><table>
+  <tr><th>Measure</th><th>Result</th></tr>
+  <tr><td>Ticket triage accuracy, 96 queries: LLM / keyword / laya</td><td>90.6 % / 57.3 % / 51.0 %</td></tr>
+  <tr><td>Q&amp;A, 33 questions: correct source in top 5</td><td>100 %</td></tr>
+  <tr><td>Q&amp;A: answer correct (run 1: 71 %)</td><td>91 %</td></tr>
+  <tr><td>Internal evidence leaked to students, 20 adversarial queries</td><td>0</td></tr>
+  <tr><td>Cross-department leaks, 10 queries</td><td>0</td></tr>
+  <tr><td>Commitment extraction, 9 gold</td><td>precision 1.00, recall 1.00</td></tr>
+  <tr><td>p95 answer latency (target 10 s)</td><td>10.0 s (student answers 7.8 s)</td></tr>
+</table></div>
+<p>All committee data and labels are synthetic and team-written, so these show the system works as designed; they are not a field study.</p>
 
 <h2>Roadmap</h2>
 <ol>
-  <li>Report the evaluation results.</li>
-  <li>Per-department and per-committee visibility.</li>
-  <li>Notices and circulars feed with AI summaries per role, plus academic-calendar reminders.</li>
+  <li>Per-committee confidentiality.</li>
+  <li>Notice attachments and e-mail delivery; feedback on answers.</li>
   <li>NBA/NAAC evidence tracker linking decisions and documents to criteria.</li>
 </ol>
 
