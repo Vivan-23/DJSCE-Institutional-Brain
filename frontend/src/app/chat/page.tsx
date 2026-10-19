@@ -2,6 +2,7 @@
 import React, { useRef, useState } from 'react';
 import { apiFetch } from '@/lib/api';
 import { Badge } from '@/components/ui/Badge';
+import { renderBold } from '@/lib/renderBold';
 import SourceList, { type Source } from '@/components/knowledge/SourceList';
 import { isStaffRole, useMe } from '@/lib/roles';
 
@@ -31,13 +32,6 @@ const STUDENT_QUERIES = [
   'What are the Program Outcomes of Information Technology?',
   'Which companies recruit from the department?',
 ];
-
-// LLM answers use **bold** markdown; render just that, everything else stays plain text.
-function renderBold(text: string) {
-  return text.split(/\*\*(.+?)\*\*/g).map((part, i) =>
-    i % 2 ? <strong key={i} className="font-semibold text-slate-100">{part}</strong> : part,
-  );
-}
 
 export default function ChatPage() {
   const me = useMe();

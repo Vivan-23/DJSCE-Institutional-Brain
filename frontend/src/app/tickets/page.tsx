@@ -5,6 +5,7 @@ import { formatDateTime } from '@/lib/format';
 import SourceList, { type Source } from '@/components/knowledge/SourceList';
 import { PRIORITY_STYLE, TICKET_STATUS, TicketBadge, type TicketStatus } from '@/components/helpdesk/TicketBadge';
 import EmptyState from '@/components/ui/EmptyState';
+import { renderBold } from '@/lib/renderBold';
 
 interface StaffTicket {
   id: string;
@@ -187,7 +188,7 @@ export default function TicketQueuePage() {
                   )}
                 </div>
                 <p className="text-xs text-slate-200 mt-1.5 whitespace-pre-wrap">
-                  {selected.ai_draft_reply ?? 'No draft was generated (language model unavailable).'}
+                  {selected.ai_draft_reply ? renderBold(selected.ai_draft_reply) : 'No draft was generated (language model unavailable).'}
                 </p>
                 <SourceList sources={selected.ai_sources} warnInternal />
               </div>
