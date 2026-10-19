@@ -90,7 +90,7 @@ export default function ChatPage() {
         <div className="flex items-center justify-between">
           <div>
             <h1 className="text-xl sm:text-2xl font-semibold text-slate-100 tracking-[-0.02em]">
-              Institutional Knowledge Assistant
+              Assistant
             </h1>
             <p className="text-xs sm:text-sm text-slate-400 mt-0.5">
               Ask questions about institutional documents, committee decisions, procedures and assigned responsibilities.

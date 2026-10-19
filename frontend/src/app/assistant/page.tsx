@@ -1,6 +1,7 @@
 'use client';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { apiFetch } from '@/lib/api';
+import EmptyState from '@/components/ui/EmptyState';
 
 interface Followup {
   commitment_id: string;
@@ -137,7 +138,7 @@ export default function AssistantPage() {
       {/* Header */}
       <div>
         <h1 className="text-xl md:text-2xl font-semibold text-slate-100 tracking-[-0.02em]">
-          Faculty Desk &amp; Daily Debrief
+          Faculty Desk
         </h1>
         <p className="text-slate-400 text-xs sm:text-sm mt-1">
           Proactive follow-ups on committee responsibilities, statutory deliverables, and evening conversational check-in.
@@ -150,8 +151,8 @@ export default function AssistantPage() {
           Pending Follow-ups &amp; Inquiries ({followups.length})
         </h2>
         {followups.length === 0 ? (
-          <div className="glass-panel p-5 text-xs text-slate-400">
-            You are fully caught up — no open institutional commitments require follow-up at this time.
+          <div className="glass-panel">
+            <EmptyState icon="check" title="You're all caught up" body="No open commitments need a follow-up right now. Use the debrief below to log today's work." />
           </div>
         ) : (
           <ul className="space-y-3">

@@ -3,6 +3,7 @@ import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import InsightCard, { type Insight } from '@/components/dashboard/InsightCard';
+import { Badge } from '@/components/ui/Badge';
 import { apiFetch } from '@/lib/api';
 import { formatDate } from '@/lib/format';
 import { isStaffRole, useMe } from '@/lib/roles';
@@ -97,7 +98,7 @@ export default function Dashboard() {
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div>
             <h1 className="text-xl md:text-2xl font-semibold text-slate-100 tracking-[-0.02em]">
-              Institutional Governance Intelligence
+              Overview
             </h1>
             <p className="text-slate-400 text-sm mt-1">
               Connect institutional knowledge, decisions, procedures and follow-up responsibilities.
@@ -128,7 +129,7 @@ export default function Dashboard() {
           <div className="glass-panel p-4 flex flex-col justify-between">
             <span className="text-xs font-medium text-slate-400">Pending Commitments</span>
             <div className="mt-2 flex items-baseline gap-2">
-              <span className="text-2xl font-semibold text-blue-400">{metrics.openCommitments}</span>
+              <span className="text-2xl font-semibold text-slate-100">{metrics.openCommitments}</span>
               {metrics.blockedCommitments > 0 && (
                 <span className="text-[12px] text-rose-400 font-medium">({metrics.blockedCommitments} blocked)</span>
               )}
@@ -144,7 +145,7 @@ export default function Dashboard() {
           <div className="glass-panel p-4 flex flex-col justify-between">
             <span className="text-xs font-medium text-slate-400">Institutional Procedures</span>
             <div className="mt-2 flex items-baseline gap-2">
-              <span className="text-2xl font-semibold text-emerald-400">{metrics.totalProcedures}</span>
+              <span className="text-2xl font-semibold text-slate-100">{metrics.totalProcedures}</span>
               <span className="text-[12px] text-slate-400">SOPs</span>
             </div>
           </div>
@@ -157,7 +158,7 @@ export default function Dashboard() {
         <div className="lg:col-span-2 space-y-4">
           <div className="flex items-center justify-between">
             <h2 className="text-base font-semibold text-slate-100 flex items-center gap-2">
-              <span>Actionable Governance Insights</span>
+              <span>Insights</span>
               {insights.length > 0 && (
                 <span className="px-2 py-0.5 text-xs font-semibold rounded-full bg-blue-500/20 text-blue-400 border border-blue-500/30">
                   {insights.length}
@@ -212,7 +213,7 @@ export default function Dashboard() {
             </div>
           )}
 
-          <div className="space-y-4">
+          <div className="glass-panel divide-y divide-white/[0.05] overflow-hidden">
             {insights.map((insight) => (
               <InsightCard
                 key={insight.id}
@@ -228,7 +229,7 @@ export default function Dashboard() {
           {/* Quick Navigation Panel */}
           <div className="glass-panel p-5 space-y-3">
             <h3 className="text-xs font-semibold text-slate-300">
-              Workspaces &amp; Decision Tools
+              Shortcuts
             </h3>
             <div className="grid grid-cols-1 gap-2 text-xs">
               <Link
@@ -279,7 +280,7 @@ export default function Dashboard() {
             <div className="glass-panel p-5 space-y-3">
               <div className="flex items-center justify-between">
                 <h3 className="text-xs font-semibold text-slate-300">
-                  Upcoming Responsibilities
+                  Upcoming commitments
                 </h3>
                 <Link href="/commitments" className="text-[12px] text-blue-400 hover:underline">
                   View all
@@ -291,13 +292,9 @@ export default function Dashboard() {
                     <p className="font-medium text-slate-200 line-clamp-2">{c.description}</p>
                     <div className="flex items-center justify-between text-[12px] text-slate-400 pt-1">
                       <span>{c.assignee || 'Unassigned'}</span>
-                      <span className={`px-1.5 py-0.5 rounded text-[11px] font-semibold ${
-                        c.status === 'blocked' ? 'bg-rose-500/10 text-rose-400' :
-                        c.status === 'in_progress' ? 'bg-amber-500/10 text-amber-400' :
-                        'bg-blue-500/10 text-blue-400'
-                      }`}>
-                        {c.status.replace(/_/g, ' ')}
-                      </span>
+                      <Badge tone={c.status === 'blocked' ? 'danger' : c.status === 'in_progress' ? 'accent' : 'neutral'}>
+                        {c.status === 'in_progress' ? 'In progress' : c.status === 'blocked' ? 'Blocked' : 'Not started'}
+                      </Badge>
                     </div>
                   </div>
                 ))}

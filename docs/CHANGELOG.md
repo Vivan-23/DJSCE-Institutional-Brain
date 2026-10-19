@@ -8,6 +8,15 @@ Format: `## YYYY-MM-DD — title` then bullets of what/why.
 
 ---
 
+## 2026-10-19 — Formal list layouts, shared badges and empty states
+- `components/ui/Badge.tsx` (dot + label, tones neutral/accent/success/warning/danger) replaces per-page coloured
+  pills on tickets, procedures, My Work, calendar and the overview; `components/ui/EmptyState.tsx` for empty lists and
+  unselected panes (ticket preview, My Work, Faculty Desk, notices, procedures).
+- Procedures, Ticket Queue and Overview insights are dense divided rows in one panel instead of stacked cards;
+  insight "Dismiss" shows on hover (desktop).
+- Shorter page titles matching the sidebar (Overview, Procedures, Ticket Queue, Meetings, Documents, Calendar, …);
+  overview stat numbers are neutral.
+
 ## 2026-10-19 — Linear-inspired visual refresh (frontend only)
 - **Theme via tokens, not class rewrites**: `app/globals.css` retunes Tailwind's `slate` scale to neutral near-black
   greys and `blue` to an indigo accent (#5e6ad2), plus softer emerald/amber/rose. Every page picks this up from its

@@ -29,7 +29,7 @@ export default function RelationshipsPage() {
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
           <h1 className="text-xl md:text-2xl font-semibold text-slate-100 tracking-[-0.02em]">
-            Institutional Knowledge Graph
+            Knowledge Graph
           </h1>
           <p className="text-slate-400 text-xs sm:text-sm mt-1">
             Who attended which meetings and which committees, departments and documents are connected, extracted automatically from meetings and documents. Filter by type, search, and click a node to focus on it.

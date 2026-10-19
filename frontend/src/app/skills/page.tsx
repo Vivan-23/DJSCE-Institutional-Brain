@@ -5,6 +5,8 @@ import { formatDate, formatDateTime } from '@/lib/format';
 import { isCoordinatorRole, useMe } from '@/lib/roles';
 import { useInstitution } from '@/lib/useInstitution';
 import EvidencePanel, { Citation } from '@/components/skills/EvidencePanel';
+import { Badge, Tag, type Tone } from '@/components/ui/Badge';
+import EmptyState from '@/components/ui/EmptyState';
 
 const STATUSES = ['draft', 'approved', 'stale', 'deprecated', 'rejected'] as const;
 type Status = (typeof STATUSES)[number];
@@ -51,12 +53,8 @@ interface Version {
   snapshot: Record<string, string | string[] | null>;
 }
 
-const STATUS_STYLE: Record<Status, string> = {
-  draft: 'bg-blue-500/15 border-blue-500/30 text-blue-300',
-  approved: 'bg-emerald-500/15 border-emerald-500/30 text-emerald-300',
-  stale: 'bg-amber-500/15 border-amber-500/30 text-amber-300',
-  deprecated: 'bg-slate-700/20 border-slate-600/40 text-slate-400',
-  rejected: 'bg-rose-500/15 border-rose-500/30 text-rose-300',
+const STATUS_TONE: Record<Status, Tone> = {
+  draft: 'accent', approved: 'success', stale: 'warning', deprecated: 'neutral', rejected: 'danger',
 };
 const TAB_LABEL: Record<Status, string> = {
   draft: 'Drafts in review', approved: 'Approved', stale: 'Needs review', deprecated: 'Retired', rejected: 'Rejected',
@@ -294,7 +292,7 @@ export default function SkillsPage() {
     <main className="p-4 sm:p-6 md:p-10 max-w-7xl mx-auto space-y-5">
       <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
         <div>
-          <h1 className="text-xl md:text-2xl font-semibold text-slate-100 tracking-[-0.02em]">Institutional Procedures &amp; SOPs</h1>
+          <h1 className="text-xl md:text-2xl font-semibold text-slate-100 tracking-[-0.02em]">Procedures</h1>
           <p className="text-slate-400 text-xs sm:text-sm mt-1">
             How things are done here: reviewed, versioned procedures with an owning office and a review date. Approved
             procedures are what the assistant cites first.
@@ -346,25 +344,29 @@ export default function SkillsPage() {
       {error && <div className="p-4 rounded-lg bg-rose-500/10 border border-rose-500/30 text-rose-400 text-xs">{error}</div>}
 
       <div className={`grid gap-4 ${openId ? 'lg:grid-cols-[minmax(0,2fr)_minmax(0,3fr)]' : ''}`}>
-        <ul className="space-y-2">
-          {!error && skills.length === 0 && <li className="text-xs text-slate-500">No procedures match this view.</li>}
+        <ul className="glass-panel divide-y divide-white/[0.05] overflow-hidden self-start">
+          {!error && skills.length === 0 && (
+            <li><EmptyState icon="search" title="No procedures here" body="Nothing matches this filter. Try another status or clear the search." /></li>
+          )}
           {skills.map((s) => (
             <li key={s.id}>
               <button type="button" onClick={() => void openDetail(s.id)}
-                className={`w-full text-left glass-panel p-3.5 border cursor-pointer ${openId === s.id ? 'border-blue-500/50' : 'border-transparent'}`}>
-                <div className="flex flex-wrap items-center gap-2">
-                  <span className={`text-[11px] font-semibold px-2 py-0.5 rounded-full border ${STATUS_STYLE[s.status]}`}>{s.status_label}</span>
-                  <span className="text-[12px] text-slate-400">v{s.version}</span>
-                  {s.visibility === 'public' && <span className="text-[11px] px-1.5 py-px rounded border border-emerald-500/30 text-emerald-300">Student-facing</span>}
-                  {s.department !== 'all' && <span className="text-[11px] text-slate-400">{s.department}</span>}
-                  {reviewOverdue(s) && <span className="text-[11px] text-rose-300">review overdue</span>}
+                className={`w-full text-left px-4 py-3 cursor-pointer transition-colors ${openId === s.id ? 'bg-white/[0.05]' : 'hover:bg-white/[0.025]'}`}>
+                <div className="flex items-center gap-3">
+                  <p className="flex-1 min-w-0 text-[13px] font-medium text-slate-100 truncate">{s.name}</p>
+                  <Badge tone={STATUS_TONE[s.status]}>{s.status_label}</Badge>
                 </div>
-                <p className="mt-1 text-sm font-semibold text-slate-100">{s.name}</p>
-                <p className="text-xs text-slate-400 line-clamp-2">{s.description}</p>
-                <p className="mt-1 text-[12px] text-slate-500">
-                  {s.owner_office ?? 'No owning office'}{s.review_by ? ` · review by ${formatDate(s.review_by)}` : ''}
-                  {s.use_count ? ` · cited ${s.use_count}×` : ''}{s.origin === 'manual' ? ' · written by hand' : ''}
-                </p>
+                <p className="mt-0.5 text-[12px] text-slate-400 line-clamp-1">{s.description}</p>
+                <div className="mt-1.5 flex flex-wrap items-center gap-1.5 text-[12px] text-slate-500">
+                  <Tag>v{s.version}</Tag>
+                  {s.visibility === 'public' && <Tag>Student-facing</Tag>}
+                  {s.department !== 'all' && <Tag>{s.department}</Tag>}
+                  <span>{s.owner_office ?? 'No owning office'}</span>
+                  {s.review_by && <span>· review by {formatDate(s.review_by)}</span>}
+                  {reviewOverdue(s) && <span className="text-rose-300">· review overdue</span>}
+                  {s.use_count ? <span>· cited {s.use_count}×</span> : null}
+                  {s.origin === 'manual' && <span>· written by hand</span>}
+                </div>
               </button>
             </li>
           ))}

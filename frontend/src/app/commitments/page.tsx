@@ -1,6 +1,8 @@
 'use client';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { apiFetch } from '@/lib/api';
+import { Badge, type Tone } from '@/components/ui/Badge';
+import EmptyState from '@/components/ui/EmptyState';
 import { formatDate, formatDateTime } from '@/lib/format';
 import { isCoordinatorRole, useMe } from '@/lib/roles';
 
@@ -60,13 +62,13 @@ interface TeamGroup {
   items: Task[];
 }
 
-const STATUS: Record<Status, { label: string; style: string }> = {
-  open: { label: 'Not started', style: 'border-slate-600 text-slate-300' },
-  in_progress: { label: 'In progress', style: 'border-blue-500/40 text-blue-300' },
-  blocked: { label: 'Blocked', style: 'border-rose-500/40 text-rose-300' },
-  review: { label: 'Done · awaiting confirmation', style: 'border-amber-500/40 text-amber-300' },
-  done: { label: 'Completed', style: 'border-emerald-500/40 text-emerald-300' },
-  dropped: { label: 'Dropped', style: 'border-slate-700 text-slate-500' },
+const STATUS: Record<Status, { label: string; style: string; tone: Tone }> = {
+  open: { label: 'Not started', style: 'border-slate-600 text-slate-300', tone: 'neutral' },
+  in_progress: { label: 'In progress', style: 'border-blue-500/40 text-blue-300', tone: 'accent' },
+  blocked: { label: 'Blocked', style: 'border-rose-500/40 text-rose-300', tone: 'danger' },
+  review: { label: 'Done · awaiting confirmation', style: 'border-amber-500/40 text-amber-300', tone: 'warning' },
+  done: { label: 'Completed', style: 'border-emerald-500/40 text-emerald-300', tone: 'success' },
+  dropped: { label: 'Dropped', style: 'border-slate-700 text-slate-500', tone: 'neutral' },
 };
 const SOURCE_LABEL: Record<string, string> = {
   checkin: 'End-of-day check-in', followup: 'Follow-up reply', owner: 'Owner', coordinator: 'Coordinator', note: 'Note',
@@ -105,9 +107,7 @@ function TaskCard({ t, onOpen, showOwner }: { t: Task; onOpen: (id: string) => v
           due.overdue ? 'border-rose-500/40' : 'border-transparent'}`}>
         <div className="flex items-start justify-between gap-3">
           <p className="text-sm font-medium text-slate-100">{t.description}</p>
-          <span className={`text-[11px] px-2 py-0.5 rounded border whitespace-nowrap ${STATUS[t.status].style}`}>
-            {STATUS[t.status].label}
-          </span>
+          <Badge tone={STATUS[t.status].tone}>{STATUS[t.status].label}</Badge>
         </div>
         <div className="mt-2 flex items-center gap-3">
           <div className="flex-1"><Bar value={t.progress} /></div>
@@ -434,7 +434,9 @@ export default function MyWorkPage() {
         <div className="space-y-5">
           {tab === 'mine' && mine && (
             <>
-              {mine.items.length === 0 && <p className="text-xs text-slate-500">No tasks assigned to you.</p>}
+              {mine.items.length === 0 && (
+                <div className="glass-panel"><EmptyState icon="check" title="Nothing assigned to you" body="Tasks from committee meetings and coordinators will appear here with their due dates and progress." /></div>
+              )}
               <Section title="Overdue or due today" items={groups.overdue} onOpen={setOpenId} />
               <Section title="Due this week" items={groups.week} onOpen={setOpenId} />
               <Section title="Later / no due date" items={groups.later} onOpen={setOpenId} />

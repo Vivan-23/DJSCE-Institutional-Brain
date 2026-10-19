@@ -1,6 +1,7 @@
 'use client';
 import React, { useCallback, useEffect, useState } from 'react';
 import { apiFetch } from '@/lib/api';
+import EmptyState from '@/components/ui/EmptyState';
 import { formatDateTime } from '@/lib/format';
 import { isCoordinatorRole, isStaffRole, ROLE_LABEL, type Role, useMe } from '@/lib/roles';
 import { useInstitution } from '@/lib/useInstitution';
@@ -182,7 +183,7 @@ export default function NoticesPage() {
 
       {tab === 'inbox' && (
         <ul className="space-y-2" aria-label="Inbox">
-          {inbox.length === 0 && <li className="text-xs text-slate-500">No notices for you right now.</li>}
+          {inbox.length === 0 && <li className="glass-panel"><EmptyState icon="inbox" title="No notices" body="Notices from your department and the institution will appear here." /></li>}
           {inbox.map((n) => (
             <li key={n.id}>
               <button type="button" onClick={() => open(n)} aria-expanded={openId === n.id}

@@ -53,7 +53,7 @@ export default function SourcesPage() {
       {/* Header */}
       <div>
         <h1 className="text-xl md:text-2xl font-semibold text-slate-100 tracking-[-0.02em]">
-          Document Repositories &amp; Ingestion
+          Documents
         </h1>
         <p className="text-slate-400 text-xs sm:text-sm mt-1">
           Ingest institutional circulars, syllabus specifications, accreditation working papers, and committee notes into vector storage and knowledge graph.

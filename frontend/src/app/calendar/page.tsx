@@ -1,6 +1,7 @@
 'use client';
 import React, { useEffect, useState } from 'react';
 import { apiFetch } from '@/lib/api';
+import { Badge, type Tone } from '@/components/ui/Badge';
 import { formatDate } from '@/lib/format';
 
 type Urgency = 'overdue' | 'today' | 'soon' | 'upcoming';
@@ -24,11 +25,11 @@ interface CalendarResponse {
   items: CalendarItem[];
 }
 
-const URGENCY: Record<Urgency, { label: string; style: string }> = {
-  overdue: { label: 'Overdue', style: 'bg-rose-500/15 text-rose-300 border-rose-500/40' },
-  today: { label: 'Today', style: 'bg-amber-500/15 text-amber-300 border-amber-500/40' },
-  soon: { label: 'Soon', style: 'bg-yellow-500/10 text-yellow-200 border-yellow-500/30' },
-  upcoming: { label: 'Upcoming', style: 'bg-slate-700/30 text-slate-300 border-slate-600/50' },
+const URGENCY: Record<Urgency, { label: string; style: string; tone: Tone }> = {
+  overdue: { label: 'Overdue', style: 'bg-rose-500/15 text-rose-300 border-rose-500/40', tone: 'danger' },
+  today: { label: 'Today', style: 'bg-amber-500/15 text-amber-300 border-amber-500/40', tone: 'warning' },
+  soon: { label: 'Soon', style: 'bg-yellow-500/10 text-yellow-200 border-yellow-500/30', tone: 'accent' },
+  upcoming: { label: 'Upcoming', style: 'bg-slate-700/30 text-slate-300 border-slate-600/50', tone: 'neutral' },
 };
 
 const KIND_DOT: Record<string, string> = {
@@ -71,7 +72,7 @@ export default function CalendarPage() {
   return (
     <main className="p-4 sm:p-6 md:p-10 max-w-5xl mx-auto space-y-5">
       <div>
-        <h1 className="text-xl md:text-2xl font-semibold text-slate-100 tracking-[-0.02em]">Academic Calendar &amp; Deadlines</h1>
+        <h1 className="text-xl md:text-2xl font-semibold text-slate-100 tracking-[-0.02em]">Calendar</h1>
         <p className="text-slate-400 text-xs sm:text-sm mt-1">
           Published academic dates for your department, plus your own commitments from meetings (faculty).
         </p>
@@ -120,9 +121,7 @@ export default function CalendarPage() {
             <div className="min-w-0 flex-1">
               <div className="flex flex-wrap items-center justify-between gap-2">
                 <p className="text-sm font-medium text-slate-100">{i.title}</p>
-                <span className={`text-[11px] px-2 py-0.5 rounded border ${URGENCY[i.urgency].style}`}>
-                  {URGENCY[i.urgency].label}
-                </span>
+                <Badge tone={URGENCY[i.urgency].tone}>{URGENCY[i.urgency].label}</Badge>
               </div>
               <p className="text-[12px] text-slate-400 mt-0.5">
                 {formatDate(i.date)}

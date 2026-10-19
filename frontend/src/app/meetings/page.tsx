@@ -188,7 +188,7 @@ export default function MeetingsPage() {
       {/* Header */}
       <div>
         <h1 className="text-xl md:text-2xl font-semibold text-slate-100 tracking-[-0.02em]">
-          Minutes &amp; Committee Meetings
+          Meetings
         </h1>
         <p className="text-slate-400 text-xs sm:text-sm mt-1">
           Record, summarize, and extract actionable institutional decisions and commitments from Academic Council, IQAC, Departmental, and Exam Committee meetings.

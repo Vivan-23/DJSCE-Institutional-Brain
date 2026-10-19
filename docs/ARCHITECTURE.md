@@ -2,7 +2,7 @@
 
 > **Read this first.** This file is the orientation layer so you don't have to
 > re-read the whole codebase. When you change structure, update this file in the
-> same change. Last verified: 2026-10-14.
+> same change. Last verified: 2026-10-19.
 
 DJSCE Institutional Brain turns scattered institutional knowledge (committee
 transcripts, reference documents, faculty check-ins) into decisions, tracked
@@ -148,7 +148,9 @@ lib/api.ts                 apiFetch() — base URL, JWT header, 401→/login red
 lib/format.ts              formatDate()/formatDateTime() — shared date rendering.
 lib/roles.ts               ROLE_LABEL (display names), isStaffRole(), useMe() (token-keyed /auth/me).
 lib/useInstitution.ts      Public branding from /api/v1/institution.
-components/layout/Sidebar.tsx   Role-filtered nav (NAV[].staff) + auth state via useSyncExternalStore.
+components/layout/Sidebar.tsx   Grouped, role-filtered nav (NAV_GROUPS[].items[].staff) + auth state via useSyncExternalStore.
+components/ui/Badge.tsx         Shared status Badge (tone dot) + Tag; use for every status pill.
+components/ui/EmptyState.tsx    Shared empty/unselected placeholder.
 components/knowledge/SourceList.tsx  Evidence excerpts behind an AI answer (public/internal badges).
 components/helpdesk/TicketBadge.tsx  Ticket status/priority styling (single source).
 components/graph/GraphCanvas.tsx  Cytoscape.js graph: type filters, hub hiding, search, focus mode, neighbourhood loading

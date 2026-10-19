@@ -4,6 +4,7 @@ import { apiFetch } from '@/lib/api';
 import { formatDateTime } from '@/lib/format';
 import SourceList, { type Source } from '@/components/knowledge/SourceList';
 import { PRIORITY_STYLE, TICKET_STATUS, TicketBadge, type TicketStatus } from '@/components/helpdesk/TicketBadge';
+import EmptyState from '@/components/ui/EmptyState';
 
 interface StaffTicket {
   id: string;
@@ -86,7 +87,7 @@ export default function TicketQueuePage() {
   return (
     <main className="p-4 sm:p-6 md:p-10 max-w-7xl mx-auto space-y-5">
       <div>
-        <h1 className="text-xl md:text-2xl font-semibold text-slate-100 tracking-[-0.02em]">Help Desk Queue</h1>
+        <h1 className="text-xl md:text-2xl font-semibold text-slate-100 tracking-[-0.02em]">Ticket Queue</h1>
         <p className="text-slate-400 text-xs sm:text-sm mt-1">
           Tickets are triaged and drafted by AI. Review every draft — nothing reaches the student until you send it.
         </p>
@@ -113,22 +114,24 @@ export default function TicketQueuePage() {
       {error && <p role="alert" className="text-rose-400 text-xs">{error}</p>}
 
       <div className="grid lg:grid-cols-[minmax(0,2fr)_minmax(0,3fr)] gap-4">
-        <ul className="space-y-2" aria-label="Tickets">
-          {tickets.length === 0 && !error && <li className="text-xs text-slate-500">No tickets in this view.</li>}
+        <ul className="glass-panel divide-y divide-white/[0.05] overflow-hidden self-start" aria-label="Tickets">
+          {tickets.length === 0 && !error && (
+            <li><EmptyState icon="check" title="All caught up" body="No tickets in this view." /></li>
+          )}
           {tickets.map((t) => (
             <li key={t.id}>
               <button
                 type="button"
                 onClick={() => select(t)}
-                className={`w-full text-left glass-panel p-3 cursor-pointer border ${
-                  t.id === selectedId ? 'border-blue-500/50' : 'border-transparent'
+                className={`w-full text-left px-4 py-3 cursor-pointer transition-colors ${
+                  t.id === selectedId ? 'bg-white/[0.05]' : 'hover:bg-white/[0.025]'
                 }`}
               >
-                <div className="flex items-start justify-between gap-2">
-                  <p className="text-sm font-medium text-slate-100 truncate">{t.subject}</p>
+                <div className="flex items-center justify-between gap-3">
+                  <p className="text-[13px] font-medium text-slate-100 truncate">{t.subject}</p>
                   <TicketBadge status={t.status} />
                 </div>
-                <p className="text-[11px] text-slate-500 mt-1">
+                <p className="text-[12px] text-slate-500 mt-1 truncate">
                   <span className={PRIORITY_STYLE[t.priority] ?? ''}>{t.priority} priority</span> · {t.routed_to} ·{' '}
                   {t.raised_by ?? 'Unknown'} · {formatDateTime(t.created_at)}
                 </p>
@@ -139,7 +142,7 @@ export default function TicketQueuePage() {
 
         <section className="glass-panel p-5 space-y-4 min-h-[16rem]" aria-label="Ticket detail">
           {!selected ? (
-            <p className="text-xs text-slate-500">Select a ticket to review the AI triage and draft reply.</p>
+            <EmptyState icon="cursor" title="No ticket selected" body="Pick a ticket on the left to review the AI triage and the draft reply before sending it." />
           ) : (
             <>
               <div>
