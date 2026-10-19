@@ -1,6 +1,7 @@
 'use client';
 import React, { useCallback, useEffect, useState } from 'react';
 import { apiFetch } from '@/lib/api';
+import { Badge } from '@/components/ui/Badge';
 import { ROLE_LABEL, type Role, useMe } from '@/lib/roles';
 import { useInstitution } from '@/lib/useInstitution';
 
@@ -247,7 +248,7 @@ export default function AdminUsersPage() {
                       ) : u[k] ?? '—'}
                     </td>
                   ))}
-                  <td className="p-2">{u.is_active ? 'Active' : 'Deactivated'}</td>
+                  <td className="p-2"><Badge tone={u.is_active ? 'success' : 'neutral'}>{u.is_active ? 'Active' : 'Deactivated'}</Badge></td>
                   <td className="p-2 whitespace-nowrap space-x-1.5 text-right">
                     {on ? (
                       <>

@@ -8,6 +8,14 @@ Format: `## YYYY-MM-DD — title` then bullets of what/why.
 
 ---
 
+## 2026-10-19 — Visual refresh: Meetings, Documents, Assistant, Faculty Desk
+- **Assistant** (`app/chat`): open conversation canvas (assistant avatar + plain text, user bubbles), suggestion cards
+  only before the first question, single composer with a "check the cited sources" note.
+- **Meetings**: list first, as divided rows; the minutes form opens from a "Record meeting" button.
+- **Faculty Desk**: follow-ups as divided rows, check-in in the same chat style; plain-language copy.
+- **Documents**: plainer copy, quieter dropzone, and the pipeline explained in user terms.
+- Users table status uses the shared `Badge`; assistant answers render `**bold**` instead of showing asterisks.
+
 ## 2026-10-19 — Formal list layouts, shared badges and empty states
 - `components/ui/Badge.tsx` (dot + label, tones neutral/accent/success/warning/danger) replaces per-page coloured
   pills on tickets, procedures, My Work, calendar and the overview; `components/ui/EmptyState.tsx` for empty lists and

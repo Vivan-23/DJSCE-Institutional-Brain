@@ -1,6 +1,7 @@
 'use client';
 import React, { useCallback, useEffect, useState } from 'react';
 import { apiFetch } from '@/lib/api';
+import EmptyState from '@/components/ui/EmptyState';
 import { formatDateTime } from '@/lib/format';
 import { isCoordinatorRole, useMe } from '@/lib/roles';
 import { useInstitution } from '@/lib/useInstitution';
@@ -78,6 +79,7 @@ Dr. Rohan Mehta: I will follow up with the remaining faculty on missing course f
 ];
 
 export default function MeetingsPage() {
+  const [showForm, setShowForm] = useState(false);
   const [title, setTitle] = useState('');
   const [transcript, setTranscript] = useState('');
   const [department, setDepartment] = useState('all');
@@ -184,31 +186,41 @@ export default function MeetingsPage() {
     title.trim().length > 0 && transcript.trim().length > 0 && status !== 'submitting';
 
   return (
-    <main className="p-6 md:p-10 max-w-4xl mx-auto space-y-8">
+    <main className="p-4 sm:p-6 md:p-10 max-w-5xl mx-auto space-y-6">
       {/* Header */}
-      <div>
-        <h1 className="text-xl md:text-2xl font-semibold text-slate-100 tracking-[-0.02em]">
-          Meetings
-        </h1>
-        <p className="text-slate-400 text-xs sm:text-sm mt-1">
-          Record, summarize, and extract actionable institutional decisions and commitments from Academic Council, IQAC, Departmental, and Exam Committee meetings.
-        </p>
+      <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
+        <div>
+          <h1 className="text-xl md:text-2xl font-semibold text-slate-100 tracking-[-0.02em]">
+            Meetings
+          </h1>
+          <p className="text-slate-400 text-[13px] mt-1">
+            Committee minutes with their summaries, decisions and the commitments extracted from them.
+          </p>
+        </div>
+        <button
+          type="button"
+          onClick={() => setShowForm((v) => !v)}
+          className="shrink-0 bg-blue-600 hover:bg-blue-500 text-white h-8 px-3.5 rounded-md text-[13px] font-medium transition-colors cursor-pointer"
+        >
+          {showForm ? 'Close' : 'Record meeting'}
+        </button>
       </div>
 
       {/* Submission Form */}
+      {showForm && (
       <section className="glass-panel p-5 sm:p-6 space-y-4">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 border-b border-slate-800 pb-3">
           <h2 className="text-sm font-semibold text-slate-200">
-            Record Minutes of Meeting (MoM)
+            Record minutes of meeting
           </h2>
           <div className="flex items-center gap-1.5 flex-wrap">
-            <span className="text-[12px] text-slate-500 font-medium mr-1">Load Demo Scenario:</span>
+            <span className="text-[12px] text-slate-500 mr-1">Load a sample:</span>
             {SAMPLE_TEMPLATES.map((sample, idx) => (
               <button
                 key={idx}
                 type="button"
                 onClick={() => handleSelectSample(sample)}
-                className="px-2 py-1 rounded bg-slate-900 hover:bg-slate-800 text-[12px] text-blue-400 border border-slate-800 hover:border-slate-700 transition-colors cursor-pointer"
+                className="px-2 h-6 rounded-md hover:bg-white/[0.05] text-[12px] text-slate-300 border border-white/[0.08] transition-colors cursor-pointer"
               >
                 {sample.name}
               </button>
@@ -222,7 +234,7 @@ export default function MeetingsPage() {
               htmlFor="meeting-title"
               className="block text-xs font-medium text-slate-300 mb-1"
             >
-              Committee / Meeting Title
+              Meeting title
             </label>
             <input
               id="meeting-title"
@@ -257,7 +269,7 @@ export default function MeetingsPage() {
               htmlFor="meeting-transcript"
               className="block text-xs font-medium text-slate-300 mb-1"
             >
-              Meeting Transcript or Minutes Text
+              Transcript or minutes
             </label>
             <textarea
               id="meeting-transcript"
@@ -268,22 +280,22 @@ export default function MeetingsPage() {
               className="w-full bg-slate-900/90 border border-slate-700/80 rounded-lg px-3.5 py-2 text-xs sm:text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:border-blue-500 font-mono resize-y"
             />
             <p className="text-[12px] text-slate-400 mt-1">
-              {transcript.length.toLocaleString()} characters · The intelligence engine automatically parses speakers, decisions, and actionable commitments with owners and due dates.
+              {transcript.length.toLocaleString()} characters · Speakers, decisions and commitments (with owners and due dates) are extracted automatically.
             </p>
           </div>
 
           <button
             onClick={handleSubmit}
             disabled={!canSubmit}
-            className="w-full bg-blue-600 hover:bg-blue-500 text-white py-2.5 rounded-lg transition-colors disabled:opacity-40 font-semibold text-xs sm:text-sm cursor-pointer shadow-sm"
+            className="bg-blue-600 hover:bg-blue-500 text-white h-9 px-4 rounded-md transition-colors disabled:opacity-40 font-medium text-[13px] cursor-pointer"
           >
-            {status === 'submitting' ? 'Submitting to Queue…' : 'Extract Institutional Decisions & Action Items'}
+            {status === 'submitting' ? 'Submitting…' : 'Extract decisions and commitments'}
           </button>
         </div>
 
         {status === 'queued' && result && (
           <div className="p-3.5 rounded-lg bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-xs space-y-1">
-            <p className="font-semibold">✓ {result.title} queued for institutional extraction</p>
+            <p className="font-semibold">{result.title} queued for extraction</p>
             <p className="text-emerald-500/80">{result.message}</p>
           </div>
         )}
@@ -293,18 +305,19 @@ export default function MeetingsPage() {
           </div>
         )}
       </section>
+      )}
 
       {/* Ingested Meetings List */}
       <section className="space-y-4">
-        <div className="flex items-center justify-between border-b border-slate-800 pb-2">
-          <h2 className="text-sm font-semibold text-slate-200">
-            Indexed Committee Proceedings ({meetings.length})
+        <div className="flex items-center justify-between">
+          <h2 className="text-[13px] font-medium text-slate-200">
+            All meetings <span className="text-slate-500 font-normal">{meetings.length}</span>
           </h2>
           <button
             onClick={refreshMeetings}
-            className="text-xs text-blue-400 hover:underline cursor-pointer"
+            className="text-[12px] text-slate-400 hover:text-slate-200 cursor-pointer"
           >
-            Refresh records
+            Refresh
           </button>
         </div>
 
@@ -319,30 +332,30 @@ export default function MeetingsPage() {
             {listError}
           </div>
         ) : meetings.length === 0 ? (
-          <div className="glass-panel p-8 text-center text-slate-400 text-xs">
-            No institutional meetings recorded yet. Use the form above or run the institutional ingestion script.
+          <div className="glass-panel">
+            <EmptyState icon="inbox" title="No meetings yet" body="Record a meeting's minutes to extract its decisions and commitments." />
           </div>
         ) : (
-          <ul className="space-y-3">
+          <ul className="glass-panel divide-y divide-white/[0.05] overflow-hidden">
             {meetings.map((m) => {
               const open = expandedId === m.id;
               return (
-                <li key={m.id} className="glass-panel overflow-hidden">
+                <li key={m.id}>
                   <button
                     onClick={() => void toggleExpand(m.id)}
-                    className="w-full text-left p-4 hover:bg-slate-900/50 transition-colors cursor-pointer"
+                    className="w-full text-left px-4 py-3.5 hover:bg-white/[0.025] transition-colors cursor-pointer"
                     aria-expanded={open}
                   >
                     <div className="flex items-start justify-between gap-4">
                       <div className="min-w-0">
-                        <p className="text-slate-100 font-semibold text-sm truncate">
+                        <p className="text-slate-100 font-medium text-[13px] truncate">
                           {m.title}
                         </p>
-                        <p className="text-[12px] text-slate-400 mt-0.5">
-                          Conducted: {formatDateTime(m.occurred_at)} · Source: {m.source}
+                        <p className="text-[12px] text-slate-500 mt-0.5">
+                          {formatDateTime(m.occurred_at)} · {m.source}
                         </p>
                         {m.summary && (
-                          <p className="text-xs text-slate-300 mt-2 line-clamp-2 leading-relaxed">
+                          <p className="text-[12px] text-slate-400 mt-1.5 line-clamp-2 leading-relaxed">
                             {m.summary}
                           </p>
                         )}
@@ -359,7 +372,7 @@ export default function MeetingsPage() {
                   </button>
 
                   {open && (
-                    <div className="border-t border-slate-800/80 p-4 space-y-4 bg-slate-950/40">
+                    <div className="border-t border-white/[0.05] px-4 py-4 space-y-4 bg-black/20">
                       {loadingDetail ? (
                         <p className="text-slate-400 text-xs">Retrieving meeting details…</p>
                       ) : detail && detail.id === m.id ? (
@@ -367,7 +380,7 @@ export default function MeetingsPage() {
                           {detail.summary && (
                             <div>
                               <h3 className="text-[12px] font-semibold text-slate-400 mb-1">
-                                Executive Summary
+                                Summary
                               </h3>
                               <p className="text-xs sm:text-sm text-slate-200 whitespace-pre-wrap leading-relaxed">
                                 {detail.summary}
@@ -378,13 +391,13 @@ export default function MeetingsPage() {
                           {detail.participants.length > 0 && (
                             <div>
                               <h3 className="text-[12px] font-semibold text-slate-400 mb-1.5">
-                                Verified Attendees &amp; Committee Members
+                                Attendees
                               </h3>
                               <div className="flex flex-wrap gap-1.5">
                                 {detail.participants.map((p) => (
                                   <span
                                     key={p}
-                                    className="text-xs px-2.5 py-0.5 rounded-full bg-blue-500/15 border border-blue-500/30 text-blue-300"
+                                    className="text-[12px] px-2 h-5 inline-flex items-center rounded-full border border-white/[0.08] bg-white/[0.03] text-slate-300"
                                   >
                                     {p}
                                   </span>
@@ -427,7 +440,7 @@ export default function MeetingsPage() {
 
                           <details className="group pt-1">
                             <summary className="text-[12px] text-slate-400 cursor-pointer hover:text-slate-300 select-none font-semibold">
-                              View Raw Minutes / Transcript
+                              Raw transcript
                             </summary>
                             <pre className="mt-2 text-xs text-slate-400 whitespace-pre-wrap font-mono max-h-72 overflow-y-auto bg-slate-900/90 rounded p-3 border border-slate-800 leading-relaxed">
                               {detail.raw_transcript}

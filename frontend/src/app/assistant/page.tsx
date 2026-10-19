@@ -1,6 +1,7 @@
 'use client';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { apiFetch } from '@/lib/api';
+import { Badge } from '@/components/ui/Badge';
 import EmptyState from '@/components/ui/EmptyState';
 
 interface Followup {
@@ -134,33 +135,33 @@ export default function AssistantPage() {
   };
 
   return (
-    <main className="p-6 md:p-10 max-w-3xl mx-auto space-y-8">
+    <main className="p-4 sm:p-6 md:p-10 max-w-3xl mx-auto space-y-8">
       {/* Header */}
       <div>
         <h1 className="text-xl md:text-2xl font-semibold text-slate-100 tracking-[-0.02em]">
           Faculty Desk
         </h1>
-        <p className="text-slate-400 text-xs sm:text-sm mt-1">
-          Proactive follow-ups on committee responsibilities, statutory deliverables, and evening conversational check-in.
+        <p className="text-slate-400 text-[13px] mt-1">
+          Follow-ups on your committee commitments, and an end-of-day check-in that keeps your tasks up to date.
         </p>
       </div>
 
       {/* Follow-ups */}
       <section className="space-y-3">
-        <h2 className="text-xs font-semibold text-slate-300">
-          Pending Follow-ups &amp; Inquiries ({followups.length})
+        <h2 className="text-[13px] font-medium text-slate-200">
+          Follow-ups <span className="text-slate-500 font-normal">{followups.length}</span>
         </h2>
         {followups.length === 0 ? (
           <div className="glass-panel">
             <EmptyState icon="check" title="You're all caught up" body="No open commitments need a follow-up right now. Use the debrief below to log today's work." />
           </div>
         ) : (
-          <ul className="space-y-3">
+          <ul className="glass-panel divide-y divide-white/[0.05] overflow-hidden">
             {followups.map((f) => (
-              <li key={f.commitment_id} className="glass-panel p-4 space-y-2">
-                <p className="text-xs sm:text-sm text-slate-200 font-medium">{f.message}</p>
+              <li key={f.commitment_id} className="px-4 py-3.5 space-y-1.5">
+                <p className="text-[13px] text-slate-100 font-medium">{f.message}</p>
                 <p className="text-[12px] text-slate-400">
-                  Regarding deliverable: <strong className="text-slate-300">{f.description}</strong> · Status: {f.status}
+                  {f.description} · {STATUS_WORD[f.status] ?? f.status}
                 </p>
                 <div className="mt-2 flex gap-2">
                   <input
@@ -169,15 +170,15 @@ export default function AssistantPage() {
                       setReplyText((prev) => ({ ...prev, [f.commitment_id]: e.target.value }))
                     }
                     onKeyDown={(e) => e.key === 'Enter' && sendReply(f.commitment_id)}
-                    placeholder="Provide brief status update in plain language…"
-                    className="flex-1 bg-slate-900 border border-slate-700 rounded-lg px-3 py-1.5 text-xs text-slate-100 placeholder-slate-500 focus:outline-none focus:border-blue-500"
+                    placeholder="Short status update…"
+                    className="flex-1 bg-white/[0.03] border border-white/[0.09] rounded-md px-3 h-8 text-[13px] text-slate-100 placeholder-slate-500 focus:outline-none focus:border-blue-500"
                   />
                   <button
                     onClick={() => sendReply(f.commitment_id)}
                     disabled={replyingId === f.commitment_id || !(replyText[f.commitment_id] ?? '').trim()}
-                    className="bg-blue-600 hover:bg-blue-500 text-white px-3.5 py-1.5 rounded-lg text-xs font-semibold transition-colors disabled:opacity-40 cursor-pointer"
+                    className="bg-blue-600 hover:bg-blue-500 text-white px-3 h-8 rounded-md text-[13px] font-medium transition-colors disabled:opacity-40 cursor-pointer"
                   >
-                    {replyingId === f.commitment_id ? '…' : 'Submit Update'}
+                    {replyingId === f.commitment_id ? '…' : 'Update'}
                   </button>
                 </div>
               </li>
@@ -189,17 +190,13 @@ export default function AssistantPage() {
       {/* End-of-day check-in */}
       <section className="space-y-3">
         <div className="flex items-center justify-between">
-          <h2 className="text-xs font-semibold text-slate-300">
-            Faculty End-of-Day Conversational Debrief
-          </h2>
+          <h2 className="text-[13px] font-medium text-slate-200">End-of-day check-in</h2>
           {checkin?.completed && (
-            <span className="text-[12px] px-2 py-0.5 rounded-full bg-emerald-500/15 border border-emerald-500/30 text-emerald-300 font-semibold">
-              Today&apos;s Debrief Recorded
-            </span>
+            <Badge tone="success">Recorded for today</Badge>
           )}
         </div>
 
-        <div className="glass-panel flex flex-col h-[380px] sm:h-[460px] md:h-[520px] rounded-lg overflow-hidden">
+        <div className="glass-panel flex flex-col h-[360px] sm:h-[380px] rounded-lg overflow-hidden">
           <div ref={scrollRef} className="flex-1 min-h-0 overflow-y-auto p-4 sm:p-5 space-y-3.5">
             {(checkin?.conversation ?? []).map((turn, i) => (
               <div
@@ -207,10 +204,10 @@ export default function AssistantPage() {
                 className={`flex ${turn.role === 'user' ? 'justify-end' : 'justify-start'}`}
               >
                 <div
-                  className={`max-w-[80%] px-3.5 py-2.5 rounded-lg text-xs leading-relaxed ${
+                  className={`max-w-[80%] px-3.5 py-2.5 rounded-xl text-[13px] leading-relaxed ${
                     turn.role === 'user'
-                      ? 'bg-blue-600/20 border border-blue-500/40 text-slate-100'
-                      : 'bg-slate-900/90 border border-slate-800 text-slate-200'
+                      ? 'bg-white/[0.06] border border-white/[0.06] text-slate-100'
+                      : 'text-slate-200'
                   }`}
                 >
                   {turn.content}
@@ -219,9 +216,9 @@ export default function AssistantPage() {
             ))}
             {sending && (
               <div className="flex justify-start">
-                <div className="bg-slate-900/80 border border-slate-800 px-3 py-2 rounded-lg text-xs text-slate-400 flex items-center gap-1.5">
-                  <span className="w-1.5 h-1.5 bg-blue-400 rounded-full animate-bounce" />
-                  <span>Synthesizing progress updates…</span>
+                <div className="px-3.5 py-2 text-[13px] text-slate-500 flex items-center gap-1.5">
+                  <span className="w-1 h-1 bg-slate-400 rounded-full animate-bounce" />
+                  <span>Updating your tasks…</span>
                 </div>
               </div>
             )}
@@ -265,19 +262,19 @@ export default function AssistantPage() {
             </p>
           )}
 
-          <div className="flex gap-2 p-3 border-t border-slate-800 bg-slate-950/60">
+          <div className="flex gap-2 p-2.5 border-t border-white/[0.06]">
             <input
               value={message}
               onChange={(e) => setMessage(e.target.value)}
               onKeyDown={(e) => e.key === 'Enter' && !e.shiftKey && sendMessage()}
-              placeholder={checkin?.completed ? 'Daily debrief completed' : 'Mention lectures conducted, lab experiments evaluated, or committee prep done…'}
+              placeholder={checkin?.completed ? 'Check-in recorded for today' : 'What did you work on today?'}
               disabled={sending || checkin?.completed}
-              className="flex-1 bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-xs text-slate-100 placeholder-slate-500 focus:outline-none focus:border-blue-500 disabled:opacity-50"
+              className="flex-1 bg-white/[0.03] border border-white/[0.09] rounded-md px-3 h-9 text-[13px] text-slate-100 placeholder-slate-500 focus:outline-none focus:border-blue-500 disabled:opacity-50"
             />
             <button
               onClick={sendMessage}
               disabled={sending || checkin?.completed || !message.trim()}
-              className="bg-blue-600 hover:bg-blue-500 text-white px-4 py-2 rounded-lg text-xs font-semibold transition-colors disabled:opacity-40 cursor-pointer"
+              className="bg-blue-600 hover:bg-blue-500 text-white px-4 h-9 rounded-md text-[13px] font-medium transition-colors disabled:opacity-40 cursor-pointer"
             >
               Send
             </button>
@@ -289,7 +286,7 @@ export default function AssistantPage() {
             onClick={completeCheckin}
             className="text-xs text-slate-400 hover:text-emerald-400 transition-colors cursor-pointer"
           >
-            Mark today&apos;s debrief as complete →
+            Finish today&apos;s check-in →
           </button>
         )}
       </section>
