@@ -1,0 +1,798 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>IPD Report — DJSCE Institutional Brain</title>
+<style>
+  @page { size: A4; margin: 25mm 22mm 25mm 30mm; }
+  :root { --ink: #111; --muted: #555; --rule: #999; }
+  html { background: #fff; }
+  body { font-family: "Times New Roman", Times, serif; font-size: 12pt; line-height: 1.5; color: var(--ink);
+         background: #fff; margin: 0; text-align: justify; hyphens: auto; }
+  h1, h2, h3 { font-weight: bold; text-align: left; page-break-after: avoid; break-after: avoid; }
+  h1.chapter { font-size: 16pt; text-transform: uppercase; text-align: center; margin: 0 0 18pt;
+               break-before: page; letter-spacing: .02em; }
+  h1.chapter .num { display: block; font-size: 13pt; margin-bottom: 4pt; letter-spacing: .1em; }
+  h1.front { font-size: 15pt; text-transform: uppercase; text-align: center; margin: 0 0 18pt; break-before: page; }
+  h2 { font-size: 13pt; margin: 16pt 0 6pt; }
+  h3 { font-size: 12pt; margin: 12pt 0 4pt; }
+  p { margin: 0 0 8pt; }
+  ul, ol { margin: 0 0 8pt; padding-left: 22pt; }
+  li { margin-bottom: 3pt; }
+  table { border-collapse: collapse; width: 100%; margin: 4pt 0 12pt; font-size: 10.5pt; line-height: 1.3;
+          text-align: left; page-break-inside: avoid; break-inside: avoid; }
+  th, td { border: 0.6pt solid #444; padding: 3pt 5pt; vertical-align: top; }
+  th { background: #e9e9e9; }
+  td.n, th.n { text-align: right; white-space: nowrap; }
+  .tcap { font-weight: bold; text-align: center; font-size: 11pt; margin: 10pt 0 2pt; break-after: avoid; }
+  figure { margin: 10pt 0 14pt; text-align: center; break-inside: avoid; }
+  figure img { max-width: 100%; max-height: 105mm; border: 0.5pt solid #bbb; }
+  figure.diagram img { border: none; max-height: 140mm; }
+  figcaption { font-size: 11pt; font-weight: bold; margin-top: 4pt; }
+  figcaption span { font-weight: normal; }
+  pre { font-family: Consolas, "Courier New", monospace; font-size: 8.3pt; line-height: 1.35; text-align: left;
+        border: 0.6pt solid #888; background: #f6f6f6; padding: 6pt 8pt; white-space: pre-wrap; break-inside: avoid; }
+  code { font-family: Consolas, "Courier New", monospace; font-size: 10pt; }
+  .note { border: 0.8pt solid #444; padding: 6pt 9pt; font-size: 10.5pt; margin: 8pt 0 12pt; background: #fafafa; }
+  .blank { display: inline-block; border-bottom: 0.6pt solid #000; min-width: 55mm; }
+  .center { text-align: center; }
+  .refs p { text-indent: -24pt; padding-left: 24pt; text-align: left; font-size: 11pt; margin-bottom: 6pt; }
+
+  /* title page */
+  .title-page { text-align: center; height: 240mm; display: flex; flex-direction: column; justify-content: space-between; }
+  .title-page .t { font-size: 20pt; font-weight: bold; line-height: 1.25; margin-top: 6mm; }
+  .title-page .st { font-size: 13pt; font-style: italic; margin-top: 4mm; }
+  .title-page .sub { font-size: 12pt; }
+  .title-page table { width: 70%; margin: 0 auto; border: none; font-size: 12pt; }
+  .title-page td { border: none; padding: 2pt 6pt; }
+  .logo-box { width: 32mm; height: 32mm; border: 0.6pt dashed #888; margin: 0 auto; display: flex; align-items: center;
+              justify-content: center; font-size: 9pt; color: var(--muted); }
+
+  .sig { display: flex; justify-content: space-between; margin-top: 30mm; text-align: center; font-size: 11pt; }
+  .sig div { width: 30%; border-top: 0.6pt solid #000; padding-top: 3pt; }
+
+  /* contents */
+  .toc { width: 100%; font-size: 11.5pt; }
+  .toc div { display: flex; align-items: baseline; margin-bottom: 3pt; }
+  .toc .lvl1 { font-weight: bold; margin-top: 6pt; }
+  .toc .lvl2 { padding-left: 18pt; }
+  .toc .fill { flex: 1; border-bottom: 1pt dotted #666; margin: 0 4pt; transform: translateY(-3pt); }
+
+  body[data-part="front"] .part-body, body[data-part="body"] .part-front { display: none; }
+  body[data-part="front"] .part-front > h1.front:first-of-type { break-before: auto; }
+</style>
+</head>
+<body>
+
+<!-- ============================ FRONT MATTER ============================ -->
+<section class="part-front">
+
+<div class="title-page">
+  <div>
+    <div class="t">DJSCE Institutional Brain</div>
+    <div class="st">An Evidence-Grounded, Access-Aware Knowledge and Help-Desk Platform for Colleges</div>
+  </div>
+  <div class="sub">
+    Submitted in partial fulfilment of the requirements of the course<br>
+    <b>Innovative Product Development – <span class="blank" style="min-width:12mm"></span></b><br>
+    Year <span class="blank" style="min-width:12mm"></span>, Semester <span class="blank" style="min-width:12mm"></span>,
+    Computer Engineering
+  </div>
+  <div>
+    <div style="margin-bottom:4pt">by</div>
+    <table>
+      <tr><td><span class="blank"></span></td><td>SAP ID <span class="blank" style="min-width:30mm"></span></td></tr>
+      <tr><td><span class="blank"></span></td><td>SAP ID <span class="blank" style="min-width:30mm"></span></td></tr>
+      <tr><td><span class="blank"></span></td><td>SAP ID <span class="blank" style="min-width:30mm"></span></td></tr>
+      <tr><td><span class="blank"></span></td><td>SAP ID <span class="blank" style="min-width:30mm"></span></td></tr>
+    </table>
+  </div>
+  <div>
+    Under the guidance of<br><b><span class="blank"></span></b><br><span class="blank" style="min-width:40mm"></span> (designation)
+  </div>
+  <div>
+    <div class="logo-box">College logo</div>
+    <div style="margin-top:6pt"><b>Department of Computer Engineering</b><br>
+    Dwarkadas J. Sanghvi College of Engineering, Mumbai<br>
+    (Autonomous College affiliated to the University of Mumbai)<br>
+    Academic year <span class="blank" style="min-width:25mm"></span></div>
+  </div>
+</div>
+
+<h1 class="front">Certificate</h1>
+<p>This is to certify that the project entitled <b>“DJSCE Institutional Brain: An Evidence-Grounded,
+Access-Aware Knowledge and Help-Desk Platform for Colleges”</b> is a bona fide work carried out by
+<span class="blank"></span>, <span class="blank"></span>, <span class="blank"></span> and
+<span class="blank"></span>, submitted in partial fulfilment of the requirements of the course Innovative
+Product Development in Computer Engineering at Dwarkadas J. Sanghvi College of Engineering, during the
+academic year <span class="blank" style="min-width:25mm"></span>.</p>
+<div class="sig"><div>Internal Guide</div><div>Head of Department</div><div>Principal</div></div>
+
+<h1 class="front">Project Report Approval</h1>
+<p>This project report entitled <b>“DJSCE Institutional Brain”</b> by the students named on the title page is
+approved for the course Innovative Product Development, Department of Computer Engineering, Dwarkadas J.
+Sanghvi College of Engineering.</p>
+<p style="margin-top:20mm">Examiners:</p>
+<p>1. <span class="blank" style="min-width:80mm"></span></p>
+<p style="margin-top:10mm">2. <span class="blank" style="min-width:80mm"></span></p>
+<p style="margin-top:16mm">Date: <span class="blank" style="min-width:35mm"></span>
+&nbsp;&nbsp;&nbsp;&nbsp; Place: Mumbai</p>
+
+<h1 class="front">Declaration</h1>
+<p>We declare that this written submission represents our ideas in our own words and, where others’ ideas or
+words have been included, we have adequately cited and referenced the original sources. We also declare that
+we have adhered to all principles of academic honesty and integrity and have not misrepresented, fabricated
+or falsified any idea, data, fact or source in our submission. We understand that any violation of the above
+will be cause for disciplinary action by the Institute.</p>
+<p>We further declare that the committee meetings, people, commitments and internal procedures used in this
+project are <b>synthetic</b>, written by the team for demonstration, and do not represent official records,
+decisions or policy of Dwarkadas J. Sanghvi College of Engineering. Public information used by the system is
+taken from the college’s public website and is cited by URL and retrieval date.</p>
+<table style="margin-top:14mm;border:none">
+  <tr><td style="border:none">Name: <span class="blank"></span></td><td style="border:none">Signature: <span class="blank" style="min-width:40mm"></span></td></tr>
+  <tr><td style="border:none">Name: <span class="blank"></span></td><td style="border:none">Signature: <span class="blank" style="min-width:40mm"></span></td></tr>
+  <tr><td style="border:none">Name: <span class="blank"></span></td><td style="border:none">Signature: <span class="blank" style="min-width:40mm"></span></td></tr>
+  <tr><td style="border:none">Name: <span class="blank"></span></td><td style="border:none">Signature: <span class="blank" style="min-width:40mm"></span></td></tr>
+</table>
+<p>Date: <span class="blank" style="min-width:35mm"></span></p>
+
+<h1 class="front">Acknowledgement</h1>
+<p>We are grateful to our guide, <span class="blank"></span>, for direction and critical feedback throughout
+the project, and to the Head of the Department of Computer Engineering and the Principal of Dwarkadas J.
+Sanghvi College of Engineering for the opportunity and facilities to carry out this work. We thank the faculty
+members who reviewed our demonstrations and suggested the Help Desk and notice features.</p>
+<p>The public knowledge used by the system is drawn from the college’s public website (www.djsce.ac.in);
+each file records the page it came from and the date it was retrieved. We also acknowledge the open-source
+projects on which the system is built, including FastAPI, Next.js, PostgreSQL, ChromaDB, Neo4j, Celery and
+spaCy, and the open-weight language model served through Groq.</p>
+
+<h1 class="front">Abstract</h1>
+<p>Colleges take most operational decisions in committee meetings and keep their procedures in scattered
+circulars. Action items go untracked, procedures are re-learned every academic cycle, and students depend on
+office visits for routine information. General-purpose chatbots are a poor fit: they cannot cite
+institutional sources, may invent policy, and ignore who is allowed to see what.</p>
+<p>This report presents <i>DJSCE Institutional Brain</i>, a web platform that ingests meeting transcripts and
+documents, uses a large language model (LLM) to extract decisions, owner-assigned commitments and step-by-step
+procedures, and routes every AI output through human review. All knowledge is stored as citable evidence
+fragments labelled <i>internal</i> or <i>public</i> and tagged with a department; student retrieval is
+restricted to public evidence inside the vector query and re-checked on every result. Students use a Help Desk
+that answers from public information and escalates unresolved questions as tickets, which an LLM classifier
+triages (with a deterministic keyword fallback) and faculty answer from an AI-drafted, cited reply.</p>
+<p>The system is built with FastAPI, Next.js, PostgreSQL, ChromaDB, Neo4j and Celery, deployed with Docker
+Compose, and covered by 235 automated backend tests. On synthetic committee records combined with authentic
+public website content, LLM triage reached 90.6 % accuracy against 57.3 % for a keyword baseline; the assistant
+retrieved a correct source in the top five for all 33 evaluation questions and answered 91 % correctly;
+commitment extraction scored precision and recall of 1.00; and adversarial tests found no visibility leaks in
+20 student queries and no department leaks in 10. Six of seven objectives were met; the 95th-percentile
+answer latency (10.03 s) narrowly missed its 10 s target.</p>
+<p><b>Keywords:</b> retrieval-augmented generation, access control, meeting action items, help desk,
+human-in-the-loop, higher education.</p>
+
+<h1 class="front">Contents</h1>
+<div class="toc" id="toc"></div>
+
+<h1 class="front">List of Figures</h1>
+<div class="toc" id="lof"></div>
+
+<h1 class="front">List of Tables</h1>
+<div class="toc" id="lot"></div>
+
+<h1 class="front">List of Abbreviations</h1>
+<table>
+<tr><th style="width:22%">Abbreviation</th><th>Expansion</th></tr>
+<tr><td>AI</td><td>Artificial Intelligence</td></tr>
+<tr><td>API</td><td>Application Programming Interface</td></tr>
+<tr><td>CE / IT</td><td>Computer Engineering / Information Technology (departments)</td></tr>
+<tr><td>F1</td><td>Harmonic mean of precision and recall</td></tr>
+<tr><td>hit@5</td><td>A correct source appears among the top five retrieved results</td></tr>
+<tr><td>IQAC</td><td>Internal Quality Assurance Cell</td></tr>
+<tr><td>JWT</td><td>JSON Web Token</td></tr>
+<tr><td>KB</td><td>Knowledge Base</td></tr>
+<tr><td>LLM</td><td>Large Language Model</td></tr>
+<tr><td>NBA / NAAC</td><td>National Board of Accreditation / National Assessment and Accreditation Council</td></tr>
+<tr><td>NER</td><td>Named-Entity Recognition</td></tr>
+<tr><td>p50 / p95</td><td>Median / 95th-percentile value of a latency distribution</td></tr>
+<tr><td>RAG</td><td>Retrieval-Augmented Generation</td></tr>
+<tr><td>RBAC</td><td>Role-Based Access Control</td></tr>
+<tr><td>SOP</td><td>Standard Operating Procedure</td></tr>
+</table>
+
+</section>
+
+<!-- ============================ BODY ============================ -->
+<section class="part-body">
+
+<h1 class="chapter" style="break-before:auto"><span class="num">Chapter 1</span>Introduction</h1>
+
+<p>Indian engineering colleges are run through committees: the Academic Council, Boards of Studies, the
+Internal Quality Assurance Cell (IQAC), the Examination Cell, the Training and Placement Cell and department
+committees. Each meeting produces <i>decisions</i> (“the elective is approved for 60 students”) and
+<i>commitments</i> (“Prof. X will circulate the rubric by Friday”). These are written as free-text minutes,
+stored as files and rarely tracked to completion. Procedures such as revaluation or equipment-breakage
+recovery live in circulars and in the memory of a few staff members, so they are re-learned every academic
+cycle. Students, meanwhile, ask the same routine questions at office counters, and their queries leave no
+record that could improve the next answer.</p>
+
+<p>Large language models can now read transcripts and documents and answer questions about them. An
+institution, however, cannot simply place a chatbot in front of its records. Answers must be traceable to a
+source; AI output that becomes procedure must be reviewed by a person; and a student must never see internal
+discussion. This project builds a platform around those three requirements:</p>
+<ol>
+  <li><b>Evidence first</b>: every answer, procedure and draft reply carries the excerpts it came from.</li>
+  <li><b>A human in the loop</b>: nothing generated by the AI becomes a procedure or reaches a student without
+  a person approving or sending it.</li>
+  <li><b>Access control inside retrieval</b>: what a user may see is enforced where evidence is searched,
+  not only in the user interface.</li>
+</ol>
+
+<p><i>DJSCE Institutional Brain</i> turns meetings and documents into structured, cited knowledge (decisions,
+accountable commitments and reviewed procedures), serves it to staff through an assistant and dashboards, and
+serves students through a Help Desk that answers only from public information and escalates the rest to
+faculty as tracked tickets.</p>
+
+<div class="note"><b>Data used in this project.</b> Committee meetings, people, commitments and internal
+procedures are <b>synthetic</b>, written by the team, and are not official DJSCE records or policy. Public
+knowledge is authentic information published on www.djsce.ac.in, cited per file by URL and retrieval date
+(13 October 2026).</div>
+
+<p>The report is organised as follows. Chapter 2 explains the need for the product and compares existing
+systems. Chapter 3 surveys the literature. Chapter 4 formulates the problem, objectives and scope. Chapter 5
+describes the design, Chapter 6 the implementation, and Chapter 7 the evaluation. Chapter 8 concludes and
+outlines future work.</p>
+
+<h1 class="chapter"><span class="num">Chapter 2</span>Need of the Product</h1>
+
+<h2>2.1 Introduction and need</h2>
+<p>Four groups of people interact with institutional knowledge, each with a different problem.
+Table 2.1 summarises what each currently struggles with and what the product offers them.</p>
+
+<div class="tcap">Table 2.1 Stakeholders and needs</div>
+<table>
+<tr><th>Stakeholder</th><th>Current pain</th><th>What the product gives them</th></tr>
+<tr><td>Committee coordinators</td><td>Action items from meetings are forgotten; follow-up is manual</td><td>Commitments extracted with owner and due date; overdue alerts; confirm or send back completed work</td></tr>
+<tr><td>Faculty</td><td>Re-learn procedures; repeat the same answers to students</td><td>Cited procedures; AI-drafted ticket replies they edit and send; an end-of-day check-in that updates their tasks</td></tr>
+<tr><td>Students</td><td>Office visits for routine questions; no record of queries</td><td>Instant answers from public department information; tickets routed to the right office</td></tr>
+<tr><td>IQAC / accreditation</td><td>Evidence for decisions scattered across files</td><td>Every decision and procedure linked to its source excerpt; audit log; minutes export</td></tr>
+</table>
+
+<h2>2.2 Analysis of existing systems</h2>
+<p>Colleges today rely on three kinds of tool, none of which was designed for meeting-derived knowledge.
+<b>College ERP and learning-management systems</b> record transactions such as admissions, attendance,
+marks and fees, and offer role-based pages, but they do not capture the reasoning and commitments made in
+meetings. <b>General-purpose chatbots</b> answer fluently but without institutional grounding, and they
+hallucinate [8], [9]. <b>Enterprise search and RAG prototypes</b> ground answers in retrieved text [1], [2],
+but typical deployments retrieve from a single shared index and so do not distinguish what a student may see
+from what staff may see; recent work shows that RAG systems can leak the private documents they retrieve from
+[12]. Table 2.2 compares these categories with the proposed system.</p>
+
+<div class="tcap">Table 2.2 Comparison with existing categories of system</div>
+<table>
+<tr><th>Criterion</th><th>College ERP / LMS</th><th>Generic chatbot</th><th>Enterprise search / RAG prototype</th><th>Institutional Brain</th></tr>
+<tr><td>Captures meeting decisions and commitments</td><td>✗</td><td>✗</td><td>✗</td><td>✓ with owners and due dates</td></tr>
+<tr><td>Answers cite institutional sources</td><td>✗</td><td>✗</td><td>partial</td><td>✓ every answer</td></tr>
+<tr><td>Human review before AI output is published</td><td>n/a</td><td>✗</td><td>✗</td><td>✓ procedures and ticket replies</td></tr>
+<tr><td>Role-aware retrieval (students vs staff)</td><td>role-based pages</td><td>✗</td><td>rarely</td><td>✓ inside the vector query</td></tr>
+<tr><td>Student query tracking</td><td>partial</td><td>✗</td><td>✗</td><td>✓ tickets with routing</td></tr>
+<tr><td>Detects outdated procedures</td><td>✗</td><td>✗</td><td>✗</td><td>✓ contradiction → stale</td></tr>
+</table>
+
+<h2>2.3 Applications</h2>
+<ul>
+  <li><b>Committee secretariats:</b> minutes become tracked commitments with owners, due dates and reminders.</li>
+  <li><b>Department offices and the Examination Cell:</b> reviewed procedures and a queue of student queries.</li>
+  <li><b>IQAC and accreditation preparation:</b> decisions and procedures linked to their source evidence.</li>
+  <li><b>Student help desk:</b> instant answers from public information, with escalation to the right office.</li>
+</ul>
+<p>The system is configured per institution through a single file (<code>institution.yaml</code>: branding,
+departments, help-desk categories and offices, members, academic calendar), so another college can adopt it
+without code changes.</p>
+
+<h1 class="chapter"><span class="num">Chapter 3</span>Survey</h1>
+
+<h2>3.1 Literature survey</h2>
+<p><b>Retrieval-augmented generation and grounding.</b> Lewis et al. [1] introduced RAG, combining a
+pre-trained generator with a dense index retrieved at inference time, and showed more specific and factual
+output than a parametric-only model. Gao et al. [2] survey the design space (naive, advanced and modular RAG)
+and identify retrieval quality and evaluation as open problems. Dense passage retrieval [3] and sentence
+embeddings [4] made semantic retrieval practical; our system uses the BGE family of embedding models [5].</p>
+
+<p><b>Citations and evaluation.</b> Gao, Yen, Yu and Chen [6] built ALCE, a benchmark for answers with
+citations, and found that even strong models lacked full citation support about half the time on ELI5.
+RAGAs [7] separates retrieval quality, faithfulness and answer relevance. We adopt the same separation and
+measure whether the right source was retrieved separately from whether the answer is correct.</p>
+
+<p><b>Hallucination.</b> Ji et al. [8] and Huang et al. [9] survey hallucination in text generation and in
+LLMs; both list retrieval grounding and human verification among the main mitigations. This motivates our
+rule that no AI output becomes a procedure or reaches a student without a person approving it.</p>
+
+<p><b>Meeting information extraction.</b> Purver et al. [10] detect action items in multi-party meetings by
+modelling the dialogue structure in which tasks are proposed and agreed, then summarise each task. QMSum [11]
+frames meeting understanding as query-focused summarisation. We use an LLM with a constrained JSON schema to
+extract decisions and commitments (owner, task, due date) from speaker-attributed transcripts.</p>
+
+<p><b>Access control and RAG security.</b> Role-based access control [14] assigns permissions to roles rather
+than individuals; we use four ranked roles. Zeng et al. [12] show empirically that RAG systems can leak their
+retrieval database, and Greshake et al. [13] show that retrieved content can carry indirect prompt injection.
+We therefore filter by visibility and department <i>inside</i> the vector query, re-check every hit, and keep
+AI drafts and triage fields away from students.</p>
+
+<p><b>Ticket triage.</b> Revina et al. [15] find that well-chosen simple features can match complex models for
+IT ticket classification, and Zangari et al. [16] survey ticket automation and multi-level classification. We
+compare an LLM classifier with a keyword baseline and a small non-generative classifier (laya), and keep the
+keyword classifier as a deterministic fallback.</p>
+
+<p><b>Knowledge graphs.</b> Hogan et al. [17] survey graph data models and knowledge extraction; GraphRAG [18]
+builds an entity graph to answer corpus-wide questions. We use a lighter graph (people, committees, meetings,
+documents) for navigation rather than for answer generation.</p>
+
+<p><b>Chatbots in education.</b> Systematic reviews by Okonkwo and Ade-Ibijola [19] and Wollny et al. [20]
+find chatbots useful for routine student support, but point to weak evaluation and limited integration with
+institutional processes. Our Help Desk is evaluated on a labelled set and is tied to staff workflows.</p>
+
+<h2>3.2 Outcome of the survey</h2>
+<p>The literature shows what works: RAG with explicit citations, structured extraction from dialogue, and
+simple, robust classifiers. It also shows three gaps in tools available to colleges:</p>
+<ol>
+  <li>access-aware retrieval, where students and staff search different evidence;</li>
+  <li>accountability for commitments made in meetings; and</li>
+  <li>human review built into the workflow rather than added afterwards.</li>
+</ol>
+<p>These three gaps define the novelty of our design (Section 4.3).</p>
+
+<h1 class="chapter"><span class="num">Chapter 4</span>Problem Formulation</h1>
+
+<h2>4.1 Problem statement</h2>
+<p class="note" style="font-style:italic">To design and implement a platform that converts a college’s meeting
+transcripts and documents into structured, citable institutional knowledge (decisions, accountable
+commitments and reviewed procedures) and serves it to staff and students through grounded, role-restricted
+AI assistance with human oversight.</p>
+
+<h2>4.2 Product objectives</h2>
+<p>Targets were set from the baseline evaluation run of 13 October 2026; results are from the final run of
+19 October 2026 (Chapter 7).</p>
+
+<div class="tcap">Table 4.1 Objectives, targets and results</div>
+<table>
+<tr><th>#</th><th>Objective</th><th>Target</th><th>Result</th><th>Met</th></tr>
+<tr><td>1</td><td>Extract commitments from transcripts</td><td>precision ≥ 0.80, recall ≥ 0.80</td><td>P 1.00, R 1.00</td><td>Yes</td></tr>
+<tr><td>2</td><td>Retrieve a correct source for questions</td><td>hit@5 ≥ 90 %</td><td>100 %</td><td>Yes</td></tr>
+<tr><td>3</td><td>Answer questions correctly from sources</td><td>≥ 80 %</td><td>91 %</td><td>Yes</td></tr>
+<tr><td>4</td><td>No internal evidence reaches students</td><td>0 leaks on adversarial set</td><td>0 / 20</td><td>Yes</td></tr>
+<tr><td>5</td><td>No cross-department leaks for students</td><td>0 leaks</td><td>0 / 10</td><td>Yes</td></tr>
+<tr><td>6</td><td>Route tickets correctly</td><td>LLM accuracy ≥ 85 % and above keyword baseline</td><td>90.6 % vs 57.3 %</td><td>Yes</td></tr>
+<tr><td>7</td><td>Responsive answers</td><td>p95 answer latency ≤ 10 s</td><td>10.03 s</td><td>Narrowly missed</td></tr>
+</table>
+
+<h2>4.3 Novelty</h2>
+<ol>
+  <li><b>Evidence first.</b> Every answer, procedure and ticket draft carries the excerpts it came from.</li>
+  <li><b>Human in the loop by design.</b> Procedures start as drafts that a coordinator approves; ticket replies
+  are written by faculty from an AI draft that the student never sees.</li>
+  <li><b>Access-aware retrieval.</b> Visibility and department are stored on each fragment, filtered in the
+  vector query, and re-checked on every hit.</li>
+  <li><b>Meetings → accountability.</b> Commitments get owners, due dates, progress, blockers and a coordinator
+  confirmation step; a conversational check-in updates them.</li>
+  <li><b>Constrained triage with a deterministic fallback.</b> The LLM may only choose configured categories;
+  otherwise the keyword classifier decides.</li>
+  <li><b>Freshness.</b> New evidence that contradicts an approved procedure marks it <i>stale</i> for re-review.</li>
+</ol>
+
+<h2>4.4 Scope</h2>
+<p><b>In scope:</b> transcript and document ingestion (.txt, .pdf, .docx); decision and commitment
+extraction; procedures with versions and review dates; cited question answering; a student Help Desk with
+tickets; notices filtered by department, year, semester and division; an academic calendar; a knowledge
+graph; analytics; an audit log; minutes export (DOCX/PDF); four roles and per-department scope.</p>
+<p><b>Out of scope:</b> live meeting recording, ERP integration, and real internal records or personal data.
+Public knowledge is a snapshot of public pages of www.djsce.ac.in retrieved on 13 October 2026, without
+personal contact data.</p>
+
+<h1 class="chapter"><span class="num">Chapter 5</span>Proposed Design</h1>
+
+<h2>5.1 Approach selection</h2>
+<p>Each major component was chosen against at least one alternative (Table 5.1). The guiding constraints
+were a single demonstration machine without a GPU, no labelled institutional data for fine-tuning, and the
+requirement that institutional data stay on the college’s own infrastructure apart from LLM calls.</p>
+
+<div class="tcap">Table 5.1 Technology choices and alternatives</div>
+<table>
+<tr><th style="width:20%">Need</th><th style="width:30%">Choice</th><th>Alternatives considered and why not</th></tr>
+<tr><td>Language understanding and generation</td><td>Hosted LLM (<code>openai/gpt-oss-120b</code> via Groq), JSON-constrained prompts</td><td>Fine-tuning needs labelled institutional data we do not have; a local LLM needs a GPU the demo machine lacks</td></tr>
+<tr><td>Retrieval</td><td>Dense embeddings <code>BAAI/bge-large-en-v1.5</code> [5] in ChromaDB, cosine similarity</td><td>BM25 misses paraphrases (“re-checking” vs “revaluation”); a hosted vector database adds cost and moves data off-site</td></tr>
+<tr><td>Metadata and workflow</td><td>PostgreSQL with Alembic migrations</td><td>Document stores make relational workflows (owners, versions, tickets) harder</td></tr>
+<tr><td>Entity relations</td><td>spaCy NER → Neo4j</td><td>Building the graph with an LLM costs more tokens with no gain for navigation</td></tr>
+<tr><td>Triage</td><td>LLM restricted to configured categories → keyword fallback; laya compared</td><td>LLM alone fails when the API is unavailable; keyword alone is inaccurate (Table 7.4)</td></tr>
+<tr><td>Background work</td><td>Celery + Redis (ingestion, scans, reminders)</td><td>Ingesting inside the request blocks the UI for tens of seconds</td></tr>
+</table>
+
+<h2>5.2 System architecture</h2>
+<p>Figure 5.1 shows five layers: sources, processing services, the evidence layer, access-aware retrieval,
+and the web application with human review. The key design decision is that there is a <b>single evidence
+pipeline</b>: every transcript turn or document chunk becomes a <code>Fragment</code> carrying
+<code>visibility</code> (internal/public) and <code>department</code>, stored in PostgreSQL and mirrored
+with the same metadata in ChromaDB, with recognised entities sent to Neo4j (Figure 5.2). Because all
+downstream features read from this one store, the access policy has to be enforced in only one place.</p>
+
+<figure class="diagram"><img src="figures/fig5_1_architecture.png" alt=""><figcaption>Figure 5.1 <span>Layered system architecture</span></figcaption></figure>
+<figure class="diagram"><img src="figures/fig5_2_evidence_pipeline.png" alt=""><figcaption>Figure 5.2 <span>Evidence pipeline and access-aware retrieval</span></figcaption></figure>
+
+<p>Figure 5.3 shows the help-desk sequence. A student’s question is first answered from public evidence; if
+the student is not satisfied, a ticket is raised, triaged by the LLM (or the keyword fallback), routed to the
+configured office, and given an AI draft with sources that only staff can see. A faculty member edits and
+sends the reply. Figure 5.4 shows the lifecycle of a procedure (called a <i>skill</i> in the code): drafts
+are extracted from internal evidence, approved by a coordinator, marked stale when contradicted by new
+evidence, and eventually retired or rejected.</p>
+
+<figure class="diagram"><img src="figures/fig5_3_helpdesk_sequence.png" alt=""><figcaption>Figure 5.3 <span>Help-desk sequence (student → triage → faculty reply)</span></figcaption></figure>
+<figure class="diagram"><img src="figures/fig5_4_skill_lifecycle.png" alt=""><figcaption>Figure 5.4 <span>Procedure (skill) lifecycle</span></figcaption></figure>
+
+<h2>5.3 Roles and permissions</h2>
+<p>Permissions are enforced in the API; the user interface only hides what the API already refuses.</p>
+<div class="tcap">Table 5.2 Roles and permissions</div>
+<table>
+<tr><th>Capability</th><th>Student</th><th>Faculty</th><th>Committee Coordinator</th><th>System Administrator</th></tr>
+<tr><td>Help Desk answers (public knowledge only)</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td></tr>
+<tr><td>Raise tickets, see own tickets</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td></tr>
+<tr><td>Read notices addressed to them</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td></tr>
+<tr><td>Staff assistant over internal evidence</td><td>✗</td><td>own dept + institution-wide</td><td>all</td><td>all</td></tr>
+<tr><td>Ticket queue, AI draft, reply</td><td>✗</td><td>✓</td><td>✓</td><td>✓</td></tr>
+<tr><td>My Work, Faculty Desk check-in</td><td>✗</td><td>✓</td><td>✓</td><td>✓</td></tr>
+<tr><td>Approve / reject / retire procedures; extract</td><td>✗</td><td>✗</td><td>✓</td><td>✓</td></tr>
+<tr><td>Analytics, assign tasks, confirm completion</td><td>✗</td><td>✗</td><td>✓</td><td>✓</td></tr>
+<tr><td>Manage users and roles</td><td>✗</td><td>✗</td><td>✗</td><td>✓</td></tr>
+</table>
+
+<h2>5.4 Data model</h2>
+<p>The relational schema has 17 tables (<code>backend/app/models/structured.py</code>); list-valued fields are
+stored as JSON strings. Table 5.3 groups them by purpose.</p>
+<div class="tcap">Table 5.3 Main tables</div>
+<table>
+<tr><th style="width:32%">Table</th><th>Purpose</th></tr>
+<tr><td>User</td><td>Login, role, department; year, semester and division for students</td></tr>
+<tr><td>Employee</td><td>Staff directory (seeded from <code>institution.yaml</code>)</td></tr>
+<tr><td>Meeting</td><td>Title, date, summary, decisions, participants, raw transcript, department</td></tr>
+<tr><td>Fragment</td><td>One citable excerpt: text, source, speaker, <code>visibility</code>, <code>department</code> (mirrored in ChromaDB)</td></tr>
+<tr><td>Commitment, CommitmentUpdate</td><td>Task, owner, due date, status, progress, blocker; history of updates</td></tr>
+<tr><td>CheckIn</td><td>Faculty end-of-day conversation and the task updates it produced</td></tr>
+<tr><td>Skill, SkillVersion, SkillCitation</td><td>Procedure (steps, rules, owner office, review date, status), its versions, and cited fragments</td></tr>
+<tr><td>Ticket</td><td>Student query, triage (category, priority, office, engine), AI draft and sources, human reply</td></tr>
+<tr><td>Notice, NoticeRecipient</td><td>Notices with audience filters and read receipts</td></tr>
+<tr><td>ActiveInsight</td><td>Deadline, risk and bottleneck alerts on the overview</td></tr>
+<tr><td>QueryLog</td><td>Questions asked (for analytics and knowledge gaps)</td></tr>
+<tr><td>AuditLog</td><td>Who did what and when</td></tr>
+<tr><td>Document, ProgressReport</td><td>Uploaded document records; generated progress reports</td></tr>
+</table>
+
+<h1 class="chapter"><span class="num">Chapter 6</span>Implementation</h1>
+
+<h2>6.1 Backend services</h2>
+<p>The backend is written in FastAPI (<code>backend/app</code>). Its 17 routers in <code>api/v1/</code> stay
+thin; logic lives in 24 module-level services in <code>services/</code>. The main services are:</p>
+<ul>
+  <li><b>transcript_service / extraction_service</b> parse speaker turns, create fragments, and call the LLM
+  with a JSON schema for summary, decisions and commitments; owners are matched to staff.</li>
+  <li><b>fragment_service</b> is the only writer to the evidence store: a PostgreSQL row plus a ChromaDB vector
+  with the same visibility and department.</li>
+  <li><b>parser</b> splits documents into chunks of up to 800 characters with 150-character overlap, keeping
+  question–answer pairs together.</li>
+  <li><b>skill_service / procedure_service</b> synthesise procedures from internal fragments, keep versions,
+  owner office and review dates, write student summaries, and export DOCX/PDF and a handbook.</li>
+  <li><b>freshness_service</b> scans new evidence for contradictions with approved procedures and marks them
+  stale with the reason and evidence.</li>
+  <li><b>rag_service</b> retrieves the top 5 fragments plus up to 2 approved procedures, filtered by role and
+  department, and asks the LLM (temperature 0.2) for an answer with numbered citations.</li>
+  <li><b>ticket_service</b> triages tickets (LLM → keyword), routes them to the configured office, and drafts a
+  cited reply for staff.</li>
+  <li><b>commitment_service / pa_service</b> handle progress, blockers, confirmation, follow-up messages and the
+  end-of-day check-in that turns plain-language updates into task changes.</li>
+  <li><b>graph_service / ner_service</b> build Employee, Project, Document and Meeting nodes with MENTIONS and
+  ATTENDED edges; people are added only with supporting evidence.</li>
+  <li><b>notice_service, calendar_service, analytics_service, audit_service, user_service</b> provide notices,
+  reminders, dashboards, the audit trail and user administration.</li>
+</ul>
+<p>Ingestion endpoints return HTTP 202 and enqueue work on Celery. Scheduled jobs (Celery beat) run the daily
+08:00 insight sweep, the faculty check-in at a configured hour, an hourly follow-up scan for stale or overdue
+commitments, procedure extraction at 03:00, the freshness scan at 04:00, and reminders for academic dates and
+for commitments due within three days.</p>
+
+<h2>6.2 Access control</h2>
+<p>Users have one of four ranked roles (<code>student &lt; employee &lt; manager &lt; admin</code>, shown in the
+interface as Student, Faculty, Committee Coordinator and System Administrator). Internal routes depend on
+<code>require_staff</code> and elevated actions on <code>require_role("manager")</code>; self-registration
+creates students only. Retrieval applies the policy twice, once inside the vector query and once on every
+returned hit (Algorithm 6.1), so a defect in one layer alone cannot leak evidence. Ticket triage is shown in
+Algorithm 6.2. Students receive HTTP 404 for other people’s tickets and never receive <code>ai_*</code> fields.</p>
+
+<pre><b>Algorithm 6.1</b> AnswerQuestion(question, user)
+  public_only ← (user.role = student)
+  depts ← {user.department, "all"}   unless user.role ≥ manager
+  filter ← {visibility = public if public_only} ∧ {department ∈ depts if depts}
+  hits ← VectorSearch(embed(question), k = 5, where = filter)
+         ∪ VectorSearch(procedures, k = 2, where = filter)
+  hits ← [h ∈ hits | (¬public_only ∨ h.visibility = public)
+                    ∧ (no depts ∨ h.department ∈ depts)]
+  answer ← LLM(rules + numbered hits, question)
+  RETURN answer, hits                       ▷ sources always returned</pre>
+
+<pre><b>Algorithm 6.2</b> TriageTicket(subject, description)
+  r ← LLMClassify(text, allowed = categories from institution.yaml)
+  IF r is invalid OR r.category ∉ allowed THEN r ← KeywordClassify(text)
+  ticket.routed_to ← office(r.category);  ticket.priority ← r.priority
+  ticket.ai_draft, ticket.ai_sources ← AnswerQuestion(text, staff)
+                                    ▷ ai_* fields are never returned to students</pre>
+
+<h2>6.3 Frontend</h2>
+<p>The frontend uses Next.js 16 and React 19 with Tailwind CSS (<code>frontend/src</code>), with a restrained,
+dense visual style so that tables of commitments, tickets and procedures stay readable. All API calls go
+through one helper, and <code>/api/*</code> is proxied to the backend. A persistent banner states that the
+system is a demonstration prototype (Figure 6.1).</p>
+
+<figure><img src="figures/fig6_01_login.png" alt=""><figcaption>Figure 6.1 <span>Sign-in page with demonstration-prototype notice</span></figcaption></figure>
+
+<h3>6.3.1 Student view</h3>
+<p>Students see the Help Desk, Assistant, Notices and Calendar. The Help Desk (Figure 6.2) accepts a
+question in plain language and answers only from public information, listing the sources used
+(Figure 6.3). If the answer does not help, the student raises a ticket from the same page.</p>
+<figure><img src="figures/fig6_02_student_helpdesk.png" alt=""><figcaption>Figure 6.2 <span>Student Help Desk</span></figcaption></figure>
+<figure><img src="figures/fig6_03_student_answer.png" alt=""><figcaption>Figure 6.3 <span>Student answer from public information, with sources</span></figcaption></figure>
+
+<h3>6.3.2 Staff view</h3>
+<p>Staff additionally see Overview, My Work, Faculty Desk, Ticket Queue, Meetings, Procedures, Documents and
+Knowledge Graph. The Overview (Figure 6.4) gathers deadline and risk insights and upcoming commitments. My
+Work (Figure 6.5) lists each commitment with progress, due date and who assigned it; marking it done sends it
+to the coordinator for confirmation. In the Ticket Queue (Figure 6.6) staff see the AI triage and an unsent,
+cited draft reply, which they edit and send themselves.</p>
+<figure><img src="figures/fig6_04_overview.png" alt=""><figcaption>Figure 6.4 <span>Staff overview: insights and upcoming commitments</span></figcaption></figure>
+<figure><img src="figures/fig6_05_my_work.png" alt=""><figcaption>Figure 6.5 <span>My Work: commitment with progress and due date</span></figcaption></figure>
+<figure><img src="figures/fig6_06_ticket_review.png" alt=""><figcaption>Figure 6.6 <span>Ticket review: AI triage and unsent AI draft</span></figcaption></figure>
+
+<p>Procedures (Figure 6.7) show the owner office, the next review date, the steps and the evidence each step
+was derived from. Meetings (Figure 6.8) list summarised meetings with their decisions and a minutes export.
+The knowledge graph (Figure 6.9) links people, committees, meetings and documents for navigation.</p>
+<figure><img src="figures/fig6_07_procedure_evidence.png" alt=""><figcaption>Figure 6.7 <span>Procedure with owner, review date and steps</span></figcaption></figure>
+<figure><img src="figures/fig6_08_meetings.png" alt=""><figcaption>Figure 6.8 <span>Meetings list</span></figcaption></figure>
+<figure><img src="figures/fig6_09_knowledge_graph.png" alt=""><figcaption>Figure 6.9 <span>Knowledge graph</span></figcaption></figure>
+
+<h3>6.3.3 Coordinator and administrator views</h3>
+<p>Coordinators see Analytics (Figure 6.10): ticket volume by category, questions asked and knowledge gaps.
+The staff assistant (Figure 6.11) answers over internal evidence within the user’s department scope, with
+numbered citations that expand to the source excerpt. Administrators also manage users and roles.</p>
+<figure><img src="figures/fig6_10_analytics.png" alt=""><figcaption>Figure 6.10 <span>Analytics</span></figcaption></figure>
+<figure><img src="figures/fig6_11_assistant_cited.png" alt=""><figcaption>Figure 6.11 <span>Staff assistant answer with citations</span></figcaption></figure>
+
+<h2>6.4 Deployment</h2>
+<p>Docker Compose runs eight services: PostgreSQL, ChromaDB, Redis, the backend, a Celery worker, Celery
+beat, the frontend, and an on-demand evaluator. Neo4j runs alongside them for the knowledge graph. Startup
+runs <code>alembic upgrade head</code>, so data survives rebuilds, and health checks gate the start order.
+A tunnelling script exposes the demonstration for remote review.</p>
+
+<h2>6.5 Testing</h2>
+<p>235 backend tests in 26 test modules run against SQLite with the LLM, ChromaDB and Neo4j mocked. They cover
+authentication and roles, student access (every internal route refuses students), department scope,
+transcripts and extraction, commitments and My Work, the Faculty Desk, procedures (versions, approval,
+rejection, retirement, export), freshness, the help desk, notices, the calendar, analytics, user
+administration, the graph, auditing, insights, parsing and date parsing, plus a test that fails if the
+database models and migrations drift apart. The frontend is checked by ESLint and the TypeScript compiler in
+continuous integration.</p>
+
+<h1 class="chapter"><span class="num">Chapter 7</span>Experimentation and Results</h1>
+
+<h2>7.1 Datasets</h2>
+<p>All labels were written by the team and are stored in <code>evaluation/data/</code> (Table 7.1).</p>
+<div class="tcap">Table 7.1 Datasets</div>
+<table>
+<tr><th>Set</th><th>Contents</th><th class="n">Size</th></tr>
+<tr><td>Committee transcripts</td><td>Synthetic: Academic Council, IQAC, departmental lab readiness, placement planning (plus one demo minutes file for the live upload)</td><td class="n">4 (+1)</td></tr>
+<tr><td>Internal documents</td><td>Synthetic proposals, guidelines and SOPs</td><td class="n">3 + 3 SOPs</td></tr>
+<tr><td>Public knowledge (mini-project)</td><td>CE department FAQs, IT department overview</td><td class="n">2</td></tr>
+<tr><td>Public website knowledge base</td><td>Authentic content from www.djsce.ac.in, each file cited by URL, retrieved 13 Oct 2026</td><td class="n">26 files</td></tr>
+<tr><td>Triage set</td><td>Labelled student queries, 6 categories, urgency labels</td><td class="n">96</td></tr>
+<tr><td>Q&amp;A set</td><td>Questions with gold sources and answer keywords</td><td class="n">33</td></tr>
+<tr><td>Visibility set</td><td>Adversarial student questions about internal content</td><td class="n">20</td></tr>
+<tr><td>Department set</td><td>CE/IT students asking about the other department</td><td class="n">10</td></tr>
+<tr><td>Commitments gold set</td><td>Hand-labelled commitments in the transcripts</td><td class="n">9</td></tr>
+</table>
+
+<h2>7.2 Test cases</h2>
+<p>Table 7.2 lists representative functional test cases; each is automated in <code>backend/tests/</code> and
+passes. The role-access matrix of Table 5.2 is covered by <code>test_student_access.py</code>,
+<code>test_departments.py</code> and <code>test_admin_users.py</code>.</p>
+<div class="tcap">Table 7.2 Functional test cases</div>
+<table>
+<tr><th>ID</th><th>Feature</th><th>Case</th><th>Expected</th><th>Result</th></tr>
+<tr><td>T1</td><td>Access</td><td>Student calls any internal route</td><td>403</td><td>Pass</td></tr>
+<tr><td>T2</td><td>Access</td><td>Student opens another student’s ticket</td><td>404, no <code>ai_*</code> fields</td><td>Pass</td></tr>
+<tr><td>T3</td><td>Visibility</td><td>Student question whose best match is internal</td><td>Only public sources returned</td><td>Pass</td></tr>
+<tr><td>T4</td><td>Department</td><td>CE faculty retrieves an IT-only fragment</td><td>Not returned</td><td>Pass</td></tr>
+<tr><td>T5</td><td>Transcripts</td><td>Submit an empty transcript</td><td>400, nothing queued</td><td>Pass</td></tr>
+<tr><td>T6</td><td>Extraction</td><td>Transcript with “I will … by Friday”</td><td>Commitment with owner and due date</td><td>Pass</td></tr>
+<tr><td>T7</td><td>My Work</td><td>Owner marks task done</td><td>Status <i>review</i>; coordinator confirms or sends back</td><td>Pass</td></tr>
+<tr><td>T8</td><td>Procedures</td><td>Approve, edit, reject with reason, retire</td><td>Versions kept, reason stored</td><td>Pass</td></tr>
+<tr><td>T9</td><td>Freshness</td><td>New fragment contradicts an approved procedure</td><td>Procedure marked stale with evidence</td><td>Pass</td></tr>
+<tr><td>T10</td><td>Help desk</td><td>LLM unavailable</td><td>Keyword triage used; ticket still routed</td><td>Pass</td></tr>
+<tr><td>T11</td><td>Notices</td><td>Notice to TE CE division A</td><td>Only matching students receive it</td><td>Pass</td></tr>
+<tr><td>T12</td><td>Admin</td><td>Non-admin opens user management; deactivated user logs in</td><td>Refused; login and old token rejected</td><td>Pass</td></tr>
+<tr><td>T13</td><td>Migrations</td><td>Models changed without a migration</td><td>Test fails</td><td>Pass</td></tr>
+</table>
+
+<h2>7.3 Parameter choices</h2>
+<p>No large parameter sweep was run, because the LLM API has a daily token quota. Parameters were chosen once
+and changed only when the baseline run exposed a specific failure (Table 7.3).</p>
+<div class="tcap">Table 7.3 Parameters and reasons</div>
+<table>
+<tr><th style="width:25%">Parameter</th><th style="width:28%">Value</th><th>Reason</th></tr>
+<tr><td>Chunk size / overlap</td><td>800 / 150 characters, paragraph-aware</td><td>The baseline run split FAQ answers from their questions; chunks now keep question–answer pairs together</td></tr>
+<tr><td>Retrieval depth</td><td>Top 5 fragments + up to 2 approved procedures</td><td>Approved procedures should outrank meeting discussion when equally relevant</td></tr>
+<tr><td>Answer temperature</td><td>0.2</td><td>Factual answers; 0.6 only for the conversational check-in</td></tr>
+<tr><td>Classification temperature</td><td>0.1, JSON output</td><td>Stable labels</td></tr>
+<tr><td>Speaker names in fragments</td><td>Included</td><td>The baseline run missed “who decided” questions without them</td></tr>
+<tr><td>LLM</td><td><code>openai/gpt-oss-120b</code> (Groq)</td><td>Large open-weight model with JSON output, available on Groq’s free tier</td></tr>
+</table>
+
+<h2>7.4 Results</h2>
+<p>All results come from the final evaluation run (19 October 2026, 14:55 UTC, recorded in
+<code>results/RESULTS.md</code>). The baseline run of 13 October 2026 is shown for comparison in Table 7.8.</p>
+
+<div class="tcap">Table 7.4 Help-desk triage (96 queries, 6 categories)</div>
+<table>
+<tr><th>Engine</th><th class="n">Coverage</th><th class="n">Accuracy</th><th class="n">Macro-F1</th><th class="n">Urgency F1</th><th class="n">p50 (s)</th><th class="n">p95 (s)</th></tr>
+<tr><td>keyword</td><td class="n">100 %</td><td class="n">57.3 %</td><td class="n">0.586</td><td class="n">0.533</td><td class="n">0.00</td><td class="n">0.00</td></tr>
+<tr><td><b>llm</b></td><td class="n">100 %</td><td class="n"><b>90.6 %</b></td><td class="n"><b>0.907</b></td><td class="n"><b>1.000</b></td><td class="n">2.49</td><td class="n">4.53</td></tr>
+<tr><td>laya</td><td class="n">67 %</td><td class="n">51.0 %</td><td class="n">0.563</td><td class="n">0.533</td><td class="n">1.39</td><td class="n">1.92</td></tr>
+<tr><td>llm → keyword (default)</td><td class="n">100 %</td><td class="n">90.6 %</td><td class="n">0.907</td><td class="n">1.000</td><td class="n">2.49</td><td class="n">4.53</td></tr>
+<tr><td>laya → keyword</td><td class="n">100 %</td><td class="n">68.8 %</td><td class="n">0.684</td><td class="n">0.533</td><td class="n">1.39</td><td class="n">1.92</td></tr>
+<tr><td>laya → llm → keyword</td><td class="n">100 %</td><td class="n">80.2 %</td><td class="n">0.794</td><td class="n">0.625</td><td class="n">1.54</td><td class="n">4.47</td></tr>
+</table>
+<p style="font-size:10.5pt">Single engines count an abstention as wrong; chains fall back to the next engine.</p>
+
+<figure class="diagram"><img src="figures/fig7_1_triage.png" alt="" style="max-height:85mm"><figcaption>Figure 7.1 <span>Triage accuracy by engine</span></figcaption></figure>
+
+<div class="tcap">Table 7.5 Question answering</div>
+<table>
+<tr><th>Asked as</th><th class="n">n</th><th class="n">Hit@5</th><th class="n">Correct</th><th class="n">Cited</th><th class="n">Abstained</th><th class="n">p50 (s)</th><th class="n">p95 (s)</th></tr>
+<tr><td>student</td><td class="n">21</td><td class="n">100 %</td><td class="n">90 %</td><td class="n">100 %</td><td class="n">0 %</td><td class="n">3.25</td><td class="n">7.84</td></tr>
+<tr><td>staff</td><td class="n">12</td><td class="n">100 %</td><td class="n">92 %</td><td class="n">92 %</td><td class="n">0 %</td><td class="n">8.80</td><td class="n">10.11</td></tr>
+<tr><td><b>overall</b></td><td class="n"><b>33</b></td><td class="n"><b>100 %</b></td><td class="n"><b>91 %</b></td><td class="n"><b>97 %</b></td><td class="n">0 %</td><td class="n">6.73</td><td class="n">10.03</td></tr>
+</table>
+
+<div class="tcap">Table 7.6 Visibility and department isolation</div>
+<table>
+<tr><th>Test</th><th class="n">Queries</th><th class="n">Leaks</th><th>Definition of a leak</th></tr>
+<tr><td>Visibility (adversarial)</td><td class="n">20</td><td class="n"><b>0</b></td><td>An internal source returned, or an internal-only fact stated</td></tr>
+<tr><td>Department isolation</td><td class="n">10</td><td class="n"><b>0</b></td><td>A source from a department outside the student’s own plus institution-wide</td></tr>
+</table>
+
+<div class="tcap">Table 7.7 Commitment extraction</div>
+<table>
+<tr><th class="n">Gold</th><th class="n">Extracted</th><th class="n">Matched</th><th class="n">Precision</th><th class="n">Recall</th><th class="n">F1</th></tr>
+<tr><td class="n">9</td><td class="n">9</td><td class="n">9</td><td class="n">1.00</td><td class="n">1.00</td><td class="n">1.00</td></tr>
+</table>
+
+<div class="tcap">Table 7.8 Baseline run vs final run</div>
+<table>
+<tr><th>Measure</th><th>Baseline (13 Oct)</th><th>Final (19 Oct)</th></tr>
+<tr><td>Triage accuracy, LLM / keyword / laya</td><td>90.6 % / 57.3 % / 51.0 %</td><td>90.6 % / 57.3 % / 51.0 %</td></tr>
+<tr><td>Q&amp;A questions</td><td>24</td><td>33 (adds 8 public-website and IT-department questions)</td></tr>
+<tr><td>Retrieval hit@5</td><td>100 %</td><td>100 %</td></tr>
+<tr><td>Answer correct (overall)</td><td>71 %</td><td><b>91 %</b></td></tr>
+<tr><td>Answer correct (student)</td><td>75 %</td><td><b>90 %</b></td></tr>
+<tr><td>Cited</td><td>88 %</td><td>97 %</td></tr>
+<tr><td>Abstained</td><td>8 %</td><td>0 %</td></tr>
+<tr><td>p95 answer latency</td><td>8.2 s</td><td>10.0 s</td></tr>
+<tr><td>Visibility leaks</td><td>0 / 20</td><td>0 / 20</td></tr>
+<tr><td>Department leaks</td><td>not measured</td><td>0 / 10</td></tr>
+<tr><td>Commitments P / R</td><td>1.00 / 1.00</td><td>1.00 / 1.00</td></tr>
+</table>
+
+<h2>7.5 Discussion</h2>
+<p><b>Triage.</b> The LLM classifier is clearly best (90.6 % accuracy, macro-F1 0.907, urgency F1 1.00),
+33 percentage points above the keyword baseline. laya abstained on a third of the queries (coverage 67 %)
+and was less accurate even with a keyword fallback (68.8 %); placing it before the LLM lowered accuracy to
+80.2 %. The default chain therefore stays LLM → keyword, which keeps 90.6 % while the keyword fallback
+guarantees a category when the LLM is unavailable. The keyword classifier answers in under a millisecond;
+the LLM’s p95 of 4.5 s is acceptable for a ticket that a person answers later.</p>
+
+<p><b>Question answering.</b> Retrieval found a correct source in the top five for every question in both
+runs, so the remaining errors lie in answer generation, not retrieval. Answer correctness rose from 71 % to
+91 % after two changes motivated by the baseline run: paragraph-aware chunking that keeps FAQ questions with
+their answers, and speaker names in transcript fragments. Abstentions fell from 8 % to 0 %. Latency rose:
+overall p95 went from 8.2 s to 10.03 s (staff questions 10.11 s), just above the 10 s target, so Objective 7
+is narrowly missed. Likely causes are the extra procedure retrieval, longer chunks in the prompt, and the
+hosted API’s own variance; these were not isolated. The final Q&amp;A set is also larger (33 vs 24
+questions), so the two runs are not strictly like-for-like. Student answers, which search only public
+knowledge, have a p95 of 7.84 s.</p>
+
+<p><b>Isolation.</b> No internal source and no internal-only fact reached a student in 20 adversarial
+queries, and no out-of-department source reached a student in 10 cross-department queries. Because the filter
+is applied in the vector query and checked again on every hit, a single bug in either layer would not be
+enough to cause a leak.</p>
+
+<p><b>Extraction.</b> All 9 hand-labelled commitments in the 4 transcripts were extracted with the correct
+owner, and nothing extra was extracted. The set is small, so this shows that the pipeline works on clearly
+phrased commitments; ambiguous or implied commitments are future work.</p>
+
+<p><b>Threats to validity.</b> All committee data and every gold label were written by the team, so the
+results show that the system works as designed on realistic data; they are not a field study with real users.
+“Answer correct” is a keyword check against gold facts and does not judge fluency or completeness. LLM outputs
+vary between runs, and the evaluation sets are small (tens of items), so a single item changes a percentage
+by several points. The public knowledge base is a snapshot and may drift from the live website.</p>
+
+<h1 class="chapter"><span class="num">Chapter 8</span>Conclusion</h1>
+
+<h2>8.1 Conclusion</h2>
+<p>This project built and evaluated a platform that turns a college’s meetings and documents into cited,
+reviewed and access-controlled knowledge. Its contribution is the combination of three properties that
+existing tools offer separately or not at all: evidence-first answers, human review built into procedures and
+ticket replies, and visibility and department filters enforced inside retrieval.</p>
+<p>On the evaluation sets, LLM triage routed 90.6 % of tickets correctly (keyword baseline 57.3 %); a correct
+source was retrieved for every question and 91 % of answers were correct; all 9 labelled commitments were
+extracted; and no internal or out-of-department evidence reached a student. Six of the seven objectives were
+met; the 95th-percentile answer latency (10.03 s) narrowly missed its 10 s target.</p>
+
+<h2>8.2 Limitations</h2>
+<ul>
+  <li>Committee data and evaluation labels are synthetic and team-written; there has been no field trial.</li>
+  <li>The system depends on a hosted LLM and its daily quota.</li>
+  <li>Access control has two visibility levels (internal/public) plus department, but no per-committee
+  confidentiality.</li>
+  <li>Only English content is supported.</li>
+</ul>
+
+<h2>8.3 Future scope</h2>
+<ul>
+  <li>Per-committee confidentiality levels.</li>
+  <li>Notice attachments and e-mail delivery.</li>
+  <li>Feedback on answers to improve retrieval over time.</li>
+  <li>An NBA/NAAC evidence tracker linking decisions and documents to accreditation criteria.</li>
+  <li>Integration with the college ERP and timetable.</li>
+  <li>A pilot with one department using real, consented records.</li>
+  <li>A locally hosted LLM to remove the external dependency and reduce latency.</li>
+</ul>
+
+<h1 class="chapter" style="text-transform:none"><span class="num">&nbsp;</span>REFERENCES</h1>
+<div class="refs">
+<p>[1] P. Lewis, E. Perez, A. Piktus, F. Petroni, V. Karpukhin, N. Goyal, H. Küttler, M. Lewis, W. Yih, T. Rocktäschel, S. Riedel, and D. Kiela, “Retrieval-augmented generation for knowledge-intensive NLP tasks,” in <i>Advances in Neural Information Processing Systems 33 (NeurIPS)</i>, 2020. arXiv:2005.11401.</p>
+<p>[2] Y. Gao <i>et al.</i>, “Retrieval-augmented generation for large language models: A survey,” arXiv:2312.10997, 2023 (v5, Mar. 2024).</p>
+<p>[3] V. Karpukhin, B. Oğuz, S. Min, P. Lewis, L. Wu, S. Edunov, D. Chen, and W. Yih, “Dense passage retrieval for open-domain question answering,” in <i>Proc. EMNLP</i>, 2020, pp. 6769–6781.</p>
+<p>[4] N. Reimers and I. Gurevych, “Sentence-BERT: Sentence embeddings using Siamese BERT-networks,” in <i>Proc. EMNLP-IJCNLP</i>, Hong Kong, 2019, pp. 3982–3992, doi: 10.18653/v1/D19-1410.</p>
+<p>[5] S. Xiao, Z. Liu, P. Zhang, N. Muennighoff, D. Lian, and J.-Y. Nie, “C-Pack: Packed resources for general Chinese embeddings,” in <i>Proc. 47th Int. ACM SIGIR Conf.</i>, 2024. arXiv:2309.07597.</p>
+<p>[6] T. Gao, H. Yen, J. Yu, and D. Chen, “Enabling large language models to generate text with citations,” in <i>Proc. EMNLP</i>, 2023, pp. 6465–6488.</p>
+<p>[7] S. Es, J. James, L. Espinosa-Anke, and S. Schockaert, “RAGAs: Automated evaluation of retrieval augmented generation,” in <i>Proc. 18th Conf. EACL: System Demonstrations</i>, St. Julian’s, Malta, 2024, pp. 150–158.</p>
+<p>[8] Z. Ji, N. Lee, R. Frieske, T. Yu, D. Su, Y. Xu, E. Ishii, Y. Bang, A. Madotto, and P. Fung, “Survey of hallucination in natural language generation,” <i>ACM Computing Surveys</i>, vol. 55, no. 12, Art. 248, pp. 1–38, 2023.</p>
+<p>[9] L. Huang <i>et al.</i>, “A survey on hallucination in large language models: Principles, taxonomy, challenges, and open questions,” <i>ACM Transactions on Information Systems</i>, doi: 10.1145/3703155. arXiv:2311.05232.</p>
+<p>[10] M. Purver, J. Dowding, J. Niekrasz, P. Ehlen, S. Noorbaloochi, and S. Peters, “Detecting and summarizing action items in multi-party dialogue,” in <i>Proc. 8th SIGdial Workshop on Discourse and Dialogue</i>, Antwerp, Belgium, 2007, pp. 18–25.</p>
+<p>[11] M. Zhong <i>et al.</i>, “QMSum: A new benchmark for query-based multi-domain meeting summarization,” in <i>Proc. NAACL-HLT</i>, 2021, pp. 5905–5921, doi: 10.18653/v1/2021.naacl-main.472.</p>
+<p>[12] S. Zeng, J. Zhang <i>et al.</i>, “The good and the bad: Exploring privacy issues in retrieval-augmented generation (RAG),” in <i>Findings of ACL 2024</i>, Bangkok, 2024, pp. 4505–4524, doi: 10.18653/v1/2024.findings-acl.267.</p>
+<p>[13] K. Greshake, S. Abdelnabi, S. Mishra, C. Endres, T. Holz, and M. Fritz, “Not what you’ve signed up for: Compromising real-world LLM-integrated applications with indirect prompt injection,” in <i>Proc. 16th ACM Workshop on Artificial Intelligence and Security (AISec ’23)</i>, 2023. arXiv:2302.12173.</p>
+<p>[14] R. S. Sandhu, E. J. Coyne, H. L. Feinstein, and C. E. Youman, “Role-based access control models,” <i>IEEE Computer</i>, vol. 29, no. 2, pp. 38–47, Feb. 1996.</p>
+<p>[15] A. Revina, K. Buza, and V. G. Meister, “IT ticket classification: The simpler, the better,” <i>IEEE Access</i>, 2020.</p>
+<p>[16] F. Zangari, M. Marcuzzo, M. Schiavinato, A. Gasparetto, and A. Albarelli, “Ticket automation: An insight into current research with applications to multi-level classification scenarios,” <i>Expert Systems with Applications</i>, vol. 225, Art. 119984, 2023, doi: 10.1016/j.eswa.2023.119984.</p>
+<p>[17] A. Hogan <i>et al.</i>, “Knowledge graphs,” <i>ACM Computing Surveys</i>, vol. 54, no. 4, Art. 71, pp. 1–37, 2021, doi: 10.1145/3447772.</p>
+<p>[18] D. Edge <i>et al.</i>, “From local to global: A graph RAG approach to query-focused summarization,” arXiv:2404.16130, 2024.</p>
+<p>[19] C. W. Okonkwo and A. Ade-Ibijola, “Chatbots applications in education: A systematic review,” <i>Computers and Education: Artificial Intelligence</i>, vol. 2, Art. 100033, 2021, doi: 10.1016/j.caeai.2021.100033.</p>
+<p>[20] S. Wollny, J. Schneider, D. Di Mitri, J. Weidlich, M. Rittberger, and H. Drachsler, “Are we there yet? — A systematic literature review on chatbots in education,” <i>Frontiers in Artificial Intelligence</i>, vol. 4, Art. 654924, 2021, doi: 10.3389/frai.2021.654924.</p>
+<p>[21] Dwarkadas J. Sanghvi College of Engineering, public website, https://www.djsce.ac.in (pages listed per file in <code>djsce_public_data/kb/</code>), retrieved 13 Oct 2026.</p>
+</div>
+
+</section>
+
+<script>
+  // ?part=front | body selects what is printed; without it the whole report shows (for screen reading).
+  const part = new URLSearchParams(location.search).get('part');
+  if (part) document.body.dataset.part = part;
+  // Contents, figure and table lists are built from the body; page numbers are filled in by the PDF build
+  // (window.PAGES = {label: page}); on screen they are left blank.
+  function buildLists(pages = {}) {
+    const row = (cls, label, pg) => `<div class="${cls}"><span>${label}</span><span class="fill"></span><span>${pg ?? ''}</span></div>`;
+    const body = document.querySelector('.part-body');
+    document.getElementById('toc').innerHTML = [...body.querySelectorAll('h1.chapter, h2')].map(h => {
+      const label = h.matches('h1') ? (h.querySelector('.num').textContent.trim() ? h.querySelector('.num').textContent + ': ' : '') + [...h.childNodes].filter(n => n.nodeType === 3).map(n => n.textContent).join('').trim() : h.textContent;
+      return row(h.matches('h1') ? 'lvl1' : 'lvl2', label, pages[label]);
+    }).join('');
+    document.getElementById('lof').innerHTML = [...body.querySelectorAll('figcaption')].map(f => row('', f.textContent, pages[f.textContent])).join('');
+    document.getElementById('lot').innerHTML = [...body.querySelectorAll('.tcap')].map(t => row('', t.textContent, pages[t.textContent])).join('');
+  }
+  buildLists(window.PAGES);
+  window.buildLists = buildLists;
+</script>
+</body>
+</html>

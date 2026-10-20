@@ -8,6 +8,16 @@ Format: `## YYYY-MM-DD — title` then bullets of what/why.
 
 ---
 
+## 2026-10-20 — IPD report as a formatted PDF
+
+- `publication/01_ipd_report/IPD_Report_final.pdf` (43 pages, A4, Times, binding margin): title page,
+  certificate, approval, declaration, acknowledgement, abstract, contents / figures / tables lists with real page
+  numbers, chapters 1–8 with all 16 figures embedded and captioned, IEEE references. Source is the standalone
+  `IPD_Report_final.html` (printed with Edge; front matter unnumbered, body numbered from 1).
+- Content edits over `REPORT_DRAFT.md`: §2.2 written as a comparison of system categories (no unsourced product
+  names), screen walkthrough per role in §6.3, objectives table gains a "Met" column, p95 stated as 10.03 s,
+  algorithms numbered, tables renumbered consistently (7.1–7.8), small-sample note added to threats to validity.
+
 ## 2026-10-19 — Final evaluation run and publication tools
 - Full evaluation completed (all parts) → `publication/01_ipd_report/results/RESULTS.md`; run 1 kept as baseline.
 - `evaluation/publication_tools/`: `fig7_1_triage.py` (chart from RESULTS.md) and `export_report_docx.py`

@@ -8,7 +8,7 @@ The **software** lives in the rest of the repository (`backend/`, `frontend/`,
 | Folder | What goes in it | Status |
 |---|---|---|
 | [`00_project_brief/`](00_project_brief/) | One-document explanation of the project for the mentor/guide | ✅ updated with final results |
-| [`01_ipd_report/`](01_ipd_report/) | IPD report, chapter by chapter, following the department format | ✅ final draft (`REPORT_DRAFT.md` + `IPD_Report_final_draft.docx`), 16 figures, 20 verified references |
+| [`01_ipd_report/`](01_ipd_report/) | IPD report, chapter by chapter, following the department format | ✅ final draft: **`IPD_Report_final.pdf`** (43 pages, typeset from `IPD_Report_final.html`), plus `REPORT_DRAFT.md` + `IPD_Report_final_draft.docx`, 16 figures, 20 verified references |
 | [`02_poster/`](02_poster/) | AVINYA poster content (and the final PDF/PNG export) | ✅ final content; visual layout to do |
 | [`03_presentation/`](03_presentation/) | Review / viva slide decks | 🟡 12-slide outline + demo script; deck to build |
 | [`04_research_paper/`](04_research_paper/) | Conference/journal paper draft | 🟡 structured draft with results |
