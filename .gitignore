@@ -52,3 +52,8 @@ backend/app/models/en_core_web_sm*
 # Test artifacts
 *.db
 test.db
+
+# /brag video intermediates (sources kept: brag-output/work/composition.html, music.py)
+brag-output/work/*
+!brag-output/work/composition.html
+!brag-output/work/music.py

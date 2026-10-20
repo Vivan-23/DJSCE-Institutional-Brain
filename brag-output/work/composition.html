@@ -1,0 +1,203 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root { --bg:#08090a; --panel:#0f1011; --line:rgba(255,255,255,.08); --text:#f7f8f8; --muted:#8a8f98;
+          --dim:#686d76; --accent:#5e6ad2; --accent2:#7170ff; }
+  * { box-sizing:border-box; margin:0; padding:0; }
+  html,body { width:1920px; height:1080px; overflow:hidden; background:var(--bg); color:var(--text);
+              font-family:Inter, sans-serif; font-feature-settings:"cv01","ss03"; -webkit-font-smoothing:antialiased; }
+  .scene { position:absolute; inset:0; opacity:0; }
+  .glow { position:absolute; inset:0; background:radial-gradient(ellipse 60% 50% at 50% 40%, rgba(94,106,210,.18), transparent 70%); }
+  .big { position:absolute; left:0; right:0; text-align:center; font-weight:600; letter-spacing:-0.035em; }
+  .logo { width:120px; height:120px; border-radius:28px; background:linear-gradient(135deg,#7170ff,#4f58b5);
+          box-shadow:inset 0 1px 0 rgba(255,255,255,.25), 0 30px 80px rgba(94,106,210,.45);
+          display:flex; align-items:center; justify-content:center; font-weight:700; font-size:30px; letter-spacing:-.02em; }
+  .caption { position:absolute; left:120px; width:560px; }
+  .kicker { font-size:22px; font-weight:500; color:var(--accent2); letter-spacing:.01em; margin-bottom:22px; display:flex; gap:12px; align-items:center; }
+  .kicker .n { display:inline-flex; width:38px; height:38px; border-radius:10px; align-items:center; justify-content:center;
+               background:rgba(94,106,210,.15); border:1px solid rgba(113,112,255,.35); font-size:18px; }
+  .ctitle { font-size:54px; font-weight:600; line-height:1.08; letter-spacing:-0.03em; }
+  .csub { margin-top:22px; font-size:26px; line-height:1.4; color:var(--muted); }
+  .win { position:absolute; left:740px; top:176px; width:1080px; height:675px; border-radius:16px; overflow:hidden;
+         border:1px solid rgba(255,255,255,.1); background:var(--panel);
+         box-shadow:0 0 0 1px rgba(0,0,0,.5), 0 40px 120px rgba(0,0,0,.6), 0 0 120px rgba(94,106,210,.12); }
+  .cam { position:absolute; left:0; top:0; width:2160px; height:1350px; transform-origin:0 0; }
+  .cam img { position:absolute; left:0; top:0; width:2160px; height:1350px; }
+  .hl { position:absolute; border:3px solid #7170ff; border-radius:14px; box-shadow:0 0 0 6px rgba(113,112,255,.18), 0 0 40px rgba(113,112,255,.35); opacity:0; }
+  .mask { position:absolute; background:#0f1011; }
+  .stat { position:absolute; top:430px; width:480px; height:300px; border-radius:20px; border:1px solid var(--line);
+          background:rgba(255,255,255,.025); padding:44px 44px; }
+  .stat .v { font-size:104px; font-weight:600; letter-spacing:-0.045em; line-height:1; }
+  .stat .l { margin-top:26px; font-size:26px; color:var(--muted); line-height:1.35; }
+  .footnote { position:absolute; bottom:56px; left:0; right:0; text-align:center; font-size:20px; color:var(--dim); }
+</style>
+</head>
+<body>
+<div class="glow" id="glow"></div>
+
+<!-- 1 Hook -->
+<div class="scene" id="s1">
+  <div class="big" id="h1a" style="top:420px;font-size:84px">Every committee meeting makes promises.</div>
+  <div class="big" id="h1b" style="top:540px;font-size:84px;color:var(--accent2)">Who keeps track of them?</div>
+</div>
+
+<!-- 2 Reveal -->
+<div class="scene" id="s2">
+  <div id="logoWrap" style="position:absolute;left:900px;top:250px"><div class="logo">DJSCE</div></div>
+  <div class="big" id="r2a" style="top:430px;font-size:92px">DJSCE Institutional Brain</div>
+  <div class="big" id="r2b" style="top:570px;font-size:36px;font-weight:400;color:var(--muted);letter-spacing:-0.01em">
+    Meetings, procedures and student questions — answered with sources.</div>
+</div>
+
+<!-- feature scenes share a template -->
+<div class="scene" id="s3">
+  <div class="caption" style="top:300px">
+    <div class="kicker"><span class="n">1</span>Meetings</div>
+    <div class="ctitle">Minutes in.<br>Commitments out.</div>
+    <div class="csub" id="s3sub">Each one gets an owner, a due date and progress — and a coordinator confirms it's done.</div>
+  </div>
+  <div class="win"><div class="cam" id="cam3a"><img src="assets/fig6_08_meetings.png"><div class="hl" id="hl3a"></div></div>
+                   <div class="cam" id="cam3b"><img src="assets/fig6_05_my_work.png"><div class="hl" id="hl3b"></div></div></div>
+</div>
+
+<div class="scene" id="s4">
+  <div class="caption" style="top:300px">
+    <div class="kicker"><span class="n">2</span>Procedures</div>
+    <div class="ctitle">How things are done here, written down.</div>
+    <div class="csub">Drafted from records. Approved by a coordinator before anyone relies on them.</div>
+  </div>
+  <div class="win"><div class="cam" id="cam4"><img src="assets/fig6_07_procedure_evidence.png"><div class="hl" id="hl4a"></div><div class="hl" id="hl4b"></div></div></div>
+</div>
+
+<div class="scene" id="s5">
+  <div class="caption" style="top:300px">
+    <div class="kicker"><span class="n">3</span>Assistant</div>
+    <div class="ctitle">Ask anything. Get the source.</div>
+    <div class="csub">Answers come from meeting records and approved procedures — every one cites where it came from.</div>
+  </div>
+  <div class="win"><div class="cam" id="cam5"><img src="assets/fig6_11_assistant_cited.png">
+    <div class="mask" id="m5q" style="left:1110px;top:370px;width:700px;height:80px"></div>
+    <div class="mask" id="m5a" style="left:700px;top:470px;width:1120px;height:180px"></div>
+    <div class="hl" id="hl5"></div></div></div>
+</div>
+
+<div class="scene" id="s6">
+  <div class="caption" style="top:300px">
+    <div class="kicker"><span class="n">4</span>Student Help Desk</div>
+    <div class="ctitle" id="s6t">Students get answers, not office queues.</div>
+    <div class="csub" id="s6s">Only from public information. Anything else becomes a ticket: AI drafts the reply — a person sends it.</div>
+  </div>
+  <div class="win"><div class="cam" id="cam6a"><img src="assets/fig6_03_student_answer.png"><div class="hl" id="hl6a"></div></div>
+                   <div class="cam" id="cam6b"><img src="assets/fig6_06_ticket_review.png"><div class="hl" id="hl6b"></div></div></div>
+</div>
+
+<!-- 7 Results -->
+<div class="scene" id="s7">
+  <div class="big" id="r7t" style="top:250px;font-size:60px">Tested, not just demoed.</div>
+  <div class="stat" id="c1" style="left:180px"><div class="v" id="v1">0%</div><div class="l">of help-desk tickets routed to the right office</div></div>
+  <div class="stat" id="c2" style="left:720px"><div class="v" id="v2">0%</div><div class="l">of answers correct, with the right source found every time</div></div>
+  <div class="stat" id="c3" style="left:1260px"><div class="v" id="v3">0</div><div class="l">internal records leaked to students in 20 attack questions</div></div>
+  <div class="footnote" id="r7f">Evaluation run 19 Oct 2026 · synthetic committee data + public djsce.ac.in content</div>
+</div>
+
+<!-- 8 Outro -->
+<div class="scene" id="s8">
+  <div style="position:absolute;left:900px;top:300px"><div class="logo">DJSCE</div></div>
+  <div class="big" style="top:470px;font-size:84px">DJSCE Institutional Brain</div>
+  <div class="big" style="top:590px;font-size:32px;font-weight:400;color:var(--muted)">Department of Computer Engineering · Dwarkadas J. Sanghvi College of Engineering</div>
+  <div class="footnote">Demonstration prototype · synthetic committee data · not an official college system</div>
+</div>
+
+<script>
+const W = 1080, H = 675, IW = 2160, IH = 1350, BASE = W / IW;
+const clamp = (x, a = 0, b = 1) => Math.min(b, Math.max(a, x));
+const ease = (x) => { x = clamp(x); return x < .5 ? 4*x*x*x : 1 - Math.pow(-2*x + 2, 3) / 2; };
+const outc = (x) => 1 - Math.pow(1 - clamp(x), 3);
+const lerp = (a, b, k) => a + (b - a) * k;
+const $ = (id) => document.getElementById(id);
+// in/out envelope for a scene: fade in over 0.5s, out over 0.4s
+const env = (t, a, b, fi = .5, fo = .4) => clamp((t - a) / fi) * clamp((b - t) / fo);
+function rise(el, t, at, dist = 24, dur = .6) {
+  const k = outc((t - at) / dur); el.style.opacity = k; el.style.transform = `translateY(${(1-k)*dist}px)`;
+}
+// camera: zoom z around focus (fx,fy) in image px
+function cam(el, z, fx, fy) {
+  const s = BASE * z;
+  let tx = W/2 - fx*s, ty = H/2 - fy*s;
+  tx = Math.min(0, Math.max(W - IW*s, tx)); ty = Math.min(0, Math.max(H - IH*s, ty));
+  el.style.transform = `translate(${tx}px,${ty}px) scale(${s})`;
+}
+function camPath(el, t, keys) { // keys: [[time,z,fx,fy],...]
+  let k = keys[0];
+  for (let i = 0; i < keys.length - 1; i++) {
+    const [t0, ...a] = keys[i], [t1, ...b] = keys[i+1];
+    if (t >= t0 && t <= t1) { const e = ease((t - t0)/(t1 - t0)); return cam(el, lerp(a[0],b[0],e), lerp(a[1],b[1],e), lerp(a[2],b[2],e)); }
+    if (t > t1) k = keys[i+1];
+  }
+  cam(el, k[1], k[2], k[3]);
+}
+function hl(el, t, at, until, box) {
+  const [x0,y0,x1,y1] = box; const p = 10;
+  Object.assign(el.style, { left:(x0-p)+'px', top:(y0-p)+'px', width:(x1-x0+2*p)+'px', height:(y1-y0+2*p)+'px' });
+  el.style.opacity = clamp((t-at)/.35) * clamp((until-t)/.3);
+}
+function count(el, t, at, dur, target, dec, suffix) {
+  const k = outc((t - at) / dur); el.textContent = (target * k).toFixed(dec) + suffix;
+}
+
+window.render = function (t) {
+  $('glow').style.opacity = 0.6 + 0.4*Math.sin(t*0.5);
+  // 1 hook
+  const s1 = $('s1'); s1.style.opacity = env(t, 0, 4.0, .01);
+  rise($('h1a'), t, 0.2); rise($('h1b'), t, 1.7);
+  // 2 reveal
+  $('s2').style.opacity = env(t, 4.0, 8.0);
+  const lk = outc((t - 4.1)/.8); $('logoWrap').style.transform = `scale(${0.7 + 0.3*lk})`; $('logoWrap').style.opacity = lk;
+  rise($('r2a'), t, 4.5); rise($('r2b'), t, 5.1);
+  // 3 meetings
+  $('s3').style.opacity = env(t, 8.0, 14.0);
+  const sw3 = clamp((t - 10.6)/.5);           // dip from list to My Work
+  $('cam3a').style.opacity = 1 - sw3; $('cam3b').style.opacity = clamp((t - 11.0)/.5);
+  camPath($('cam3a'), t, [[8.0,1.0,1080,675],[10.6,1.2,1260,560]]);
+  hl($('hl3a'), t, 9.2, 10.5, [553,305,1966,471]);
+  camPath($('cam3b'), t, [[11.0,1.0,1259,640],[13.9,1.12,1259,620]]);
+  hl($('hl3b'), t, 11.8, 14.0, [434,524,2084,704]);
+  // 4 procedures
+  $('s4').style.opacity = env(t, 14.0, 19.5);
+  camPath($('cam4'), t, [[14.0,1.0,1080,675],[15.6,1.0,1080,675],[17.0,1.55,1590,900],[19.5,1.6,1590,1000]]);
+  hl($('hl4a'), t, 15.0, 16.6, [1134,583,1728,718]);
+  hl($('hl4b'), t, 17.3, 19.5, [1134,1037,2052,1328]);
+  // 5 assistant
+  $('s5').style.opacity = env(t, 19.5, 25.0);
+  camPath($('cam5'), t, [[19.5,1.0,1080,675],[21.0,1.25,1260,520],[25.0,1.4,1260,540]]);
+  $('m5q').style.opacity = 1 - clamp((t - 20.3)/.3);
+  $('m5a').style.opacity = 1 - clamp((t - 21.4)/.6);
+  hl($('hl5'), t, 22.4, 25.0, [760,522,1800,650]);
+  // 6 help desk
+  $('s6').style.opacity = env(t, 25.0, 31.0);
+  const sw6 = clamp((t - 27.9)/.45);
+  $('cam6a').style.opacity = 1 - sw6; $('cam6b').style.opacity = clamp((t - 28.3)/.45);
+  camPath($('cam6a'), t, [[25.0,1.0,1080,675],[26.4,1.5,1260,1000],[27.9,1.55,1260,1010]]);
+  hl($('hl6a'), t, 26.6, 27.9, [584,886,1935,1175]);
+  camPath($('cam6b'), t, [[28.3,1.2,1500,800],[31.0,1.45,1600,820]]);
+  hl($('hl6b'), t, 29.0, 31.0, [1141,688,2055,1335]);
+  // 7 results
+  $('s7').style.opacity = env(t, 31.0, 36.5);
+  rise($('r7t'), t, 31.1);
+  rise($('c1'), t, 31.6, 40); rise($('c2'), t, 32.2, 40); rise($('c3'), t, 32.8, 40);
+  count($('v1'), t, 31.7, 1.2, 90.6, 1, '%'); count($('v2'), t, 32.3, 1.2, 91, 0, '%');
+  $('v3').textContent = '0'; $('v3').style.color = t > 33.4 ? '#4cb782' : '#f7f8f8';
+  rise($('r7f'), t, 33.6, 10);
+  // 8 outro
+  $('s8').style.opacity = clamp((t - 36.5)/.6);
+};
+window.ready = Promise.all([document.fonts.ready,
+  ...Array.from(document.images).map(i => i.complete ? 1 : new Promise(r => { i.onload = r; i.onerror = r; }))]);
+window.render(0);
+</script>
+</body>
+</html>
