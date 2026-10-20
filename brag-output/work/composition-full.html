@@ -1,0 +1,200 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root { --bg:#08090a; --panel:#0f1011; --line:rgba(255,255,255,.08); --text:#f7f8f8; --muted:#8a8f98; --dim:#686d76; --accent2:#7170ff; }
+  * { box-sizing:border-box; margin:0; padding:0; }
+  html,body { width:1920px; height:1080px; overflow:hidden; background:var(--bg); color:var(--text);
+              font-family:Inter, sans-serif; font-feature-settings:"cv01","ss03"; -webkit-font-smoothing:antialiased; }
+  .scene { position:absolute; inset:0; opacity:0; }
+  .glow { position:absolute; inset:0; background:radial-gradient(ellipse 60% 50% at 50% 40%, rgba(94,106,210,.18), transparent 70%); }
+  .big { position:absolute; left:0; right:0; text-align:center; font-weight:600; letter-spacing:-0.035em; }
+  .logo { width:120px; height:120px; border-radius:28px; background:linear-gradient(135deg,#7170ff,#4f58b5);
+          box-shadow:inset 0 1px 0 rgba(255,255,255,.25), 0 30px 80px rgba(94,106,210,.45);
+          display:flex; align-items:center; justify-content:center; font-weight:700; font-size:30px; letter-spacing:-.02em; }
+  .caption { position:absolute; left:110px; top:250px; width:580px; }
+  .kicker { font-size:21px; font-weight:500; color:var(--accent2); margin-bottom:22px; display:flex; gap:12px; align-items:center; }
+  .kicker .n { display:inline-flex; min-width:38px; height:38px; padding:0 10px; border-radius:10px; align-items:center; justify-content:center;
+               background:rgba(94,106,210,.15); border:1px solid rgba(113,112,255,.35); font-size:17px; }
+  .kicker .grp { color:var(--dim); font-weight:400; }
+  .ctitle { font-size:52px; font-weight:600; line-height:1.08; letter-spacing:-0.03em; }
+  .csub { margin-top:24px; font-size:26px; line-height:1.42; color:var(--muted); }
+  .win { position:absolute; left:740px; top:176px; width:1080px; height:675px; border-radius:16px; overflow:hidden;
+         border:1px solid rgba(255,255,255,.1); background:var(--panel);
+         box-shadow:0 0 0 1px rgba(0,0,0,.5), 0 40px 120px rgba(0,0,0,.6), 0 0 120px rgba(94,106,210,.12); }
+  .who { position:absolute; left:740px; top:120px; font-size:18px; color:var(--dim); }
+  .who b { color:var(--muted); font-weight:500; }
+  .cam { position:absolute; left:0; top:0; width:2160px; height:1350px; transform-origin:0 0; }
+  .cam img { position:absolute; left:0; top:0; width:2160px; height:1350px; }
+  .hl { position:absolute; border:3px solid #7170ff; border-radius:14px; box-shadow:0 0 0 6px rgba(113,112,255,.18), 0 0 40px rgba(113,112,255,.35); opacity:0; }
+  .mask { position:absolute; background:#0f1011; }
+  .card { position:absolute; border-radius:20px; border:1px solid var(--line); background:rgba(255,255,255,.025); }
+  .stat { top:430px; width:480px; height:300px; padding:44px; }
+  .stat .v { font-size:104px; font-weight:600; letter-spacing:-0.045em; line-height:1; }
+  .stat .l, .role .l { margin-top:26px; font-size:26px; color:var(--muted); line-height:1.35; }
+  .role { top:420px; width:390px; height:300px; padding:40px 36px; }
+  .role .t { font-size:34px; font-weight:600; letter-spacing:-0.02em; }
+  .role .l { font-size:23px; margin-top:18px; }
+  .footnote { position:absolute; bottom:56px; left:0; right:0; text-align:center; font-size:20px; color:var(--dim); }
+</style>
+</head>
+<body>
+<div class="glow" id="glow"></div>
+<div id="root"></div>
+<script>
+// ---------- timeline (all times in seconds; scene durations sum to the video length) ----------
+const G = { M:'Meetings & tasks', K:'Knowledge', S:'Students', C:'Campus', A:'Insight & admin' };
+const FEATURES = [
+  { g:'M', dur:6.5, who:'Committee Coordinator', title:'Paste the minutes.', sub:'Speakers, decisions and commitments are pulled out automatically.',
+    shots:[{ img:'c_record', hls:[[1.4,3.8,[590,578,1931,842]],[4.0,6.5,[590,907,970,961]]] }] },
+  { g:'M', dur:6, who:'Committee Coordinator', title:'Every meeting, summarised.', sub:'Summary, attendees and decisions — exported as formal minutes in Word or PDF.',
+    shots:[{ img:'c_meeting_detail', hls:[[1.2,3.8,[578,950,1642,1129]],[4.0,6,[578,1153,1069,1193]]] }] },
+  { g:'M', dur:6, who:'Committee Coordinator', title:'Commitments with an owner.', sub:'Due dates, progress and blockers. "Done" goes to a coordinator to confirm.',
+    shots:[{ img:'fig6_05_my_work', hls:[[1.3,6,[434,524,2084,704]]] }] },
+  { g:'M', dur:6.5, who:'Faculty', title:'Just say what you did today.', sub:'Follow-ups ask about each task; the end-of-day check-in turns plain language into task updates.',
+    shots:[{ img:'f_desk', hls:[[1.2,3.6,[745,308,1774,504]],[3.8,6.5,[761,1102,1760,1153]]] }] },
+  { g:'M', dur:6, who:'Committee Coordinator', title:'Nothing slips through.', sub:'Deadline and risk alerts, plus every upcoming commitment, on one page.',
+    shots:[{ img:'c_overview', hls:[[1.2,3.4,[434,261,2087,394]],[3.6,6,[434,504,1518,691]]] }] },
+  { g:'K', dur:7, who:'Committee Coordinator', title:'How things are done here, written down.', sub:'Drafted from records, approved by a coordinator, flagged for review when new evidence contradicts them.',
+    shots:[{ img:'fig6_07_procedure_evidence', hls:[[1.2,3.6,[990,330,1763,376]],[3.8,7,[1134,1037,2052,1328]]] }] },
+  { g:'K', dur:6, who:'Committee Coordinator', title:'Upload once. Choose who sees it.', sub:'Internal for staff only, or public so students can get answers from it.',
+    shots:[{ img:'c_documents', hls:[[1.2,3.4,[782,373,1739,564]],[3.6,6,[782,578,1480,610]]] }] },
+  { g:'K', dur:6, who:'Committee Coordinator', title:'Ask anything. Get the source.', sub:'Answers come from meeting records and approved procedures, with numbered citations.',
+    shots:[{ img:'fig6_11_assistant_cited', masks:[[[1110,370,700,80],0.8],[[700,470,1120,180],1.9]], hls:[[2.9,6,[760,522,1800,650]]] }] },
+  { g:'K', dur:5.5, who:'Committee Coordinator', title:'See exactly where it came from.', sub:'Every source is listed and marked internal or public.',
+    shots:[{ img:'c_sources', hls:[[1.2,5.5,[774,656,1799,1164]]] }] },
+  { g:'S', dur:6, who:'Student', title:'Students get instant answers.', sub:'From published department information only — with the sources shown.',
+    shots:[{ img:'fig6_03_student_answer', hls:[[1.3,6,[584,886,1935,1175]]] }] },
+  { g:'S', dur:6.5, who:'Student', title:'Internal stays internal.', sub:'The same Academic Council question, asked by a student: no meeting records — just a pointer to the help desk.',
+    shots:[{ img:'s_internal_q', hls:[[1.2,3.0,[1565,103,1799,135]],[3.2,6.5,[774,513,1799,616]]] }] },
+  { g:'S', dur:5.5, who:'Student', title:'Not answered? Raise a ticket.', sub:'AI picks the category and the office responsible; the student can track it.',
+    shots:[{ img:'s_ticket_form', hls:[[1.2,5.5,[584,477,1968,929]]] }] },
+  { g:'S', dur:6.5, who:'Faculty / Coordinator', title:'AI drafts. A person sends.', sub:'Staff check the triage and an unsent, cited draft before anything reaches the student.',
+    shots:[{ img:'fig6_06_ticket_review', hls:[[1.2,3.2,[1141,500,2055,661]],[3.4,6.5,[1141,688,2055,1335]]] }] },
+  { g:'C', dur:8.5, who:'Coordinator → Student', title:'Notices to exactly the right students.', sub:'Filter by department, year, semester and division — and they land in the right inboxes.',
+    shots:[{ img:'c_notice_send', until:5.0, hls:[[1.2,4.8,[578,664,1944,988]]] }, { img:'s_notices', from:5.0, hls:[[5.8,8.5,[553,243,1968,456]]] }] },
+  { g:'C', dur:6, who:'Committee Coordinator', title:'Deadlines that remind you.', sub:'Academic dates and your own commitments, with reminders before they are due.',
+    shots:[{ img:'c_calendar', hls:[[1.2,3.6,[553,356,1968,502]],[3.8,6,[553,535,1968,745]]] }] },
+  { g:'A', dur:6, who:'Committee Coordinator', title:'See how it all connects.', sub:'Who attended which meeting, and which committees and documents link together.',
+    shots:[{ img:'fig6_09_knowledge_graph', hls:[] }] },
+  { g:'A', dur:6, who:'Committee Coordinator', title:'Know what is working.', sub:'Open commitments per committee, ticket reply times, and what people ask most.',
+    shots:[{ img:'fig6_10_analytics', hls:[] }] },
+  { g:'A', dur:5.5, who:'System Administrator', title:'Ready for a whole college.', sub:'Accounts, roles, departments and CSV import — every change audited.',
+    shots:[{ img:'a_users', hls:[] }] },
+];
+const T = [];   // scene list with absolute times
+let tcur = 0;
+const add = (s) => { s.a = tcur; s.b = tcur + s.dur; tcur = s.b; T.push(s); };
+add({ kind:'hook', dur:4 }); add({ kind:'reveal', dur:4.5 }); add({ kind:'roles', dur:6 });
+FEATURES.forEach((f, i) => add({ kind:'feature', n:i + 1, ...f }));
+add({ kind:'results', dur:7 }); add({ kind:'outro', dur:4.5 });
+window.DURATION = tcur;
+window.TIMELINE = T.map((s) => ({ kind: s.kind, a: s.a, b: s.b }));
+
+// ---------- build DOM ----------
+const W = 1080, H = 675, IW = 2160, IH = 1350, BASE = W / IW;
+const root = document.getElementById('root');
+const el = (html) => { const d = document.createElement('div'); d.innerHTML = html.trim(); return d.firstChild; };
+T.forEach((s, i) => {
+  let node;
+  if (s.kind === 'hook') node = el(`<div class="scene"><div class="big r" style="top:420px;font-size:84px">Every committee meeting makes promises.</div>
+      <div class="big r" style="top:540px;font-size:84px;color:var(--accent2)">Who keeps track of them?</div></div>`);
+  if (s.kind === 'reveal') node = el(`<div class="scene"><div class="lg" style="position:absolute;left:900px;top:250px"><div class="logo">DJSCE</div></div>
+      <div class="big r" style="top:430px;font-size:92px">DJSCE Institutional Brain</div>
+      <div class="big r" style="top:570px;font-size:36px;font-weight:400;color:var(--muted);letter-spacing:-0.01em">Meetings, procedures and student questions — answered with sources.</div></div>`);
+  if (s.kind === 'roles') node = el(`<div class="scene"><div class="big r" style="top:250px;font-size:60px">One platform. Four roles.</div>
+      ${[['Student','Help Desk answers, tickets, notices, calendar'],['Faculty','Tasks, check-ins, ticket replies, cited assistant'],
+         ['Committee Coordinator','Meetings, procedures, notices, analytics'],['System Administrator','Users, roles, departments']]
+        .map(([t,l],k) => `<div class="card role r" style="left:${110 + k*430}px"><div class="t">${t}</div><div class="l">${l}</div></div>`).join('')}
+      <div class="footnote r">Each role sees only what it is allowed to — enforced on the server, not just hidden.</div></div>`);
+  if (s.kind === 'feature') node = el(`<div class="scene">
+      <div class="caption"><div class="kicker r"><span class="n">${s.n}</span>${G[s.g]}</div>
+        <div class="ctitle r">${s.title}</div><div class="csub r">${s.sub}</div></div>
+      <div class="who r">Signed in as <b>${s.who}</b></div>
+      <div class="win">${s.shots.map((sh) => `<div class="cam"><img src="assets/${sh.img}.png">
+        ${(sh.masks || []).map(([b]) => `<div class="mask" style="left:${b[0]}px;top:${b[1]}px;width:${b[2]}px;height:${b[3]}px"></div>`).join('')}
+        ${sh.hls.map(() => '<div class="hl"></div>').join('')}</div>`).join('')}</div></div>`);
+  if (s.kind === 'results') node = el(`<div class="scene"><div class="big r" style="top:250px;font-size:60px">Tested, not just demoed.</div>
+      <div class="card stat r" style="left:180px"><div class="v">0%</div><div class="l">of help-desk tickets routed to the right office</div></div>
+      <div class="card stat r" style="left:720px"><div class="v">0%</div><div class="l">of answers correct, with the right source found every time</div></div>
+      <div class="card stat r" style="left:1260px"><div class="v">0</div><div class="l">internal records leaked to students in 20 attack questions</div></div>
+      <div class="footnote r">Evaluation run 19 Oct 2026 · synthetic committee data + public djsce.ac.in content · 235 automated tests</div></div>`);
+  if (s.kind === 'outro') node = el(`<div class="scene"><div style="position:absolute;left:900px;top:300px"><div class="logo">DJSCE</div></div>
+      <div class="big" style="top:470px;font-size:84px">DJSCE Institutional Brain</div>
+      <div class="big" style="top:590px;font-size:32px;font-weight:400;color:var(--muted)">Department of Computer Engineering · Dwarkadas J. Sanghvi College of Engineering</div>
+      <div class="footnote">Demonstration prototype · synthetic committee data · not an official college system</div></div>`);
+  s.node = node; root.appendChild(node);
+});
+
+// ---------- animation helpers ----------
+const clamp = (x, a = 0, b = 1) => Math.min(b, Math.max(a, x));
+const ease = (x) => { x = clamp(x); return x < .5 ? 4*x*x*x : 1 - Math.pow(-2*x + 2, 3) / 2; };
+const outc = (x) => 1 - Math.pow(1 - clamp(x), 3);
+const lerp = (a, b, k) => a + (b - a) * k;
+const env = (t, a, b, fi = .5, fo = .4) => clamp((t - a) / fi) * clamp((b - t) / fo);
+function rise(e, lt, at, dist = 24, dur = .6) { const k = outc((lt - at) / dur); e.style.opacity = k; e.style.transform = `translateY(${(1-k)*dist}px)`; }
+function camXform(z, fx, fy) {
+  const s = BASE * z; let tx = W/2 - fx*s, ty = H/2 - fy*s;
+  tx = Math.min(0, Math.max(W - IW*s, tx)); ty = Math.min(0, Math.max(H - IH*s, ty));
+  return `translate(${tx}px,${ty}px) scale(${s})`;
+}
+function focusOf(box) {
+  const [x0,y0,x1,y1] = box; const z = Math.max(1, Math.min(1.75, (W*0.86)/((x1-x0)*BASE), (H*0.8)/((y1-y0)*BASE)));
+  return [z, (x0+x1)/2, (y0+y1)/2];
+}
+function shotCamera(sh, lt) {
+  const t0 = sh.from || 0;
+  const keys = [[t0, 1, IW/2, IH/2]];
+  if (!sh.hls.length) keys.push([t0 + 6, 1.12, IW/2, IH/2]);
+  sh.hls.forEach(([a,, box]) => keys.push([a - 0.1, ...focusOf(box)]));
+  let cur = keys[0].slice(1);
+  for (let i = 0; i < keys.length - 1; i++) {
+    const [ka, ...pa] = keys[i], [kb, ...pb] = keys[i+1];
+    const dur = Math.min(1.0, kb - ka);
+    if (lt >= kb - dur) { const e = ease((lt - (kb - dur)) / dur); cur = pa.map((v, j) => lerp(v, pb[j], e)); }
+  }
+  return camXform(...cur);
+}
+
+window.render = function (t) {
+  document.getElementById('glow').style.opacity = 0.6 + 0.4*Math.sin(t*0.5);
+  for (const s of T) {
+    const n = s.node, lt = t - s.a;
+    if (t < s.a - 0.01 || t > s.b + 0.01) { n.style.opacity = 0; continue; }
+    n.style.opacity = s.kind === 'outro' ? clamp(lt/.6) : env(t, s.a, s.b, s.kind === 'hook' ? .01 : .5);
+    const r = n.querySelectorAll('.r');
+    if (s.kind === 'hook') { rise(r[0], lt, .2); rise(r[1], lt, 1.7); }
+    if (s.kind === 'reveal') { const k = outc((lt - .1)/.8); const lg = n.querySelector('.lg'); lg.style.opacity = k; lg.style.transform = `scale(${.7+.3*k})`; rise(r[0], lt, .5); rise(r[1], lt, 1.1); }
+    if (s.kind === 'roles') { rise(r[0], lt, .1); [1,2,3,4].forEach((k) => rise(r[k], lt, .5 + k*.35, 40)); rise(r[5], lt, 2.3, 10); }
+    if (s.kind === 'feature') {
+      rise(r[0], lt, .15); rise(r[1], lt, .3); rise(r[2], lt, .7); rise(r[3], lt, .4, 8);
+      const cams = n.querySelectorAll('.cam');
+      s.shots.forEach((sh, k) => {
+        const c = cams[k], from = sh.from || 0, until = sh.until || s.dur;
+        c.style.opacity = (k === 0 ? 1 : clamp((lt - from)/.4)) * (until < s.dur ? clamp((until - lt)/.4) : 1);
+        c.style.transform = shotCamera(sh, lt);
+        c.querySelectorAll('.mask').forEach((m, j) => { m.style.opacity = 1 - clamp((lt - sh.masks[j][1])/.5); });
+        c.querySelectorAll('.hl').forEach((h, j) => {
+          const [a, b, [x0,y0,x1,y1]] = sh.hls[j]; const p = 10;
+          Object.assign(h.style, { left:(x0-p)+'px', top:(y0-p)+'px', width:(x1-x0+2*p)+'px', height:(y1-y0+2*p)+'px' });
+          h.style.opacity = clamp((lt - a)/.35) * clamp((b - lt)/.3);
+        });
+      });
+    }
+    if (s.kind === 'results') {
+      rise(r[0], lt, .1); rise(r[1], lt, .6, 40); rise(r[2], lt, 1.2, 40); rise(r[3], lt, 1.8, 40); rise(r[4], lt, 2.6, 10);
+      const v = n.querySelectorAll('.v');
+      v[0].textContent = (90.6 * outc((lt - .7)/1.2)).toFixed(1) + '%';
+      v[1].textContent = Math.round(91 * outc((lt - 1.3)/1.2)) + '%';
+      v[2].style.color = lt > 2.4 ? '#4cb782' : '#f7f8f8';
+    }
+  }
+};
+window.ready = Promise.all([document.fonts.ready,
+  ...Array.from(document.images).map((i) => i.complete ? 1 : new Promise((r) => { i.onload = r; i.onerror = r; }))]);
+window.render(0);
+</script>
+</body>
+</html>

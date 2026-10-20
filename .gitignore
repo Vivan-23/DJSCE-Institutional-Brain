@@ -53,7 +53,8 @@ backend/app/models/en_core_web_sm*
 *.db
 test.db
 
-# /brag video intermediates (sources kept: brag-output/work/composition.html, music.py)
+# /brag video intermediates (sources kept: compositions, timeline, music.py)
 brag-output/work/*
-!brag-output/work/composition.html
+!brag-output/work/composition-*.html
+!brag-output/work/timeline.json
 !brag-output/work/music.py

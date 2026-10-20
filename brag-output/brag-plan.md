@@ -1,5 +1,41 @@
 # /brag plan — DJSCE Institutional Brain
 
+Two cuts: **`brag.mp4`** — the full feature tour (2:18, every feature explained; source
+`work/composition-full.html`, music `python work/music.py work/timeline.json work/music-full.wav`) — and
+**`brag-short.mp4`** — the original 40 s cut (source `work/composition-short.html`, music `python work/music.py`).
+
+## Full tour storyboard (2:18, 1920×1080, 30 fps)
+
+| # | Group | Scene | Signed in as | Shows |
+|---|---|---|---|---|
+| — | — | Hook (4 s) · Name (4.5 s) · "One platform. Four roles." (6 s) | — | — |
+| 1 | Meetings & tasks | Paste the minutes | Coordinator | Record form with IQAC sample, transcript → Extract button (not submitted) |
+| 2 | Meetings & tasks | Every meeting, summarised | Coordinator | Summary, attendees, decisions, Download DOCX/PDF |
+| 3 | Meetings & tasks | Commitments with an owner | Coordinator | My Work card: progress, due date, assigned by |
+| 4 | Meetings & tasks | Just say what you did today | Faculty | Follow-up question + typed check-in (not sent) |
+| 5 | Meetings & tasks | Nothing slips through | Coordinator | Overview stats + deadline insights |
+| 6 | Knowledge | How things are done here | Coordinator | Status filters (draft/approved/needs review/retired) + procedure steps |
+| 7 | Knowledge | Upload once. Choose who sees it | Coordinator | File chosen, Public selected (not uploaded) |
+| 8 | Knowledge | Ask anything. Get the source | Coordinator | Question → cited answer |
+| 9 | Knowledge | See exactly where it came from | Coordinator | Expanded source list, internal/public tags |
+| 10 | Students | Students get instant answers | Student | Help Desk answer, public information only |
+| 11 | Students | Internal stays internal | Student | Same Academic Council question → no internal records |
+| 12 | Students | Not answered? Raise a ticket | Student | Ticket form filled (not submitted), My tickets |
+| 13 | Students | AI drafts. A person sends | Coordinator | Triage + unsent draft |
+| 14 | Campus | Notices to exactly the right students | Coordinator → Student | Audience filters ("reaches 6 people", not sent) → student inbox |
+| 15 | Campus | Deadlines that remind you | Coordinator | Reminders + calendar items |
+| 16 | Insight & admin | See how it all connects | Coordinator | Knowledge graph |
+| 17 | Insight & admin | Know what is working | Coordinator | Analytics |
+| 18 | Insight & admin | Ready for a whole college | Admin | Users table |
+| — | — | Results (7 s) · Outro (4.5 s) | — | 90.6 % · 91 % · 0 leaks |
+
+Length: 2:18 rather than 2:00 so every caption stays on screen long enough to read (~0.3 s per word).
+No demo data was changed while capturing: forms were filled on screen but never submitted.
+
+---
+
+## Short cut (40 s) — original plan
+
 **What it is:** A college platform that turns committee meetings and documents into tracked commitments,
 reviewed procedures and cited answers, with a student help desk that only answers from public information.
 **For:** committee coordinators, faculty and students at an engineering college.
