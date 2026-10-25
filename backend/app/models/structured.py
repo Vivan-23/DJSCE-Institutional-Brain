@@ -1,3 +1,4 @@
+from sqlalchemy import Column, LargeBinary
 from sqlmodel import SQLModel, Field
 from typing import Optional, List
 from datetime import date, datetime, timezone
@@ -291,10 +292,15 @@ class TimetableImport(SQLModel, table=True):
     source_filename: str
     source_sha256: str = Field(index=True)
     version: int = Field(default=1)
-    # draft (extracted, under review) / published / superseded (replaced by a newer version) / discarded
+    semester: Optional[str] = None
+    # extracting (queued/running) / failed / draft (under review) / published / superseded (a newer version of the
+    # same class was published) / discarded
     status: str = Field(default="draft", index=True)
-    extraction_method: Optional[str] = None  # docx_table / xlsx / csv / pdf_table / ocr
-    extraction_notes: Optional[str] = None  # JSON list of parser warnings
+    extraction_method: Optional[str] = None  # docx / xlsx / csv / vision
+    extraction_notes: Optional[str] = None  # JSON list of parser/transcription warnings
+    extraction_error: Optional[str] = None
+    header_raw: Optional[str] = None  # JSON: header exactly as transcribed
+    legend: Optional[str] = None  # JSON: [{code, subject, faculty}] from the sheet's key table
     uploaded_by_user_id: Optional[UUID] = Field(default=None, foreign_key="user.id")
     published_by_user_id: Optional[UUID] = Field(default=None, foreign_key="user.id")
     created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
@@ -317,6 +323,14 @@ class TimetableEntry(SQLModel, table=True):
     batch: Optional[str] = None  # lab batch, e.g. C21
     source_cell: Optional[str] = None  # raw cell text, for traceability
     issues: str = Field(default="[]")  # JSON list of review flags (unknown_faculty, missing_room, overlap, …)
+    edited: bool = Field(default=False)  # corrected by a reviewer
+
+
+class TimetableSource(SQLModel, table=True):
+    """The uploaded file itself, kept so reviewers can compare entries with the original sheet."""
+    import_id: UUID = Field(foreign_key="timetableimport.id", primary_key=True)
+    content_type: str
+    data: bytes = Field(sa_column=Column(LargeBinary, nullable=False))
 
 
 class FacultyAlias(SQLModel, table=True):

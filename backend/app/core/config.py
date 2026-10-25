@@ -35,6 +35,8 @@ class Settings(BaseSettings):
 
     # Local timezone for timetables, schedule dates and "today" (IANA name).
     INSTITUTION_TIMEZONE: str = "Asia/Kolkata"
+    # Vision model that transcribes photographed/scanned timetables (Groq). Output is always reviewed by a person.
+    TIMETABLE_VISION_MODEL: str = "qwen/qwen3.8-27b"
 
     # JWT
     ALGORITHM: str = "HS256"

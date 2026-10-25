@@ -54,6 +54,19 @@ celery_app.conf.update(
 )
 
 
+@celery_app.task(name="app.core.celery.process_timetable")
+def process_timetable_task(import_id: str) -> dict:
+    """Extract an uploaded timetable into a draft for review (never publishes)."""
+    from uuid import UUID
+    from sqlmodel import Session
+    from app.core.db import engine
+    from app.services.timetable_service import timetable_service
+
+    with Session(engine) as session:
+        imp = timetable_service.run_extraction(session, UUID(import_id))
+        return {"import_id": import_id, "status": imp.status, "error": imp.extraction_error}
+
+
 @celery_app.task(name="app.core.celery.process_document")
 def process_document_task(text: str, filename: str, visibility: str = "internal", department: str = "all") -> dict:
     """

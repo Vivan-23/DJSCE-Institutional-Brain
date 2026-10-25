@@ -12,6 +12,9 @@ celery[redis]>=5.4.0
 redis>=5.0.4
 pypdf>=4.2.0
 python-docx>=1.1.2
+openpyxl>=3.1.2       # timetable upload (.xlsx)
+pymupdf>=1.24.0       # timetable upload (.pdf rendered to an image)
+Pillow>=10.0.0        # timetable images (resize before transcription)
 reportlab==4.2.5     # meeting minutes PDF export
 spacy>=3.7.4
 structlog>=24.2.0
