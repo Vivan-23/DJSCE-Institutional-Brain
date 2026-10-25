@@ -1,6 +1,6 @@
 from sqlmodel import SQLModel, Field
 from typing import Optional, List
-from datetime import datetime, timezone
+from datetime import date, datetime, timezone
 from uuid import UUID, uuid4
 
 class UserBase(SQLModel):
@@ -270,3 +270,81 @@ class NoticeRecipient(SQLModel, table=True):
     user_id: UUID = Field(foreign_key="user.id", index=True)
     read_at: Optional[datetime] = None
 
+
+
+# ── Teaching timetable (V2) ──────────────────────────────────────────────────
+# A timetable is recurring structure, not tasks: one TimetableEntry per weekly slot,
+# expanded into dated occurrences on read (schedule_service) and adjusted by
+# date-specific ScheduleExceptions. Times are local wall-clock "HH:MM" in
+# settings.INSTITUTION_TIMEZONE; dates are local calendar dates.
+
+class TimetableImport(SQLModel, table=True):
+    """One uploaded class timetable (e.g. TY C2). ``class_key`` is the stable import identity:
+    re-uploading the same class creates a new version that is diffed against the published one."""
+    id: UUID = Field(default_factory=uuid4, primary_key=True)
+    class_key: str = Field(index=True)  # normalized "TY-C2"
+    year_label: Optional[str] = None  # SY / TY / LY (as printed)
+    division: Optional[str] = None  # C1 / C2 / C3
+    academic_term: Optional[str] = None
+    effective_from: Optional[date] = None  # local date the timetable applies from
+    department: str = Field(default="all", index=True)
+    source_filename: str
+    source_sha256: str = Field(index=True)
+    version: int = Field(default=1)
+    # draft (extracted, under review) / published / superseded (replaced by a newer version) / discarded
+    status: str = Field(default="draft", index=True)
+    extraction_method: Optional[str] = None  # docx_table / xlsx / csv / pdf_table / ocr
+    extraction_notes: Optional[str] = None  # JSON list of parser warnings
+    uploaded_by_user_id: Optional[UUID] = Field(default=None, foreign_key="user.id")
+    published_by_user_id: Optional[UUID] = Field(default=None, foreign_key="user.id")
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    published_at: Optional[datetime] = None
+
+
+class TimetableEntry(SQLModel, table=True):
+    """One weekly slot from a timetable grid cell, e.g. Mon 09:00-10:00 DBMS · Room 501 · KD."""
+    id: UUID = Field(default_factory=uuid4, primary_key=True)
+    import_id: UUID = Field(foreign_key="timetableimport.id", index=True)
+    weekday: int  # 0 = Monday … 6 = Sunday
+    start_time: str  # "HH:MM"
+    end_time: str
+    subject: Optional[str] = None
+    room: Optional[str] = None
+    faculty_abbrev: Optional[str] = Field(default=None, index=True)
+    # Resolved only through a verified FacultyAlias, never guessed from initials.
+    faculty_user_id: Optional[UUID] = Field(default=None, foreign_key="user.id", index=True)
+    kind: str = Field(default="lecture")  # lecture / lab / tutorial
+    batch: Optional[str] = None  # lab batch, e.g. C21
+    source_cell: Optional[str] = None  # raw cell text, for traceability
+    issues: str = Field(default="[]")  # JSON list of review flags (unknown_faculty, missing_room, overlap, …)
+
+
+class FacultyAlias(SQLModel, table=True):
+    """A verified mapping from a timetable abbreviation to a staff account (KD → Kaushali Deulkar)."""
+    id: UUID = Field(default_factory=uuid4, primary_key=True)
+    abbrev: str = Field(index=True, unique=True)  # upper-case
+    user_id: UUID = Field(foreign_key="user.id", index=True)
+    verified_by_user_id: Optional[UUID] = Field(default=None, foreign_key="user.id")
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+
+
+class ScheduleException(SQLModel, table=True):
+    """A date-specific change that leaves the recurring entry intact.
+
+    kind: cancelled (one occurrence of ``entry_id``) / modified (new time or room for one
+    occurrence) / holiday (no teaching that date; optional ``department``) / extra (a one-off
+    replacement lecture for ``faculty_user_id``)."""
+    id: UUID = Field(default_factory=uuid4, primary_key=True)
+    on_date: date = Field(index=True)  # local date
+    kind: str
+    entry_id: Optional[UUID] = Field(default=None, foreign_key="timetableentry.id", index=True)
+    faculty_user_id: Optional[UUID] = Field(default=None, foreign_key="user.id", index=True)
+    department: str = Field(default="all")
+    start_time: Optional[str] = None
+    end_time: Optional[str] = None
+    room: Optional[str] = None
+    subject: Optional[str] = None
+    class_label: Optional[str] = None
+    reason: Optional[str] = None
+    created_by_user_id: Optional[UUID] = Field(default=None, foreign_key="user.id")
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))

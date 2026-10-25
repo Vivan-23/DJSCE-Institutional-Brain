@@ -30,6 +30,7 @@ def test_engine():
         User, Document, ProgressReport, ActiveInsight,
         Employee, Meeting, Fragment, Commitment, CommitmentUpdate,
         CheckIn, Skill, SkillCitation, SkillVersion, AuditLog, Ticket, QueryLog, Notice, NoticeRecipient,
+        TimetableImport, TimetableEntry, FacultyAlias, ScheduleException,
     )
     SQLModel.metadata.create_all(engine)
     yield engine

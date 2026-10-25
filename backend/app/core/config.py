@@ -33,6 +33,9 @@ class Settings(BaseSettings):
     # Add "laya" (e.g. "laya,llm") only where the optional laya package is installed.
     TRIAGE_ENGINES: str = "llm,keyword"
 
+    # Local timezone for timetables, schedule dates and "today" (IANA name).
+    INSTITUTION_TIMEZONE: str = "Asia/Kolkata"
+
     # JWT
     ALGORITHM: str = "HS256"
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 60

@@ -35,6 +35,7 @@ def init_db() -> None:
         User, Document, ProgressReport, ActiveInsight,
         Employee, Meeting, Fragment, Commitment, CommitmentUpdate,
         CheckIn, Skill, SkillCitation, SkillVersion, AuditLog, Ticket, QueryLog, Notice, NoticeRecipient,
+        TimetableImport, TimetableEntry, FacultyAlias, ScheduleException,
     )
     from alembic import command
 
