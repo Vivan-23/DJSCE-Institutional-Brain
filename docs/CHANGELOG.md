@@ -8,6 +8,23 @@ Format: `## YYYY-MM-DD — title` then bullets of what/why.
 
 ---
 
+## 2026-10-26 — Faculty-friendly UI for the real CE rollout
+
+The professor approved building this as real software for DJSCE (starting with CE); the users are faculty,
+mostly 40-50, with little time. Changes aim at fewer things per screen and plain words.
+- Removed the "Demonstration prototype" banner (layout) and login badge. Synthetic demo data is still in the DB
+  and must be cleared before faculty log in, since nothing now labels it.
+- Readability: all `text-[Npx]` sizes converted to rem and the root font size raised to 115% (globals.css),
+  so text, spacing and controls scale together.
+- Faculty menu (`employee`): `hideFor` on nav items hides Help Desk, Ticket Queue, Procedures and Knowledge
+  Graph (still reachable by URL; backend auth unchanged); one flat list. "Overview" → "Today", "Assistant" → "Ask".
+- Today page (`app/page.tsx`): faculty get one column — today's classes (all, large time/room), tasks needing
+  attention, coming up, notices, ask — each linking to its full page. Coordinator/admin dashboard unchanged.
+- End-of-day Check-in: one card with a large text box, starter phrases, "Save today's update" and
+  "I'm done for today"; follow-ups listed only when there are some; plain-language errors.
+- Timetable review: entries as a compact Day/Time/Subject/Faculty/Room table (sheet text as tooltip); the
+  source panel only takes a column for photo/PDF uploads.
+
 ## 2026-10-26 — openpyxl in the lock; backend runs one process
 
 - `backend/requirements.lock` was missing `openpyxl` (+ `et_xmlfile`), so `.xlsx` timetable uploads failed in the

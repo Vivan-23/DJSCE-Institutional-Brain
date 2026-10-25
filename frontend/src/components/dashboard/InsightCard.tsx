@@ -50,17 +50,17 @@ export default function InsightCard({ insight, onDismiss }: Props) {
         <div className="min-w-0 flex-1">
           <div className="flex flex-wrap items-center gap-2 mb-1.5">
             <Badge tone={cat.tone}>{cat.label}</Badge>
-            {insight.created_at && <span className="text-[12px] text-slate-500">{formatDateTime(insight.created_at)}</span>}
-            <span className="text-[12px] text-slate-500">· {confidence}% confidence</span>
+            {insight.created_at && <span className="text-[0.75rem] text-slate-500">{formatDateTime(insight.created_at)}</span>}
+            <span className="text-[0.75rem] text-slate-500">· {confidence}% confidence</span>
           </div>
-          <h3 className="text-[14px] font-medium text-slate-100 leading-snug">{insight.observation}</h3>
+          <h3 className="text-[0.875rem] font-medium text-slate-100 leading-snug">{insight.observation}</h3>
           {insight.impact_rationale && (
-            <p className="mt-0.5 text-[13px] text-slate-400 leading-relaxed">{insight.impact_rationale}</p>
+            <p className="mt-0.5 text-[0.8125rem] text-slate-400 leading-relaxed">{insight.impact_rationale}</p>
           )}
           {actions.length > 0 && (
             <ul className="mt-2 flex flex-wrap gap-x-4 gap-y-1">
               {actions.map((action, i) => (
-                <li key={i} className="text-[12px] text-slate-400 flex items-center gap-1.5">
+                <li key={i} className="text-[0.75rem] text-slate-400 flex items-center gap-1.5">
                   <span className="w-1 h-1 rounded-full bg-slate-600" aria-hidden="true" />
                   {action}
                 </li>
@@ -71,7 +71,7 @@ export default function InsightCard({ insight, onDismiss }: Props) {
         {onDismiss && insight.id && (
           <button
             onClick={() => onDismiss(insight.id!)}
-            className="shrink-0 text-[12px] text-slate-500 hover:text-slate-200 px-2 py-1 rounded-md hover:bg-white/[0.05] transition-colors cursor-pointer lg:opacity-0 lg:group-hover:opacity-100 focus:opacity-100"
+            className="shrink-0 text-[0.75rem] text-slate-500 hover:text-slate-200 px-2 py-1 rounded-md hover:bg-white/[0.05] transition-colors cursor-pointer lg:opacity-0 lg:group-hover:opacity-100 focus:opacity-100"
             aria-label="Dismiss insight"
           >
             Dismiss

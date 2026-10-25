@@ -316,7 +316,7 @@ export default function GraphCanvas() {
       </div>
 
       {data?.truncated && (
-        <p className="text-[12px] text-amber-300/90">
+        <p className="text-[0.75rem] text-amber-300/90">
           The graph is larger than the display limit, so some links are not drawn. Search for a node and use “Show all its
           connections” to load its full neighbourhood.
         </p>
@@ -330,7 +330,7 @@ export default function GraphCanvas() {
             role="img"
             aria-label="Knowledge graph of people, committees, meetings and documents"
           />
-          <p className="absolute bottom-2 left-3 text-[11px] text-slate-500 pointer-events-none">
+          <p className="absolute bottom-2 left-3 text-[0.6875rem] text-slate-500 pointer-events-none">
             {visibleCount} nodes shown · scroll to zoom · drag to pan · click a node to focus
           </p>
         </div>

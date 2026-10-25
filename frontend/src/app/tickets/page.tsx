@@ -97,7 +97,7 @@ export default function TicketQueuePage() {
           Tickets are triaged and drafted by AI. Review every draft — nothing reaches the student until you send it.
         </p>
         {readOnly && (
-          <p className="mt-2 text-[13px] text-amber-300" role="note">Read-only view: faculty members reply to tickets.</p>
+          <p className="mt-2 text-[0.8125rem] text-amber-300" role="note">Read-only view: faculty members reply to tickets.</p>
         )}
       </div>
 
@@ -136,10 +136,10 @@ export default function TicketQueuePage() {
                 }`}
               >
                 <div className="flex items-center justify-between gap-3">
-                  <p className="text-[13px] font-medium text-slate-100 truncate">{t.subject}</p>
+                  <p className="text-[0.8125rem] font-medium text-slate-100 truncate">{t.subject}</p>
                   <TicketBadge status={t.status} />
                 </div>
-                <p className="text-[12px] text-slate-500 mt-1 truncate">
+                <p className="text-[0.75rem] text-slate-500 mt-1 truncate">
                   <span className={PRIORITY_STYLE[t.priority] ?? ''}>{t.priority} priority</span> · {t.routed_to} ·{' '}
                   {t.raised_by ?? 'Unknown'} · {formatDateTime(t.created_at)}
                 </p>
@@ -155,14 +155,14 @@ export default function TicketQueuePage() {
             <>
               <div>
                 <p className="text-base font-semibold text-slate-100">{selected.subject}</p>
-                <p className="text-[12px] text-slate-500 mt-0.5">
+                <p className="text-[0.75rem] text-slate-500 mt-0.5">
                   Raised by {selected.raised_by ?? 'Unknown'} ({selected.raised_by_role ?? 'user'}) · {formatDateTime(selected.created_at)}
                 </p>
                 <p className="text-xs text-slate-300 mt-2 whitespace-pre-wrap">{selected.description}</p>
               </div>
 
-              <div className="rounded border border-slate-800 bg-slate-950/60 p-3 text-[12px] text-slate-300 space-y-1">
-                <p className="text-[11px] font-semibold text-slate-400">
+              <div className="rounded border border-slate-800 bg-slate-950/60 p-3 text-[0.75rem] text-slate-300 space-y-1">
+                <p className="text-[0.6875rem] font-semibold text-slate-400">
                   Triage · {selected.triage_method === 'llm' ? 'AI classifier' : 'Keyword rules (offline fallback)'}
                 </p>
                 <p>
@@ -185,12 +185,12 @@ export default function TicketQueuePage() {
 
               <div className="rounded border border-blue-500/20 bg-blue-500/5 p-3">
                 <div className="flex items-center justify-between gap-2">
-                  <p className="text-[11px] font-semibold text-blue-300">AI-suggested reply (not sent)</p>
+                  <p className="text-[0.6875rem] font-semibold text-blue-300">AI-suggested reply (not sent)</p>
                   {selected.ai_draft_reply && (
                     <button
                       type="button"
                       onClick={() => setDraft(selected.ai_draft_reply ?? '')}
-                      className="text-[12px] text-blue-300 hover:text-blue-200 cursor-pointer"
+                      className="text-[0.75rem] text-blue-300 hover:text-blue-200 cursor-pointer"
                     >
                       Use as starting point
                     </button>
@@ -204,7 +204,7 @@ export default function TicketQueuePage() {
 
               {!readOnly && (
               <div className="space-y-2">
-                <label htmlFor="staff-reply" className="text-[11px] font-semibold text-slate-400">
+                <label htmlFor="staff-reply" className="text-[0.6875rem] font-semibold text-slate-400">
                   Your reply to the {selected.raised_by_role === 'student' ? 'student' : 'requester'}
                 </label>
                 <textarea

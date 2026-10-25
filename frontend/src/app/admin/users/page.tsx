@@ -194,7 +194,7 @@ export default function AdminUsersPage() {
             Add user
           </button>
         </form>
-        <label className="block text-[12px] text-slate-400">
+        <label className="block text-[0.75rem] text-slate-400">
           Or import a CSV (columns: email, full_name, role, department, year, semester, division, password):{' '}
           <input type="file" accept=".csv,text/csv" className="text-xs"
             onChange={(e) => e.target.files?.[0] && importCsv(e.target.files[0])} />
@@ -210,7 +210,7 @@ export default function AdminUsersPage() {
           {ROLES.map((r) => <option key={r} value={r}>{ROLE_LABEL[r]}</option>)}
         </select>
         {deptSelect(filters.department, (v) => setFilters({ ...filters, department: v }), 'All departments')}
-        <span className="text-[12px] text-slate-500">{users.length} users</span>
+        <span className="text-[0.75rem] text-slate-500">{users.length} users</span>
       </div>
 
       <div className="glass-panel overflow-x-auto">
@@ -288,7 +288,7 @@ export default function AdminUsersPage() {
       {permissions.length > 0 && (
         <section className="glass-panel p-4 space-y-2" aria-label="Role permissions">
           <h2 className="text-sm font-semibold text-slate-100">What each role can do</h2>
-          <p className="text-[12px] text-slate-500">Fixed in the application and enforced by the server. Assign a role to change what a user can do.</p>
+          <p className="text-[0.75rem] text-slate-500">Fixed in the application and enforced by the server. Assign a role to change what a user can do.</p>
           <div className="overflow-x-auto">
             <table className="w-full text-xs">
               <thead className="text-slate-400 text-left">

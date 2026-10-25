@@ -55,7 +55,7 @@ export default function SourcesPage() {
         <h1 className="text-xl md:text-2xl font-semibold text-slate-100 tracking-[-0.02em]">
           Documents
         </h1>
-        <p className="text-slate-400 text-[13px] mt-1">
+        <p className="text-slate-400 text-[0.8125rem] mt-1">
           Add circulars, syllabi, accreditation papers and committee notes so the assistant can cite them.
         </p>
       </div>
@@ -66,7 +66,7 @@ export default function SourcesPage() {
           <h2 className="text-sm font-semibold text-slate-200 mb-1">
             Upload a document
           </h2>
-          <p className="text-[12px] text-slate-500">
+          <p className="text-[0.75rem] text-slate-500">
             The text is split into passages for search, and people and committees it names are added to the knowledge graph.
           </p>
         </div>
@@ -83,17 +83,17 @@ export default function SourcesPage() {
             <div className="text-center p-4">
               {file ? (
                 <>
-                  <p className="text-slate-100 text-[13px] font-medium">{file.name}</p>
-                  <p className="text-slate-400 text-[12px] mt-1 font-mono">
+                  <p className="text-slate-100 text-[0.8125rem] font-medium">{file.name}</p>
+                  <p className="text-slate-400 text-[0.75rem] mt-1 font-mono">
                     {(file.size / 1024).toFixed(1)} KB · ready to upload
                   </p>
                 </>
               ) : (
                 <>
-                  <p className="text-slate-300 text-[13px] font-medium">
+                  <p className="text-slate-300 text-[0.8125rem] font-medium">
                     Choose a file
                   </p>
-                  <p className="text-slate-500 text-[12px] mt-1">
+                  <p className="text-slate-500 text-[0.75rem] mt-1">
                     .txt, .pdf or .docx · up to 10 MB
                   </p>
                 </>
@@ -157,7 +157,7 @@ export default function SourcesPage() {
           <button
             onClick={handleUpload}
             disabled={!file || status === 'uploading'}
-            className="bg-blue-600 hover:bg-blue-500 text-white h-9 px-4 rounded-md text-[13px] font-medium transition-colors disabled:opacity-40 cursor-pointer"
+            className="bg-blue-600 hover:bg-blue-500 text-white h-9 px-4 rounded-md text-[0.8125rem] font-medium transition-colors disabled:opacity-40 cursor-pointer"
           >
             {status === 'uploading' ? 'Uploading…' : 'Upload and index'}
           </button>
@@ -168,7 +168,7 @@ export default function SourcesPage() {
           <div className="p-3.5 rounded-lg bg-emerald-500/10 border border-emerald-500/30 text-emerald-300 text-xs space-y-1">
             <p className="font-semibold">{result.filename} queued</p>
             <p className="text-emerald-400/80">{result.message}</p>
-            <p className="text-[11px] text-slate-500 font-mono">Task ID: {result.task_id}</p>
+            <p className="text-[0.6875rem] text-slate-500 font-mono">Task ID: {result.task_id}</p>
           </div>
         )}
         {status === 'error' && (
@@ -180,21 +180,21 @@ export default function SourcesPage() {
 
       {/* Institutional Ingestion Pipeline Description */}
       <section className="glass-panel p-5 space-y-3">
-        <h2 className="text-[13px] font-medium text-slate-200">
+        <h2 className="text-[0.8125rem] font-medium text-slate-200">
           What happens to an upload
         </h2>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-3 text-xs">
           <div className="p-3 rounded-md bg-white/[0.02] border border-white/[0.06] space-y-1">
             <p className="font-medium text-slate-200">Record</p>
-            <p className="text-slate-400 text-[12px]">PostgreSQL keeps each passage with its source file, visibility and department.</p>
+            <p className="text-slate-400 text-[0.75rem]">PostgreSQL keeps each passage with its source file, visibility and department.</p>
           </div>
           <div className="p-3 rounded-md bg-white/[0.02] border border-white/[0.06] space-y-1">
             <p className="font-medium text-slate-200">Search</p>
-            <p className="text-slate-400 text-[12px]">ChromaDB indexes the passages so the assistant can find and cite them.</p>
+            <p className="text-slate-400 text-[0.75rem]">ChromaDB indexes the passages so the assistant can find and cite them.</p>
           </div>
           <div className="p-3 rounded-md bg-white/[0.02] border border-white/[0.06] space-y-1">
             <p className="font-medium text-slate-200">Graph</p>
-            <p className="text-slate-400 text-[12px]">Neo4j links the people and committees the document mentions.</p>
+            <p className="text-slate-400 text-[0.75rem]">Neo4j links the people and committees the document mentions.</p>
           </div>
         </div>
       </section>

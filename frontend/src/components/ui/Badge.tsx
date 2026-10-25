@@ -15,7 +15,7 @@ export function Badge({ tone = 'neutral', children, title }: { tone?: Tone; chil
   return (
     <span
       title={title}
-      className="inline-flex items-center gap-1.5 shrink-0 h-5 px-2 rounded-full border border-white/[0.08] bg-white/[0.03] text-[12px] text-slate-300 whitespace-nowrap"
+      className="inline-flex items-center gap-1.5 shrink-0 h-5 px-2 rounded-full border border-white/[0.08] bg-white/[0.03] text-[0.75rem] text-slate-300 whitespace-nowrap"
     >
       <span className={`w-1.5 h-1.5 rounded-full ${DOT[tone]}`} aria-hidden="true" />
       {children}
@@ -26,7 +26,7 @@ export function Badge({ tone = 'neutral', children, title }: { tone?: Tone; chil
 /** Small outlined tag for secondary attributes (version, visibility, department). */
 export function Tag({ children }: { children: React.ReactNode }) {
   return (
-    <span className="inline-flex items-center h-5 px-1.5 rounded border border-white/[0.08] text-[11px] text-slate-400 whitespace-nowrap">
+    <span className="inline-flex items-center h-5 px-1.5 rounded border border-white/[0.08] text-[0.6875rem] text-slate-400 whitespace-nowrap">
       {children}
     </span>
   );

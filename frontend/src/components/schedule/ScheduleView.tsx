@@ -24,22 +24,22 @@ function LectureRow({ l }: { l: Lecture }) {
       <div className="w-28 shrink-0">
         <p className={`text-sm font-semibold text-slate-100 tabular-nums ${struck ? 'line-through text-slate-500' : ''}`}>{timeRange(l)}</p>
         {l.original && (
-          <p className="text-[12px] text-slate-500 line-through tabular-nums">
+          <p className="text-[0.75rem] text-slate-500 line-through tabular-nums">
             {l.original.start_time}–{l.original.end_time}
           </p>
         )}
       </div>
       <div className="min-w-0 flex-1">
         <p className={`text-sm font-medium text-slate-100 ${struck ? 'line-through text-slate-500' : ''}`}>
-          <span className="inline-block mr-2 px-1.5 rounded bg-blue-500/15 text-blue-300 text-[11px] font-semibold align-middle no-underline">
+          <span className="inline-block mr-2 px-1.5 rounded bg-blue-500/15 text-blue-300 text-[0.6875rem] font-semibold align-middle no-underline">
             {KIND_LABEL[l.kind] ?? 'Lecture'}
           </span>
           {l.subject ?? 'Subject not set'}
         </p>
-        <p className="text-[13px] text-slate-400 mt-0.5">
+        <p className="text-[0.8125rem] text-slate-400 mt-0.5">
           {[l.class_label, l.batch ? `Batch ${l.batch}` : null, l.room ? `Room ${l.room}` : 'Room not set'].filter(Boolean).join(' · ')}
         </p>
-        {l.note && <p className="text-[13px] text-slate-400 mt-0.5">Note: {l.note}</p>}
+        {l.note && <p className="text-[0.8125rem] text-slate-400 mt-0.5">Note: {l.note}</p>}
       </div>
       <Badge tone={st.tone}>{st.label}</Badge>
     </li>
@@ -50,15 +50,15 @@ function OtherRow({ i }: { i: CalendarItem }) {
   const isTask = i.source === 'commitment';
   const body = (
     <>
-      <div className="w-28 shrink-0 text-[13px] text-slate-500">{isTask ? 'Due' : 'All day'}</div>
+      <div className="w-28 shrink-0 text-[0.8125rem] text-slate-500">{isTask ? 'Due' : 'All day'}</div>
       <div className="min-w-0 flex-1">
         <p className="text-sm text-slate-200">
-          <span className="inline-block mr-2 px-1.5 rounded bg-amber-500/15 text-amber-300 text-[11px] font-semibold align-middle">
+          <span className="inline-block mr-2 px-1.5 rounded bg-amber-500/15 text-amber-300 text-[0.6875rem] font-semibold align-middle">
             {CAL_KIND_LABEL[i.kind] ?? 'Date'}
           </span>
           {i.title}
         </p>
-        {i.meeting && <p className="text-[13px] text-slate-500 mt-0.5">From “{i.meeting}”</p>}
+        {i.meeting && <p className="text-[0.8125rem] text-slate-500 mt-0.5">From “{i.meeting}”</p>}
       </div>
     </>
   );
@@ -183,7 +183,7 @@ export default function ScheduleView({ defaultMode = 'day', showOther = true }: 
             if (!current.schedule.has_timetable && !lectures.length && !other.length) return null;
             if (mode === 'week' && !lectures.length && !other.length) {
               return (
-                <p key={d} className="text-[13px] text-slate-500 px-1">
+                <p key={d} className="text-[0.8125rem] text-slate-500 px-1">
                   <span className="font-medium text-slate-400">{dayHeading(d, { weekday: 'long', day: 'numeric', month: 'short' })}</span> · nothing scheduled
                 </p>
               );

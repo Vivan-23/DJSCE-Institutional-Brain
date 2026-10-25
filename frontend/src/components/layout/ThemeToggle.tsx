@@ -12,7 +12,7 @@ export default function ThemeToggle({ compact = false }: { compact?: boolean }) 
       onClick={() => setTheme(next)}
       aria-label={`Switch to ${label.toLowerCase()}`}
       title={`Switch to ${label.toLowerCase()}`}
-      className="flex items-center gap-1.5 px-2 h-7 rounded-md text-[12px] text-slate-400 hover:text-slate-200 hover:bg-white/[0.05] border border-slate-800 cursor-pointer transition-colors"
+      className="flex items-center gap-1.5 px-2 h-7 rounded-md text-[0.75rem] text-slate-400 hover:text-slate-200 hover:bg-white/[0.05] border border-slate-800 cursor-pointer transition-colors"
     >
       <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.75} strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
         {next === 'light' ? (

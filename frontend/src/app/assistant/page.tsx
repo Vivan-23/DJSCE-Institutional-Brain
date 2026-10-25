@@ -3,7 +3,6 @@ import Link from 'next/link';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { apiFetch } from '@/lib/api';
 import { Badge } from '@/components/ui/Badge';
-import EmptyState from '@/components/ui/EmptyState';
 
 interface Followup {
   commitment_id: string;
@@ -70,7 +69,7 @@ export default function AssistantPage() {
         return r.json();
       })
       .then((data: CheckinState) => setCheckin(data))
-      .catch(() => setError('Could not load faculty desk check-in. Please ensure backend is reachable.'));
+      .catch(() => setError("Could not load today's check-in. Please refresh the page."));
   }, []);
 
   useEffect(() => {
@@ -106,7 +105,7 @@ export default function AssistantPage() {
       setLastUpdates((data.updates as AppliedUpdate[]) ?? []);
       loadFollowups();
     } catch {
-      setError('Message failed to transmit to desk assistant.');
+      setError('Your update could not be saved. Please try again.');
     } finally {
       setSending(false);
     }
@@ -135,164 +134,158 @@ export default function AssistantPage() {
     }
   };
 
+  // The opening assistant greeting is always there; the conversation is worth showing once the person has written.
+  const turns = checkin?.conversation ?? [];
+  const started = turns.some((t) => t.role === 'user');
+  const STARTERS = ['Finished ', 'Still working on ', 'Stuck on '];
+
   return (
-    <main className="p-4 sm:p-6 md:p-10 max-w-3xl mx-auto space-y-8">
+    <main className="p-4 sm:p-6 md:p-10 max-w-3xl mx-auto space-y-6">
       {/* Header */}
       <div>
         <h1 className="text-xl md:text-2xl font-semibold text-slate-100 tracking-[-0.02em]">
           End-of-day Check-in
         </h1>
-        <p className="text-slate-400 text-[13px] mt-1">
-          Update your progress and tell your assistant what you worked on today. To see your classes and
-          assigned tasks, open{' '}
-          <Link href="/commitments" className="text-blue-400 hover:text-blue-300 underline underline-offset-2">My Work</Link>.
+        <p className="text-slate-400 text-sm mt-1">
+          Write a line or two about what you did today. Your task list on{' '}
+          <Link href="/commitments" className="text-blue-400 hover:text-blue-300 underline underline-offset-2">My Work</Link>{' '}
+          updates itself.
         </p>
       </div>
 
-      {/* Follow-ups */}
-      <section className="space-y-3">
-        <h2 className="text-[13px] font-medium text-slate-200">
-          Follow-ups <span className="text-slate-500 font-normal">{followups.length}</span>
-        </h2>
-        {followups.length === 0 ? (
-          <div className="glass-panel">
-            <EmptyState icon="check" title="You're all caught up" body="No open commitments need a follow-up right now. Use the debrief below to log today's work." />
-          </div>
-        ) : (
-          <ul className="glass-panel divide-y divide-white/[0.05] overflow-hidden">
-            {followups.map((f) => (
-              <li key={f.commitment_id} className="px-4 py-3.5 space-y-1.5">
-                <p className="text-[13px] text-slate-100 font-medium">{f.message}</p>
-                <p className="text-[12px] text-slate-400">
-                  {f.description} · {STATUS_WORD[f.status] ?? f.status}
-                </p>
-                <div className="mt-2 flex gap-2">
-                  <input
-                    value={replyText[f.commitment_id] ?? ''}
-                    onChange={(e) =>
-                      setReplyText((prev) => ({ ...prev, [f.commitment_id]: e.target.value }))
-                    }
-                    onKeyDown={(e) => e.key === 'Enter' && sendReply(f.commitment_id)}
-                    placeholder="Short status update…"
-                    className="flex-1 bg-white/[0.03] border border-white/[0.09] rounded-md px-3 h-8 text-[13px] text-slate-100 placeholder-slate-500 focus:outline-none focus:border-blue-500"
-                  />
-                  <button
-                    onClick={() => sendReply(f.commitment_id)}
-                    disabled={replyingId === f.commitment_id || !(replyText[f.commitment_id] ?? '').trim()}
-                    className="bg-blue-600 hover:bg-blue-500 text-white px-3 h-8 rounded-md text-[13px] font-medium transition-colors disabled:opacity-40 cursor-pointer"
-                  >
-                    {replyingId === f.commitment_id ? '…' : 'Update'}
-                  </button>
-                </div>
-              </li>
-            ))}
-          </ul>
-        )}
-      </section>
+      {/* Today's check-in: the one thing to do on this page */}
+      <section className="glass-panel p-4 sm:p-5 space-y-4" aria-label="Today's check-in">
+        {checkin?.completed && <Badge tone="success">Recorded for today. Thank you.</Badge>}
 
-      {/* End-of-day check-in */}
-      <section className="space-y-3">
-        <div className="flex items-center justify-between">
-          <h2 className="text-[13px] font-medium text-slate-200">End-of-day check-in</h2>
-          {checkin?.completed && (
-            <Badge tone="success">Recorded for today</Badge>
-          )}
-        </div>
-
-        <div className="glass-panel flex flex-col h-[360px] sm:h-[380px] rounded-lg overflow-hidden">
-          <div ref={scrollRef} className="flex-1 min-h-0 overflow-y-auto p-4 sm:p-5 space-y-3.5">
-            {(checkin?.conversation ?? []).map((turn, i) => (
-              <div
-                key={i}
-                className={`flex ${turn.role === 'user' ? 'justify-end' : 'justify-start'}`}
-              >
+        {started && (
+          <div ref={scrollRef} className="max-h-[24rem] overflow-y-auto space-y-3" aria-live="polite">
+            {turns.map((turn, i) => (
+              <div key={i} className={`flex ${turn.role === 'user' ? 'justify-end' : 'justify-start'}`}>
                 <div
-                  className={`max-w-[80%] px-3.5 py-2.5 rounded-xl text-[13px] leading-relaxed ${
-                    turn.role === 'user'
-                      ? 'bg-white/[0.06] border border-white/[0.06] text-slate-100'
-                      : 'text-slate-200'
+                  className={`max-w-[85%] px-3.5 py-2.5 rounded-xl text-sm leading-relaxed ${
+                    turn.role === 'user' ? 'bg-blue-600/15 border border-blue-500/20 text-slate-100' : 'bg-white/[0.04] text-slate-200'
                   }`}
                 >
                   {turn.content}
                 </div>
               </div>
             ))}
-            {sending && (
-              <div className="flex justify-start">
-                <div className="px-3.5 py-2 text-[13px] text-slate-500 flex items-center gap-1.5">
-                  <span className="w-1 h-1 bg-slate-400 rounded-full animate-bounce" />
-                  <span>Updating your tasks…</span>
+            {sending && <p className="text-sm text-slate-400">Updating your tasks…</p>}
+          </div>
+        )}
+
+        {lastUpdates.length > 0 && (
+          <div className="rounded-lg border border-emerald-500/30 bg-emerald-500/5 p-3 space-y-2" aria-label="Task updates">
+            <p className="text-sm font-semibold text-emerald-300">Your tasks were updated</p>
+            {lastUpdates.map((u) => (
+              <div key={u.commitment_id} className="text-sm text-slate-200">
+                <div className="flex items-center justify-between gap-2">
+                  <span className="truncate">{u.new ? 'New task: ' : ''}{u.description ?? u.summary}</span>
+                  <span className="text-slate-400 shrink-0">
+                    {typeof u.progress === 'number' ? `${u.progress}% · ` : ''}
+                    {STATUS_WORD[u.status ?? ''] ?? u.status ?? ''}
+                  </span>
                 </div>
+                {(u.remaining || u.blocked_reason) && (
+                  <p className="text-[0.8125rem] text-slate-400 mt-0.5">
+                    {u.blocked_reason ? `Stuck: ${u.blocked_reason}` : `Left: ${u.remaining}`}
+                  </p>
+                )}
+              </div>
+            ))}
+            <Link href="/commitments" className="inline-block text-[0.8125rem] text-blue-300 hover:underline">
+              Not right? Correct it on My Work →
+            </Link>
+          </div>
+        )}
+
+        {!checkin?.completed && (
+          <form
+            className="space-y-3"
+            onSubmit={(e) => {
+              e.preventDefault();
+              sendMessage();
+            }}
+          >
+            <label htmlFor="checkin-text" className="block text-base font-medium text-slate-100">
+              {started ? 'Anything else?' : 'What did you do today?'}
+            </label>
+            {!message && (
+              <div className="flex flex-wrap gap-2">
+                {STARTERS.map((s) => (
+                  <button key={s} type="button" onClick={() => setMessage(s)}
+                    className="px-3 h-9 rounded-full border border-slate-700 text-sm text-slate-300 hover:text-slate-100 hover:border-slate-500 cursor-pointer">
+                    {s.trim()}…
+                  </button>
+                ))}
               </div>
             )}
-          </div>
-
-          {lastUpdates.length > 0 && (
-            <div className="mx-3 mb-2 rounded-lg border border-emerald-500/30 bg-emerald-500/5 p-3 space-y-2" aria-label="Task updates">
-              <p className="text-[12px] font-semibold text-emerald-300">
-                Updated your tasks from this message
-              </p>
-              {lastUpdates.map((u) => (
-                <div key={u.commitment_id} className="text-xs text-slate-200">
-                  <div className="flex items-center justify-between gap-2">
-                    <span className="truncate">{u.new ? 'New task: ' : ''}{u.description ?? u.summary}</span>
-                    <span className="text-slate-400 shrink-0">
-                      {typeof u.progress === 'number' ? `${u.progress}% · ` : ''}
-                      {STATUS_WORD[u.status ?? ''] ?? u.status ?? ''}
-                    </span>
-                  </div>
-                  {typeof u.progress === 'number' && (
-                    <div className="h-1 mt-1 rounded bg-slate-800 overflow-hidden">
-                      <div className="h-full bg-emerald-500" style={{ width: `${u.progress}%` }} />
-                    </div>
-                  )}
-                  {(u.remaining || u.blocked_reason) && (
-                    <p className="text-[12px] text-slate-400 mt-0.5">
-                      {u.blocked_reason ? `Blocked: ${u.blocked_reason}` : `Left: ${u.remaining}`}
-                    </p>
-                  )}
-                </div>
-              ))}
-              <a href="/commitments" className="inline-block text-[12px] text-blue-300 hover:underline">
-                Not right? Correct it on My Work →
-              </a>
-            </div>
-          )}
-
-          {error && (
-            <p role="alert" className="text-rose-400 text-xs px-4 pb-1">
-              {error}
-            </p>
-          )}
-
-          <div className="flex gap-2 p-2.5 border-t border-white/[0.06]">
-            <input
+            <textarea
+              id="checkin-text"
+              rows={3}
               value={message}
               onChange={(e) => setMessage(e.target.value)}
-              onKeyDown={(e) => e.key === 'Enter' && !e.shiftKey && sendMessage()}
-              placeholder={checkin?.completed ? 'Check-in recorded for today' : 'What did you work on today?'}
-              disabled={sending || checkin?.completed}
-              className="flex-1 bg-white/[0.03] border border-white/[0.09] rounded-md px-3 h-9 text-[13px] text-slate-100 placeholder-slate-500 focus:outline-none focus:border-blue-500 disabled:opacity-50"
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' && !e.shiftKey) {
+                  e.preventDefault();
+                  sendMessage();
+                }
+              }}
+              placeholder="e.g. Finished the ML lab marks for C31. Still working on the BIA question paper."
+              disabled={sending}
+              className="w-full bg-slate-900 border border-slate-700 rounded-lg px-3.5 py-2.5 text-base text-slate-100 placeholder-slate-500 focus:outline-none focus:border-blue-500 disabled:opacity-50"
             />
-            <button
-              onClick={sendMessage}
-              disabled={sending || checkin?.completed || !message.trim()}
-              className="bg-blue-600 hover:bg-blue-500 text-white px-4 h-9 rounded-md text-[13px] font-medium transition-colors disabled:opacity-40 cursor-pointer"
-            >
-              Send
-            </button>
-          </div>
-        </div>
-
-        {!checkin?.completed && (checkin?.conversation.length ?? 0) > 1 && (
-          <button
-            onClick={completeCheckin}
-            className="text-xs text-slate-400 hover:text-emerald-400 transition-colors cursor-pointer"
-          >
-            Finish today&apos;s check-in →
-          </button>
+            {error && <p role="alert" className="text-rose-400 text-sm">{error}</p>}
+            <div className="flex flex-wrap items-center gap-3">
+              <button type="submit" disabled={sending || !message.trim()}
+                className="px-5 h-11 rounded-lg bg-blue-600 hover:bg-blue-500 text-white text-base font-semibold disabled:opacity-40 cursor-pointer">
+                {sending ? 'Saving…' : "Save today's update"}
+              </button>
+              {started && (
+                <button type="button" onClick={completeCheckin}
+                  className="px-5 h-11 rounded-lg border border-slate-600 text-base text-slate-200 hover:border-emerald-500 hover:text-emerald-300 cursor-pointer">
+                  I&apos;m done for today
+                </button>
+              )}
+            </div>
+          </form>
         )}
       </section>
+
+      {/* Follow-ups: only when something is actually waiting */}
+      {followups.length > 0 && (
+        <section className="space-y-3" aria-label="Tasks waiting for your update">
+          <h2 className="text-base font-semibold text-slate-100">Tasks waiting for your update ({followups.length})</h2>
+          <ul className="glass-panel divide-y divide-white/[0.05] overflow-hidden">
+            {followups.map((f) => (
+              <li key={f.commitment_id} className="px-4 py-3.5 space-y-1.5">
+                <p className="text-sm text-slate-100 font-medium">{f.message}</p>
+                <p className="text-[0.8125rem] text-slate-400">
+                  {f.description} · {STATUS_WORD[f.status] ?? f.status}
+                </p>
+                <div className="mt-2 flex gap-2">
+                  <label htmlFor={`fu-${f.commitment_id}`} className="sr-only">Update for {f.description}</label>
+                  <input
+                    id={`fu-${f.commitment_id}`}
+                    value={replyText[f.commitment_id] ?? ''}
+                    onChange={(e) => setReplyText((prev) => ({ ...prev, [f.commitment_id]: e.target.value }))}
+                    onKeyDown={(e) => e.key === 'Enter' && sendReply(f.commitment_id)}
+                    placeholder="e.g. Half done, will finish Friday"
+                    className="flex-1 bg-slate-900 border border-slate-700 rounded-lg px-3 h-10 text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:border-blue-500"
+                  />
+                  <button
+                    onClick={() => sendReply(f.commitment_id)}
+                    disabled={replyingId === f.commitment_id || !(replyText[f.commitment_id] ?? '').trim()}
+                    className="bg-blue-600 hover:bg-blue-500 text-white px-4 h-10 rounded-lg text-sm font-semibold disabled:opacity-40 cursor-pointer"
+                  >
+                    {replyingId === f.commitment_id ? 'Saving…' : 'Update'}
+                  </button>
+                </div>
+              </li>
+            ))}
+          </ul>
+        </section>
+      )}
     </main>
   );
 }

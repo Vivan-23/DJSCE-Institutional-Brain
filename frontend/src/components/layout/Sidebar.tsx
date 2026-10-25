@@ -5,14 +5,15 @@ import { usePathname, useRouter } from 'next/navigation';
 import { apiFetch, clearToken, getToken } from '@/lib/api';
 import { useInstitution } from '@/lib/useInstitution';
 import ThemeToggle from './ThemeToggle';
+import InstitutionMark from './InstitutionMark';
 import { clearMe, isCoordinatorRole, isStaffRole, ROLE_LABEL, useMe } from '@/lib/roles';
 
 // `staff: true` items are hidden from students; `coordinator: true` items need Committee
 // Coordinator or above; `roles` lists the exact roles that see an item (no inheritance by
-// higher ranks, e.g. the Help Desk is for students and faculty only). Cosmetic only: the
-// backend refuses these requests anyway.
+// higher ranks, e.g. the Help Desk is for students and faculty only); `hideFor` keeps the faculty menu
+// short (rarely used items stay reachable by URL). Cosmetic only: the backend refuses these requests anyway.
 type NavItem = {
-  href: string; label: string; icon: string; staff: boolean; coordinator?: boolean; admin?: boolean; roles?: string[];
+  href: string; label: string; icon: string; staff: boolean; coordinator?: boolean; admin?: boolean; roles?: string[]; hideFor?: string[];
 };
 
 // 24x24 stroke icon paths (lucide-style).
@@ -36,7 +37,7 @@ const ICON = {
 const NAV_GROUPS: { title?: string; items: NavItem[] }[] = [
   {
     items: [
-      { href: '/', label: 'Overview', icon: ICON.home, staff: true },
+      { href: '/', label: 'Today', icon: ICON.home, staff: true },
       { href: '/commitments', label: 'My Work', icon: ICON.check, staff: true },
       { href: '/assistant', label: 'End-of-day Check-in', icon: ICON.coffee, staff: true },
     ],
@@ -44,18 +45,18 @@ const NAV_GROUPS: { title?: string; items: NavItem[] }[] = [
   {
     title: 'Support',
     items: [
-      { href: '/helpdesk', label: 'Help Desk', icon: ICON.lifebuoy, staff: false, roles: ['student', 'employee'] },
-      { href: '/tickets', label: 'Ticket Queue', icon: ICON.inbox, staff: true, roles: ['employee', 'admin'] },
-      { href: '/chat', label: 'Assistant', icon: ICON.sparkle, staff: false },
+      { href: '/helpdesk', label: 'Help Desk', icon: ICON.lifebuoy, staff: false, roles: ['student', 'employee'], hideFor: ['employee'] },
+      { href: '/tickets', label: 'Ticket Queue', icon: ICON.inbox, staff: true, roles: ['employee', 'admin'], hideFor: ['employee'] },
+      { href: '/chat', label: 'Ask', icon: ICON.sparkle, staff: false },
     ],
   },
   {
     title: 'Knowledge',
     items: [
       { href: '/meetings', label: 'Meetings', icon: ICON.users, staff: true },
-      { href: '/skills', label: 'Procedures', icon: ICON.book, staff: true },
+      { href: '/skills', label: 'Procedures', icon: ICON.book, staff: true, hideFor: ['employee'] },
       { href: '/sources', label: 'Documents', icon: ICON.file, staff: true },
-      { href: '/relationships', label: 'Knowledge Graph', icon: ICON.graph, staff: true },
+      { href: '/relationships', label: 'Knowledge Graph', icon: ICON.graph, staff: true, hideFor: ['employee'] },
     ],
   },
   {
@@ -105,9 +106,11 @@ export default function Sidebar() {
     ...g,
     items: g.items.filter(
       (item) => (!item.staff || staff) && (!item.coordinator || coordinator) && (!item.admin || me?.role === 'admin') &&
-        (!item.roles || (!!me && item.roles.includes(me.role))),
+        (!item.roles || (!!me && item.roles.includes(me.role))) && !(me && item.hideFor?.includes(me.role)),
     ),
   })).filter((g) => g.items.length > 0);
+  // Faculty get one short list; section headings only help with the longer coordinator/admin menu.
+  const navGroups = me?.role === 'employee' ? [{ items: groups.flatMap((g) => g.items) }] : groups;
   const initials = (me?.full_name || me?.email || '?')
     .split(/[\s@.]+/)
     .filter(Boolean)
@@ -157,21 +160,19 @@ export default function Sidebar() {
     <>
       {/* Workspace header */}
       <div className="flex items-center gap-2.5 px-2 pb-4">
-        <div className="w-6 h-6 rounded-md bg-gradient-to-br from-blue-500 to-blue-700 flex items-center justify-center shrink-0 shadow-[inset_0_1px_0_rgba(255,255,255,0.2)]">
-          <span className="text-white font-semibold text-[8px] tracking-tight">{institution.short_code}</span>
-        </div>
+        <InstitutionMark institution={institution} size="sm" />
         <div className="min-w-0">
-          <h2 className="text-[13px] font-medium text-slate-100 leading-tight truncate">{institution.name}</h2>
-          <p className="text-[11px] text-slate-500 truncate">{institution.full_name}</p>
+          <h2 className="text-[0.8125rem] font-medium text-slate-100 leading-tight truncate">{institution.name}</h2>
+          <p className="text-[0.6875rem] text-slate-500 truncate">{institution.full_name}</p>
         </div>
       </div>
 
       {/* Navigation */}
       <nav className="flex-1 overflow-y-auto -mx-1 px-1 space-y-4" aria-label="Main navigation">
-        {groups.map((group, i) => (
+        {navGroups.map((group, i) => (
           <div key={group.title ?? i}>
             {group.title && (
-              <p className="px-2 pb-1 text-[11px] font-medium text-slate-500">{group.title}</p>
+              <p className="px-2 pb-1 text-[0.6875rem] font-medium text-slate-500">{group.title}</p>
             )}
             <div className="space-y-px">
               {group.items.map(({ href, label, icon }) => {
@@ -181,7 +182,7 @@ export default function Sidebar() {
                     key={href}
                     href={href}
                     onClick={() => setMobileOpen(false)}
-                    className={`flex items-center gap-2.5 px-2 h-7 rounded-md text-[13px] transition-colors duration-100 ${
+                    className={`flex items-center gap-2.5 px-2 h-7 rounded-md text-[0.8125rem] transition-colors duration-100 ${
                       active
                         ? 'bg-white/[0.07] text-slate-100'
                         : 'text-slate-400 hover:text-slate-200 hover:bg-white/[0.04]'
@@ -191,7 +192,7 @@ export default function Sidebar() {
                     <span className={active ? 'text-slate-200' : 'text-slate-500'}><NavIcon d={icon} /></span>
                     <span className="truncate">{label}</span>
                     {href === '/notices' && unread > 0 && (
-                      <span className="ml-auto text-[11px] min-w-5 text-center px-1.5 rounded-full bg-blue-600 text-white leading-[18px]" aria-label={`${unread} unread`}>
+                      <span className="ml-auto text-[0.6875rem] min-w-5 text-center px-1.5 rounded-full bg-blue-600 text-white leading-[18px]" aria-label={`${unread} unread`}>
                         {unread}
                       </span>
                     )}
@@ -209,17 +210,17 @@ export default function Sidebar() {
         {loggedIn ? (
           <div className="flex items-center justify-between gap-2 px-2 py-1.5 rounded-md hover:bg-white/[0.04] transition-colors">
             <div className="flex items-center gap-2.5 min-w-0">
-              <div className="w-6 h-6 rounded-full bg-slate-700 flex items-center justify-center text-[10px] font-semibold text-slate-200 shrink-0">
+              <div className="w-6 h-6 rounded-full bg-slate-700 flex items-center justify-center text-[0.625rem] font-semibold text-slate-200 shrink-0">
                 {initials}
               </div>
               <div className="min-w-0">
-                <p className="text-[13px] text-slate-200 truncate leading-tight">{me?.full_name || me?.email || 'Signed in'}</p>
-                <p className="text-[11px] text-slate-500 truncate">{me ? ROLE_LABEL[me.role] ?? me.role : '…'}</p>
+                <p className="text-[0.8125rem] text-slate-200 truncate leading-tight">{me?.full_name || me?.email || 'Signed in'}</p>
+                <p className="text-[0.6875rem] text-slate-500 truncate">{me ? ROLE_LABEL[me.role] ?? me.role : '…'}</p>
               </div>
             </div>
             <button
               onClick={handleLogout}
-              className="text-[12px] text-slate-500 hover:text-slate-200 transition-colors px-1 py-0.5 cursor-pointer whitespace-nowrap shrink-0"
+              className="text-[0.75rem] text-slate-500 hover:text-slate-200 transition-colors px-1 py-0.5 cursor-pointer whitespace-nowrap shrink-0"
               aria-label="Log out"
             >
               Log out
@@ -229,7 +230,7 @@ export default function Sidebar() {
           <Link
             href="/login"
             onClick={() => setMobileOpen(false)}
-            className="block text-[13px] text-center h-8 leading-8 rounded-md bg-blue-600 text-white hover:bg-blue-500 transition-colors font-medium"
+            className="block text-[0.8125rem] text-center h-8 leading-8 rounded-md bg-blue-600 text-white hover:bg-blue-500 transition-colors font-medium"
           >
             Sign in
           </Link>
@@ -264,10 +265,8 @@ export default function Sidebar() {
             </svg>
           </button>
           <div className="flex items-center gap-2 min-w-0">
-            <div className="w-6 h-6 rounded-md bg-gradient-to-br from-blue-500 to-blue-700 flex items-center justify-center shrink-0">
-              <span className="text-white font-semibold text-[8px]">{institution.short_code}</span>
-            </div>
-            <span className="font-medium text-[13px] text-slate-100 truncate">
+            <InstitutionMark institution={institution} size="sm" />
+            <span className="font-medium text-[0.8125rem] text-slate-100 truncate">
               {institution.name}
             </span>
           </div>
@@ -278,7 +277,7 @@ export default function Sidebar() {
         {loggedIn && (
           <button
             onClick={handleLogout}
-            className="text-[12px] text-slate-500 hover:text-slate-200 transition-colors px-2 py-1"
+            className="text-[0.75rem] text-slate-500 hover:text-slate-200 transition-colors px-2 py-1"
           >
             Log out
           </button>
@@ -303,7 +302,7 @@ export default function Sidebar() {
           {/* Drawer content */}
           <aside className="relative w-72 max-w-[85vw] h-full bg-slate-950 border-r border-slate-800 px-3 py-4 flex flex-col z-50 shadow-2xl">
             <div className="flex items-center justify-between mb-4 pb-2 border-b border-slate-800 lg:hidden">
-              <span className="text-[12px] font-medium text-slate-500">Menu</span>
+              <span className="text-[0.75rem] font-medium text-slate-500">Menu</span>
               <button
                 type="button"
                 onClick={() => setMobileOpen(false)}

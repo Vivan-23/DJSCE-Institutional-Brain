@@ -193,14 +193,14 @@ export default function MeetingsPage() {
           <h1 className="text-xl md:text-2xl font-semibold text-slate-100 tracking-[-0.02em]">
             Meetings
           </h1>
-          <p className="text-slate-400 text-[13px] mt-1">
+          <p className="text-slate-400 text-[0.8125rem] mt-1">
             Committee minutes with their summaries, decisions and the commitments extracted from them.
           </p>
         </div>
         <button
           type="button"
           onClick={() => setShowForm((v) => !v)}
-          className="shrink-0 bg-blue-600 hover:bg-blue-500 text-white h-8 px-3.5 rounded-md text-[13px] font-medium transition-colors cursor-pointer"
+          className="shrink-0 bg-blue-600 hover:bg-blue-500 text-white h-8 px-3.5 rounded-md text-[0.8125rem] font-medium transition-colors cursor-pointer"
         >
           {showForm ? 'Close' : 'Record meeting'}
         </button>
@@ -214,13 +214,13 @@ export default function MeetingsPage() {
             Record minutes of meeting
           </h2>
           <div className="flex items-center gap-1.5 flex-wrap">
-            <span className="text-[12px] text-slate-500 mr-1">Load a sample:</span>
+            <span className="text-[0.75rem] text-slate-500 mr-1">Load a sample:</span>
             {SAMPLE_TEMPLATES.map((sample, idx) => (
               <button
                 key={idx}
                 type="button"
                 onClick={() => handleSelectSample(sample)}
-                className="px-2 h-6 rounded-md hover:bg-white/[0.05] text-[12px] text-slate-300 border border-white/[0.08] transition-colors cursor-pointer"
+                className="px-2 h-6 rounded-md hover:bg-white/[0.05] text-[0.75rem] text-slate-300 border border-white/[0.08] transition-colors cursor-pointer"
               >
                 {sample.name}
               </button>
@@ -279,7 +279,7 @@ export default function MeetingsPage() {
               rows={8}
               className="w-full bg-slate-900/90 border border-slate-700/80 rounded-lg px-3.5 py-2 text-xs sm:text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:border-blue-500 font-mono resize-y"
             />
-            <p className="text-[12px] text-slate-400 mt-1">
+            <p className="text-[0.75rem] text-slate-400 mt-1">
               {transcript.length.toLocaleString()} characters · Speakers, decisions and commitments (with owners and due dates) are extracted automatically.
             </p>
           </div>
@@ -287,7 +287,7 @@ export default function MeetingsPage() {
           <button
             onClick={handleSubmit}
             disabled={!canSubmit}
-            className="bg-blue-600 hover:bg-blue-500 text-white h-9 px-4 rounded-md transition-colors disabled:opacity-40 font-medium text-[13px] cursor-pointer"
+            className="bg-blue-600 hover:bg-blue-500 text-white h-9 px-4 rounded-md transition-colors disabled:opacity-40 font-medium text-[0.8125rem] cursor-pointer"
           >
             {status === 'submitting' ? 'Submitting…' : 'Extract decisions and commitments'}
           </button>
@@ -310,12 +310,12 @@ export default function MeetingsPage() {
       {/* Ingested Meetings List */}
       <section className="space-y-4">
         <div className="flex items-center justify-between">
-          <h2 className="text-[13px] font-medium text-slate-200">
+          <h2 className="text-[0.8125rem] font-medium text-slate-200">
             All meetings <span className="text-slate-500 font-normal">{meetings.length}</span>
           </h2>
           <button
             onClick={refreshMeetings}
-            className="text-[12px] text-slate-400 hover:text-slate-200 cursor-pointer"
+            className="text-[0.75rem] text-slate-400 hover:text-slate-200 cursor-pointer"
           >
             Refresh
           </button>
@@ -348,14 +348,14 @@ export default function MeetingsPage() {
                   >
                     <div className="flex items-start justify-between gap-4">
                       <div className="min-w-0">
-                        <p className="text-slate-100 font-medium text-[13px] truncate">
+                        <p className="text-slate-100 font-medium text-[0.8125rem] truncate">
                           {m.title}
                         </p>
-                        <p className="text-[12px] text-slate-500 mt-0.5">
+                        <p className="text-[0.75rem] text-slate-500 mt-0.5">
                           {formatDateTime(m.occurred_at)} · {m.source}
                         </p>
                         {m.summary && (
-                          <p className="text-[12px] text-slate-400 mt-1.5 line-clamp-2 leading-relaxed">
+                          <p className="text-[0.75rem] text-slate-400 mt-1.5 line-clamp-2 leading-relaxed">
                             {m.summary}
                           </p>
                         )}
@@ -379,7 +379,7 @@ export default function MeetingsPage() {
                         <>
                           {detail.summary && (
                             <div>
-                              <h3 className="text-[12px] font-semibold text-slate-400 mb-1">
+                              <h3 className="text-[0.75rem] font-semibold text-slate-400 mb-1">
                                 Summary
                               </h3>
                               <p className="text-xs sm:text-sm text-slate-200 whitespace-pre-wrap leading-relaxed">
@@ -390,14 +390,14 @@ export default function MeetingsPage() {
 
                           {detail.participants.length > 0 && (
                             <div>
-                              <h3 className="text-[12px] font-semibold text-slate-400 mb-1.5">
+                              <h3 className="text-[0.75rem] font-semibold text-slate-400 mb-1.5">
                                 Attendees
                               </h3>
                               <div className="flex flex-wrap gap-1.5">
                                 {detail.participants.map((p) => (
                                   <span
                                     key={p}
-                                    className="text-[12px] px-2 h-5 inline-flex items-center rounded-full border border-white/[0.08] bg-white/[0.03] text-slate-300"
+                                    className="text-[0.75rem] px-2 h-5 inline-flex items-center rounded-full border border-white/[0.08] bg-white/[0.03] text-slate-300"
                                   >
                                     {p}
                                   </span>
@@ -408,7 +408,7 @@ export default function MeetingsPage() {
 
                           {detail.decisions.length > 0 && (
                             <div>
-                              <h3 className="text-[12px] font-semibold text-slate-400 mb-1">
+                              <h3 className="text-[0.75rem] font-semibold text-slate-400 mb-1">
                                 Decisions
                               </h3>
                               <ol className="list-decimal list-inside space-y-0.5 text-xs sm:text-sm text-slate-200">
@@ -421,7 +421,7 @@ export default function MeetingsPage() {
 
                           {canExport && (
                             <div className="flex flex-wrap items-center gap-2">
-                              <span className="text-[12px] font-semibold text-slate-400">
+                              <span className="text-[0.75rem] font-semibold text-slate-400">
                                 Formal minutes
                               </span>
                               {(['docx', 'pdf'] as const).map((f) => (
@@ -439,7 +439,7 @@ export default function MeetingsPage() {
                           )}
 
                           <details className="group pt-1">
-                            <summary className="text-[12px] text-slate-400 cursor-pointer hover:text-slate-300 select-none font-semibold">
+                            <summary className="text-[0.75rem] text-slate-400 cursor-pointer hover:text-slate-300 select-none font-semibold">
                               Raw transcript
                             </summary>
                             <pre className="mt-2 text-xs text-slate-400 whitespace-pre-wrap font-mono max-h-72 overflow-y-auto bg-slate-900/90 rounded p-3 border border-slate-800 leading-relaxed">

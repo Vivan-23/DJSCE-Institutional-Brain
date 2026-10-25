@@ -26,7 +26,7 @@ export default function HowToGuides() {
   return (
     <section className="glass-panel p-5 space-y-3" aria-labelledby="guides-heading">
       <h2 id="guides-heading" className="text-sm font-semibold text-slate-200">How-to guides</h2>
-      <p className="text-[12px] text-slate-500">Procedures approved in this demonstration (synthetic content, not official DJSCE rules), written for students.</p>
+      <p className="text-[0.75rem] text-slate-500">Procedures approved in this demonstration (synthetic content, not official DJSCE rules), written for students.</p>
       <ul className="space-y-1.5">
         {guides.map((g) => (
           <li key={g.id} className="rounded border border-slate-800">
@@ -37,7 +37,7 @@ export default function HowToGuides() {
             {open === g.id && (
               <div className="px-3 pb-3 text-xs text-slate-300 space-y-1">
                 <p className="whitespace-pre-wrap">{g.summary}</p>
-                <p className="text-[11px] text-slate-500">{g.owner_office ? `${g.owner_office} · ` : ''}version {g.version}</p>
+                <p className="text-[0.6875rem] text-slate-500">{g.owner_office ? `${g.owner_office} · ` : ''}version {g.version}</p>
               </div>
             )}
           </li>

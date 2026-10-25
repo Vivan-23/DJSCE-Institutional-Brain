@@ -1,4 +1,5 @@
 'use client';
+import InstitutionMark from '@/components/layout/InstitutionMark';
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { apiFetch, setToken, API_BASE } from '@/lib/api';
@@ -80,16 +81,11 @@ export default function LoginPage() {
       <div className="glass-panel p-8 w-full max-w-sm shadow-2xl space-y-6">
         {/* Institutional Logo & Identity */}
         <div className="text-center">
-          <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-blue-500 to-blue-700 flex items-center justify-center mx-auto mb-4 shadow-[inset_0_1px_0_rgba(255,255,255,0.2),0_8px_24px_rgba(94,106,210,0.35)]">
-            <span className="text-white font-semibold text-[11px]">{institution.short_code}</span>
-          </div>
+          <div className="flex justify-center mb-4"><InstitutionMark institution={institution} size="lg" /></div>
           <h1 className="text-xl font-semibold text-slate-100 tracking-tight">{institution.name}</h1>
           <p className="text-slate-400 text-xs mt-1">
             Institutional Knowledge, Governance Intelligence &amp; Decision Support
           </p>
-          <div className="mt-2.5 inline-block px-2.5 py-0.5 rounded bg-slate-900 border border-slate-800 text-[12px] text-amber-400 font-medium">
-            Demonstration prototype · not an official college system
-          </div>
         </div>
 
         {/* Tab switcher */}
@@ -203,14 +199,14 @@ export default function LoginPage() {
 
           {mode === 'login' && (
             <div className="space-y-1.5">
-              <p className="text-[12px] text-slate-500 text-center">Sign in as a demo user (synthetic accounts):</p>
+              <p className="text-[0.75rem] text-slate-500 text-center">Sign in as a demo user (synthetic accounts):</p>
               <div className="grid grid-cols-2 gap-1.5">
                 {DEMO_USERS.map((u) => (
                   <button
                     key={u.email}
                     type="button"
                     onClick={() => fillDemo(u.email)}
-                    className="bg-slate-800/80 text-slate-300 py-2 rounded-md hover:bg-slate-700/80 transition-colors text-[12px] border border-slate-700 cursor-pointer"
+                    className="bg-slate-800/80 text-slate-300 py-2 rounded-md hover:bg-slate-700/80 transition-colors text-[0.75rem] border border-slate-700 cursor-pointer"
                   >
                     {u.label}
                   </button>
@@ -221,7 +217,7 @@ export default function LoginPage() {
         </form>
 
         {mode === 'login' && (
-          <p className="text-center text-slate-500 text-[12px]">
+          <p className="text-center text-slate-500 text-[0.75rem]">
             All demo accounts use the password <span className="text-slate-300 font-mono">demo123</span>
           </p>
         )}

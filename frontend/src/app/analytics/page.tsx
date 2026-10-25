@@ -52,9 +52,9 @@ const RANGES = [7, 30, 90];
 function Stat({ label, value, hint }: { label: string; value: React.ReactNode; hint?: string }) {
   return (
     <div className="glass-panel p-4">
-      <p className="text-[12px] text-slate-400">{label}</p>
+      <p className="text-[0.75rem] text-slate-400">{label}</p>
       <p className="text-2xl font-semibold text-slate-100 mt-1">{value}</p>
-      {hint && <p className="text-[12px] text-slate-500 mt-0.5">{hint}</p>}
+      {hint && <p className="text-[0.75rem] text-slate-500 mt-0.5">{hint}</p>}
     </div>
   );
 }
@@ -224,7 +224,7 @@ export default function AnalyticsPage() {
                   ))}
                 </ul>
               )}
-              <p className="text-[12px] text-slate-500">Add documents that answer these, then mark them public if students ask them.</p>
+              <p className="text-[0.75rem] text-slate-500">Add documents that answer these, then mark them public if students ask them.</p>
             </Panel>
             <Panel title="Questions by topic">
               <Bars data={q.by_topic} color="bg-violet-500/70" />

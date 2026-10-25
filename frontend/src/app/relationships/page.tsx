@@ -78,7 +78,7 @@ export default function RelationshipsPage() {
           </span>
         </div>
 
-        <p className="text-[12px] text-slate-400 max-w-sm sm:text-right">
+        <p className="text-[0.75rem] text-slate-400 max-w-sm sm:text-right">
           People attend meetings; documents and meetings mention the bodies they concern. Names come from meeting speakers and spaCy NER (people only with a title or roster match).
         </p>
       </div>

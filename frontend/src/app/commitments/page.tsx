@@ -114,14 +114,14 @@ function TaskCard({ t, onOpen, showOwner }: { t: Task; onOpen: (id: string) => v
         </div>
         <div className="mt-2 flex items-center gap-3">
           <div className="flex-1"><Bar value={t.progress} /></div>
-          <span className="text-[12px] text-slate-300 w-9 text-right">{t.progress}%</span>
+          <span className="text-[0.75rem] text-slate-300 w-9 text-right">{t.progress}%</span>
         </div>
         {(t.remaining || t.blocked_reason) && (
-          <p className={`mt-1 text-[12px] ${t.blocked_reason ? 'text-rose-300' : 'text-slate-400'}`}>
+          <p className={`mt-1 text-[0.75rem] ${t.blocked_reason ? 'text-rose-300' : 'text-slate-400'}`}>
             {t.blocked_reason ? `Blocked: ${t.blocked_reason}` : `Left: ${t.remaining}`}
           </p>
         )}
-        <p className="mt-1.5 text-[12px] text-slate-500">
+        <p className="mt-1.5 text-[0.75rem] text-slate-500">
           <span className={due.overdue ? 'text-rose-300' : ''}>{due.text}</span>
           {showOwner && t.assignee ? ` · ${t.assignee}` : ''}
           {t.assigned_by ? ` · assigned by ${t.assigned_by}` : ''}
@@ -138,7 +138,7 @@ function Section({ title, items, onOpen, showOwner, empty }: {
   if (!items.length && !empty) return null;
   return (
     <section className="space-y-2">
-      <h2 className="text-[12px] font-semibold text-slate-400">
+      <h2 className="text-[0.75rem] font-semibold text-slate-400">
         {title} <span className="text-slate-600">({items.length})</span>
       </h2>
       {items.length ? (
@@ -218,7 +218,7 @@ function DetailPanel({ id, onClose, onChanged }: { id: string; onClose: () => vo
 
       {d.source_line && (
         <blockquote className="border-l-2 border-slate-600 pl-3 text-slate-300">
-          <p className="text-[11px] text-slate-500 mb-0.5">Most likely source line</p>
+          <p className="text-[0.6875rem] text-slate-500 mb-0.5">Most likely source line</p>
           {d.source_line.speaker ? <span className="text-slate-400">{d.source_line.speaker}: </span> : null}
           {d.source_line.text}
         </blockquote>
@@ -228,7 +228,7 @@ function DetailPanel({ id, onClose, onChanged }: { id: string; onClose: () => vo
 
       {d.can_update && open && (
         <section className="space-y-2 border-t border-slate-800 pt-3" aria-label="Update progress">
-          <p className="text-[12px] font-semibold text-slate-400">Update your progress</p>
+          <p className="text-[0.75rem] font-semibold text-slate-400">Update your progress</p>
           <label className="flex items-center gap-2">
             <input type="range" min={0} max={100} step={5} value={progress} onChange={(e) => setProgress(Number(e.target.value))}
               className="flex-1" aria-label="Progress percent" />
@@ -255,7 +255,7 @@ function DetailPanel({ id, onClose, onChanged }: { id: string; onClose: () => vo
 
       {d.can_manage && d.status === 'review' && (
         <section className="space-y-2 border-t border-slate-800 pt-3" aria-label="Confirm">
-          <p className="text-[12px] font-semibold text-amber-300">The owner marked this done</p>
+          <p className="text-[0.75rem] font-semibold text-amber-300">The owner marked this done</p>
           <div className="flex flex-wrap gap-2">
             <button type="button" onClick={() => act('/confirm')}
               className="px-3 py-1 rounded bg-emerald-600 hover:bg-emerald-500 text-white cursor-pointer">Confirm completed</button>
@@ -270,14 +270,14 @@ function DetailPanel({ id, onClose, onChanged }: { id: string; onClose: () => vo
       )}
 
       <section className="space-y-2 border-t border-slate-800 pt-3" aria-label="Timeline">
-        <p className="text-[12px] font-semibold text-slate-400">Timeline</p>
+        <p className="text-[0.75rem] font-semibold text-slate-400">Timeline</p>
         {d.timeline.length === 0 && <p className="text-slate-500">No updates yet.</p>}
         <ol className="space-y-2">
           {[...d.timeline].reverse().map((e, i) => (
             <li key={i} className="border-l-2 border-slate-700 pl-3">
               <p className="text-slate-200">{e.summary ?? e.text}</p>
               {e.summary && e.text !== e.summary && <p className="text-slate-500 italic">“{e.text}”</p>}
-              <p className="text-[11px] text-slate-500">
+              <p className="text-[0.6875rem] text-slate-500">
                 {formatDateTime(e.at)} · {SOURCE_LABEL[e.source] ?? e.source}{e.actor ? ` (${e.actor})` : ''}
                 {e.progress !== null ? ` · ${e.progress}%` : ''}
                 {e.status ? ` · ${STATUS[e.status]?.label ?? e.status}` : ''}
@@ -335,7 +335,7 @@ function NewTaskForm({ onCreated }: { onCreated: () => void }) {
           className={`flex-1 ${field}`} aria-label="Notes" />
         <button type="submit" className="px-3 py-1.5 rounded bg-blue-600 hover:bg-blue-500 text-white text-xs font-semibold cursor-pointer">Assign</button>
       </div>
-      {msg && <p className="text-[12px] text-slate-300">{msg}</p>}
+      {msg && <p className="text-[0.75rem] text-slate-300">{msg}</p>}
     </form>
   );
 }
@@ -437,7 +437,7 @@ function MyWork() {
               {v.label}
               {v.key === 'team' && waitingCount > 0 ? ` · ${waitingCount} to confirm` : ''}
             </span>
-            <span className="block text-[12px] text-slate-500">{v.hint}</span>
+            <span className="block text-[0.75rem] text-slate-500">{v.hint}</span>
           </button>
         ))}
       </div>
@@ -459,7 +459,7 @@ function MyWork() {
                       ['Average progress', s.average_progress === null ? '—' : `${s.average_progress}%`, ''],
                     ].map(([label, value, cls]) => (
                       <div key={String(label)} className="glass-panel p-3">
-                        <p className="text-[12px] text-slate-400">{label}</p>
+                        <p className="text-[0.75rem] text-slate-400">{label}</p>
                         <p className={`text-xl font-semibold text-slate-100 ${cls}`}>{value}</p>
                       </div>
                     ))}
@@ -468,7 +468,7 @@ function MyWork() {
                 <div className="flex flex-wrap gap-1.5" role="tablist" aria-label="Task lists">
                   {taskTabs.map((t) => (
                     <button key={t.key} role="tab" aria-selected={taskTab === t.key} onClick={() => { setTaskTab(t.key); setOpenId(null); }}
-                      className={`px-3 py-1.5 rounded text-[13px] font-medium border cursor-pointer ${
+                      className={`px-3 py-1.5 rounded text-[0.8125rem] font-medium border cursor-pointer ${
                         taskTab === t.key ? 'bg-blue-600/15 text-blue-300 border-blue-500/40' : 'text-slate-400 border-slate-800 hover:text-slate-200'}`}>
                       {t.label}
                     </button>
@@ -506,7 +506,7 @@ function MyWork() {
                   <section key={g.owner} className="space-y-2">
                     <div className="flex flex-wrap items-baseline gap-3">
                       <h2 className="text-sm font-semibold text-slate-100">{g.owner}</h2>
-                      <span className="text-[13px] text-slate-400">
+                      <span className="text-[0.8125rem] text-slate-400">
                         {g.summary.open} open · <span className={g.summary.overdue ? 'text-rose-300' : ''}>{g.summary.overdue} overdue</span>
                         {' '}· {g.summary.blocked} blocked · {g.summary.awaiting_confirmation} to confirm
                         {g.summary.average_progress !== null ? ` · ${g.summary.average_progress}% average` : ''}

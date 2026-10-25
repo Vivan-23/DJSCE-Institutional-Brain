@@ -21,8 +21,8 @@ export default function EmptyState({ title, body, action, icon = 'inbox' }: {
           <path d={paths[icon]} />
         </svg>
       </div>
-      <p className="text-[13px] font-medium text-slate-200">{title}</p>
-      {body && <p className="mt-1 text-[12px] text-slate-500 max-w-sm leading-relaxed">{body}</p>}
+      <p className="text-[0.8125rem] font-medium text-slate-200">{title}</p>
+      {body && <p className="mt-1 text-[0.75rem] text-slate-500 max-w-sm leading-relaxed">{body}</p>}
       {action && <div className="mt-4">{action}</div>}
     </div>
   );

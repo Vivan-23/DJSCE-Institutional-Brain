@@ -95,8 +95,8 @@ function Chat() {
       {/* Header */}
       <div className="mb-4 shrink-0 flex items-start justify-between gap-4">
         <div>
-          <h1 className="text-xl sm:text-2xl font-semibold text-slate-100 tracking-[-0.02em]">Assistant</h1>
-          <p className="text-[13px] text-slate-400 mt-0.5">
+          <h1 className="text-xl sm:text-2xl font-semibold text-slate-100 tracking-[-0.02em]">Ask</h1>
+          <p className="text-[0.8125rem] text-slate-400 mt-0.5">
             Answers grounded in institutional documents, committee decisions and approved procedures, with sources.
           </p>
         </div>
@@ -108,7 +108,7 @@ function Chat() {
         {messages.map((msg, i) =>
           msg.role === 'user' ? (
             <div key={i} className="flex justify-end">
-              <div className="max-w-[85%] rounded-xl px-4 py-2.5 text-[13px] leading-relaxed bg-white/[0.06] border border-white/[0.06] text-slate-100 whitespace-pre-wrap">
+              <div className="max-w-[85%] rounded-xl px-4 py-2.5 text-[0.8125rem] leading-relaxed bg-white/[0.06] border border-white/[0.06] text-slate-100 whitespace-pre-wrap">
                 {msg.content}
               </div>
             </div>
@@ -119,8 +119,8 @@ function Chat() {
                   <path d="M12 3l1.9 5.1L19 10l-5.1 1.9L12 17l-1.9-5.1L5 10l5.1-1.9z" />
                 </svg>
               </div>
-              <div className="min-w-0 flex-1 text-[14px] leading-relaxed text-slate-200">
-                <p className="text-[12px] font-medium text-slate-400 mb-1">Assistant</p>
+              <div className="min-w-0 flex-1 text-[0.875rem] leading-relaxed text-slate-200">
+                <p className="text-[0.75rem] font-medium text-slate-400 mb-1">Assistant</p>
                 <div className="whitespace-pre-wrap">{renderBold(msg.content)}</div>
                 {msg.sources && <SourceList sources={msg.sources} />}
               </div>
@@ -135,7 +135,7 @@ function Chat() {
                 key={i}
                 onClick={() => handleSend(sq)}
                 disabled={loading}
-                className="text-left px-3.5 py-3 rounded-lg border border-white/[0.07] bg-white/[0.02] hover:bg-white/[0.05] hover:border-white/[0.12] text-[13px] text-slate-300 transition-colors cursor-pointer disabled:opacity-50"
+                className="text-left px-3.5 py-3 rounded-lg border border-white/[0.07] bg-white/[0.02] hover:bg-white/[0.05] hover:border-white/[0.12] text-[0.8125rem] text-slate-300 transition-colors cursor-pointer disabled:opacity-50"
               >
                 {sq}
               </button>
@@ -144,7 +144,7 @@ function Chat() {
         )}
 
         {loading && (
-          <div className="flex gap-3 items-center text-[13px] text-slate-500">
+          <div className="flex gap-3 items-center text-[0.8125rem] text-slate-500">
             <span className="w-6 flex justify-center gap-0.5" aria-hidden="true">
               {[0, 1, 2].map((i) => (
                 <span key={i} className="w-1 h-1 bg-slate-400 rounded-full animate-bounce" style={{ animationDelay: `${i * 150}ms` }} />
@@ -156,7 +156,7 @@ function Chat() {
       </div>
 
       {error && (
-        <p role="alert" className="text-rose-400 text-[12px] mb-2 px-1">
+        <p role="alert" className="text-rose-400 text-[0.75rem] mb-2 px-1">
           {error}
         </p>
       )}
@@ -174,18 +174,18 @@ function Chat() {
           onKeyDown={(e) => e.key === 'Enter' && !e.shiftKey && handleSend()}
           placeholder="Ask about decisions, procedures or commitments…"
           disabled={loading}
-          className="flex-1 bg-transparent text-[14px] text-slate-100 placeholder-slate-500 !outline-none !border-0 !shadow-none disabled:opacity-50"
+          className="flex-1 bg-transparent text-[0.875rem] text-slate-100 placeholder-slate-500 !outline-none !border-0 !shadow-none disabled:opacity-50"
         />
         <button
           onClick={() => handleSend()}
           disabled={loading || !query.trim()}
           aria-label="Send question"
-          className="bg-blue-600 hover:bg-blue-500 text-white h-8 px-4 rounded-lg text-[13px] font-medium transition-colors disabled:opacity-40 cursor-pointer shrink-0"
+          className="bg-blue-600 hover:bg-blue-500 text-white h-8 px-4 rounded-lg text-[0.8125rem] font-medium transition-colors disabled:opacity-40 cursor-pointer shrink-0"
         >
           Send
         </button>
       </div>
-      <p className="mt-2 text-center text-[11px] text-slate-600">Answers can be wrong. Check the cited sources.</p>
+      <p className="mt-2 text-center text-[0.6875rem] text-slate-600">Answers can be wrong. Check the cited sources.</p>
     </main>
   );
 }

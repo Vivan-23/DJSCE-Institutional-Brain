@@ -95,7 +95,7 @@ export default function CalendarPage() {
               className={`text-left px-4 py-2.5 rounded-lg border cursor-pointer sm:min-w-[12rem] ${
                 view === key ? 'bg-blue-600/15 border-blue-500/50' : 'border-slate-800 hover:border-slate-600'}`}>
               <span className={`block text-sm font-semibold ${view === key ? 'text-blue-300' : 'text-slate-200'}`}>{label}</span>
-              <span className="block text-[12px] text-slate-500">{hint}</span>
+              <span className="block text-[0.75rem] text-slate-500">{hint}</span>
             </button>
           ))}
         </div>
@@ -105,7 +105,7 @@ export default function CalendarPage() {
         <ScheduleView defaultMode="week" showOther={false} />
       ) : (
       <>
-      {data?.note && <p className="text-amber-300/80 text-[13px]">{data.note}</p>}
+      {data?.note && <p className="text-amber-300/80 text-[0.8125rem]">{data.note}</p>}
 
       <div className="flex flex-wrap items-center gap-1.5" role="tablist" aria-label="Date range">
         {RANGES.map((r) => (
@@ -151,7 +151,7 @@ export default function CalendarPage() {
                 <p className="text-sm font-medium text-slate-100">{i.title}</p>
                 <Badge tone={URGENCY[i.urgency].tone}>{URGENCY[i.urgency].label}</Badge>
               </div>
-              <p className="text-[12px] text-slate-400 mt-0.5">
+              <p className="text-[0.75rem] text-slate-400 mt-0.5">
                 {formatDate(i.date)}
                 {i.end ? ` – ${formatDate(i.end)}` : ''} · {when(i)} · {i.kind}
                 {i.department !== 'all' ? ` · ${i.department} only` : ''}

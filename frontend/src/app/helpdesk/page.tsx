@@ -164,7 +164,7 @@ export default function HelpDeskPage() {
         <section className="glass-panel p-5 space-y-4" aria-labelledby="ask-heading">
           <div>
             <h2 id="ask-heading" className="text-base font-semibold text-slate-100">Ask a Question</h2>
-            <p className="text-[13px] text-slate-400 mt-0.5">Answers come from published information, with sources.</p>
+            <p className="text-[0.8125rem] text-slate-400 mt-0.5">Answers come from published information, with sources.</p>
           </div>
           <form
             className="flex gap-2"
@@ -192,7 +192,7 @@ export default function HelpDeskPage() {
 
           {quickQuestions.length > 0 && (
             <div>
-              <p className="text-[12px] font-medium text-slate-500 mb-1.5">Common questions</p>
+              <p className="text-[0.75rem] font-medium text-slate-500 mb-1.5">Common questions</p>
               <div className="flex flex-col gap-1">
                 {quickQuestions.map(({ q, label }) => (
                   <button
@@ -200,7 +200,7 @@ export default function HelpDeskPage() {
                     type="button"
                     onClick={() => ask(q)}
                     disabled={asking}
-                    className="text-left text-[13px] text-blue-300 hover:text-blue-200 disabled:opacity-50 cursor-pointer rounded px-1 py-0.5 focus-visible:outline-2 focus-visible:outline-blue-500"
+                    className="text-left text-[0.8125rem] text-blue-300 hover:text-blue-200 disabled:opacity-50 cursor-pointer rounded px-1 py-0.5 focus-visible:outline-2 focus-visible:outline-blue-500"
                   >
                     {q} <span className="text-slate-500">· {label}</span>
                   </button>
@@ -209,17 +209,17 @@ export default function HelpDeskPage() {
             </div>
           )}
 
-          {asking && <p className="text-[13px] text-slate-400" role="status">Looking for an answer…</p>}
+          {asking && <p className="text-[0.8125rem] text-slate-400" role="status">Looking for an answer…</p>}
           {answer && (
             <div className="rounded-lg border border-slate-800 bg-slate-950/70 p-4" aria-live="polite">
-              <p className="text-[12px] font-semibold text-blue-400 mb-1">AI answer · public information only</p>
-              <p className="text-[13px] text-slate-400 mb-2">{answer.question}</p>
+              <p className="text-[0.75rem] font-semibold text-blue-400 mb-1">AI answer · public information only</p>
+              <p className="text-[0.8125rem] text-slate-400 mb-2">{answer.question}</p>
               <p className="text-sm text-slate-200 whitespace-pre-wrap leading-relaxed">{answer.text}</p>
               <SourceList sources={answer.sources} />
               <button
                 type="button"
                 onClick={escalate}
-                className="mt-3 text-[13px] font-semibold text-amber-300 hover:text-amber-200 cursor-pointer"
+                className="mt-3 text-[0.8125rem] font-semibold text-amber-300 hover:text-amber-200 cursor-pointer"
               >
                 Not answered? Raise a ticket with this question →
               </button>
@@ -231,14 +231,14 @@ export default function HelpDeskPage() {
         <section id="raise-ticket" className="glass-panel p-5 space-y-3 scroll-mt-4" aria-labelledby="raise-heading">
           <div>
             <h2 id="raise-heading" className="text-base font-semibold text-slate-100">Raise a Ticket</h2>
-            <p className="text-[13px] text-slate-400 mt-0.5">
+            <p className="text-[0.8125rem] text-slate-400 mt-0.5">
               Use this when the instant answer doesn&apos;t help or your query is personal. It goes to the responsible
               office, and a faculty member writes the reply.
             </p>
           </div>
           <form onSubmit={submit} className="space-y-3">
             <div>
-              <label htmlFor="hd-subject" className="block text-[13px] font-medium text-slate-300 mb-1">Subject</label>
+              <label htmlFor="hd-subject" className="block text-[0.8125rem] font-medium text-slate-300 mb-1">Subject</label>
               <input
                 id="hd-subject"
                 value={subject}
@@ -251,7 +251,7 @@ export default function HelpDeskPage() {
               />
             </div>
             <div>
-              <label htmlFor="hd-description" className="block text-[13px] font-medium text-slate-300 mb-1">Description</label>
+              <label htmlFor="hd-description" className="block text-[0.8125rem] font-medium text-slate-300 mb-1">Description</label>
               <textarea
                 id="hd-description"
                 value={description}
@@ -264,7 +264,7 @@ export default function HelpDeskPage() {
               />
             </div>
             {notice && (
-              <p role="status" className={`text-[13px] ${notice.kind === 'ok' ? 'text-emerald-400' : 'text-rose-400'}`}>
+              <p role="status" className={`text-[0.8125rem] ${notice.kind === 'ok' ? 'text-emerald-400' : 'text-rose-400'}`}>
                 {notice.kind === 'ok' ? '✓ ' : '⚠ '}
                 {notice.text}
               </p>
@@ -286,7 +286,7 @@ export default function HelpDeskPage() {
           My tickets ({tickets.length})
         </h2>
         {tickets.length === 0 ? (
-          <p className="text-[13px] text-slate-500">You haven&apos;t raised any tickets yet.</p>
+          <p className="text-[0.8125rem] text-slate-500">You haven&apos;t raised any tickets yet.</p>
         ) : (
           <ul className="space-y-3">
             {tickets.map((t) => (
@@ -294,28 +294,28 @@ export default function HelpDeskPage() {
                 <div className="flex flex-wrap items-start justify-between gap-2">
                   <div className="min-w-0">
                     <p className="text-sm font-medium text-slate-100">{t.subject}</p>
-                    <p className="text-[12px] text-slate-500 mt-0.5">
+                    <p className="text-[0.75rem] text-slate-500 mt-0.5">
                       {labelFor(t.category)} · {t.routed_to} · {formatDateTime(t.created_at)}
                     </p>
                   </div>
                   <TicketBadge status={t.status} />
                 </div>
-                <p className="text-[13px] text-slate-400 mt-2 whitespace-pre-wrap">{t.description}</p>
+                <p className="text-[0.8125rem] text-slate-400 mt-2 whitespace-pre-wrap">{t.description}</p>
                 {t.reply ? (
                   <div className="mt-3 rounded border border-emerald-500/20 bg-emerald-500/5 p-2.5">
-                    <p className="text-[12px] font-semibold text-emerald-300">
+                    <p className="text-[0.75rem] font-semibold text-emerald-300">
                       Reply from faculty · {formatDateTime(t.replied_at)}
                     </p>
-                    <p className="text-[13px] text-slate-200 mt-1 whitespace-pre-wrap">{t.reply}</p>
+                    <p className="text-[0.8125rem] text-slate-200 mt-1 whitespace-pre-wrap">{t.reply}</p>
                   </div>
                 ) : (
-                  <p className="mt-2 text-[13px] text-slate-500">{TICKET_STATUS.open.hint}</p>
+                  <p className="mt-2 text-[0.8125rem] text-slate-500">{TICKET_STATUS.open.hint}</p>
                 )}
                 {t.status !== 'closed' && (
                   <button
                     type="button"
                     onClick={() => closeTicket(t.id)}
-                    className="mt-2 text-[13px] text-slate-400 hover:text-slate-200 cursor-pointer"
+                    className="mt-2 text-[0.8125rem] text-slate-400 hover:text-slate-200 cursor-pointer"
                   >
                     Mark as resolved
                   </button>
