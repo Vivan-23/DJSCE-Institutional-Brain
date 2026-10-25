@@ -1,8 +1,10 @@
 # Setting up a department
 
 > A runbook for bringing one department onto the Institutional Brain with real people and timetables.
-> The first run (Computer Engineering, Oct–Nov 2026) is done **by hand** on purpose: each step records what it
-> needed and what went wrong, so later departments can follow a checklist and the slow steps can be automated.
+> The first run (Computer Engineering, Oct–Nov 2026) is done **step by step, without automation**, on purpose: an
+> operator (for CE, Claude Code working through the app's API on the owner's instructions) carries out each step
+> individually and records what it needed and what went wrong, so later departments can follow a checklist and the
+> slow steps can be automated.
 > Last verified: 2026-10-25 (written before the first run; update it as you go).
 
 **Who does what**
