@@ -1,4 +1,5 @@
 from sqlalchemy import Column, LargeBinary
+import sqlalchemy as sa
 from sqlmodel import SQLModel, Field
 from typing import Optional, List
 from datetime import date, datetime, timezone
@@ -18,6 +19,9 @@ class UserBase(SQLModel):
 class User(UserBase, table=True):
     id: UUID = Field(default_factory=uuid4, primary_key=True)
     hashed_password: str
+    # True while the account still has an administrator-issued temporary password; the app asks the
+    # person to choose their own before anything else.
+    must_change_password: bool = Field(default=False, sa_column_kwargs={"server_default": sa.false()})
     created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
 
 class Document(SQLModel, table=True):

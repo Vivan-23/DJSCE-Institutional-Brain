@@ -23,6 +23,14 @@ class LoginRequest(BaseModel):
     password: str
 
 
+class PasswordChange(BaseModel):
+    current_password: str
+    new_password: str
+
+
+MIN_PASSWORD_LENGTH = 8
+
+
 class RegisterRequest(BaseModel):
     email: str
     full_name: str
@@ -198,4 +206,24 @@ def get_me(current_user: User = Depends(get_current_user)):
         "year": current_user.year,
         "semester": current_user.semester,
         "division": current_user.division,
+        "must_change_password": current_user.must_change_password,
     }
+
+
+@router.post("/change-password")
+def change_password(req: PasswordChange, current_user: User = Depends(get_current_user),
+                    db: Session = Depends(get_session)):
+    """The signed-in person replaces their password (required after an administrator-issued temporary one)."""
+    if not verify_password(req.current_password, current_user.hashed_password):
+        raise HTTPException(status_code=400, detail="Your current password is not correct")
+    if len(req.new_password) < MIN_PASSWORD_LENGTH:
+        raise HTTPException(status_code=400, detail=f"Choose a password of at least {MIN_PASSWORD_LENGTH} characters")
+    if req.new_password == req.current_password:
+        raise HTTPException(status_code=400, detail="Choose a password different from the current one")
+    current_user.hashed_password = hash_password(req.new_password)
+    current_user.must_change_password = False
+    db.add(current_user)
+    db.commit()
+    from app.services.audit_service import audit_service
+    audit_service.record(db, actor=current_user.email, action="password_changed", target_id=str(current_user.id))
+    return {"ok": True}

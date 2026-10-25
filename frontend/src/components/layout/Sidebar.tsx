@@ -100,6 +100,10 @@ export default function Sidebar() {
     () => false,
   );
   const me = useMe(loggedIn);
+  // First login with a temporary password: nothing else until they choose their own.
+  useEffect(() => {
+    if (me?.must_change_password && pathname !== '/password') router.replace('/password');
+  }, [me, pathname, router]);
   const staff = isStaffRole(me?.role);
   const coordinator = isCoordinatorRole(me?.role);
   const groups = NAV_GROUPS.map((g) => ({
@@ -218,13 +222,19 @@ export default function Sidebar() {
                 <p className="text-[0.6875rem] text-slate-500 truncate">{me ? ROLE_LABEL[me.role] ?? me.role : '…'}</p>
               </div>
             </div>
-            <button
-              onClick={handleLogout}
-              className="text-[0.75rem] text-slate-500 hover:text-slate-200 transition-colors px-1 py-0.5 cursor-pointer whitespace-nowrap shrink-0"
-              aria-label="Log out"
-            >
-              Log out
-            </button>
+            <div className="flex flex-col items-end shrink-0">
+              <Link href="/password" onClick={() => setMobileOpen(false)}
+                className="text-[0.75rem] text-slate-500 hover:text-slate-200 transition-colors px-1 py-0.5 whitespace-nowrap">
+                Change password
+              </Link>
+              <button
+                onClick={handleLogout}
+                className="text-[0.75rem] text-slate-500 hover:text-slate-200 transition-colors px-1 py-0.5 cursor-pointer whitespace-nowrap"
+                aria-label="Log out"
+              >
+                Log out
+              </button>
+            </div>
           </div>
         ) : (
           <Link

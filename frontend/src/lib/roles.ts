@@ -30,6 +30,7 @@ export interface Me {
   year?: number | null;
   semester?: number | null;
   division?: string | null;
+  must_change_password?: boolean;
 }
 
 let cached: { token: string; me: Me } | null = null;
@@ -60,7 +61,24 @@ export function useMe(loggedIn = true): Me | null {
   return cached?.token === token ? cached.me : null;
 }
 
+/** After the person sets their own password: stop sending them to the password page. */
+export function markPasswordChanged(): void {
+  loginPassword = null;
+  if (cached) cached = { ...cached, me: { ...cached.me, must_change_password: false } };
+}
+
+// The temporary password typed at login, kept in memory only (never stored) so the first-login page
+// doesn't ask for it a second time. Lost on reload, in which case the page asks for it.
+let loginPassword: string | null = null;
+export function rememberLoginPassword(p: string | null): void {
+  loginPassword = p;
+}
+export function loginPasswordForFirstLogin(): string | null {
+  return loginPassword;
+}
+
 /** Call on logout so the next sign-in doesn't see the previous user's role. */
 export function clearMe(): void {
   cached = null;
+  loginPassword = null;
 }

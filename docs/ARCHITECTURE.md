@@ -90,7 +90,7 @@ tests/             pytest suite. conftest.py mocks all external services.
 
 | Router | Prefix | Notes |
 |---|---|---|
-| `auth.py` | `/auth` | register (creates a **student**)/login/me. **`require_role()`, `require_staff`, `is_staff()` live here.** |
+| `auth.py` | `/auth` | register (creates a **student**)/login/me/`change-password`. **`require_role()`, `require_staff`, `is_staff()` live here.** `User.must_change_password` is set whenever an admin issues a generated password (create, CSV import, reset); the Sidebar sends such users to `/password` until they choose their own. |
 | `ingest.py` | `/ingest` | 👥 Document upload (`visibility` and `department` form fields) → `process_document` task; `GET /documents` lists uploaded files (grouped `source_type="document"` fragments, `department_scope`-filtered). |
 | `insights.py` | `/insights` | 👥 Active Feed insights (list/dismiss). |
 | `chat.py` | `/chat` | Grounded Q&A with `sources`; students get `public_only` retrieval. |
@@ -154,7 +154,8 @@ lazy imports so the module loads without external deps.
 ```
 lib/api.ts                 apiFetch() — base URL, JWT header, 401→/login redirect.
 lib/format.ts              formatDate()/formatDateTime() — shared date rendering.
-lib/roles.ts               ROLE_LABEL (display names), isStaffRole(), useMe() (token-keyed /auth/me).
+lib/roles.ts               ROLE_LABEL (display names), isStaffRole(), useMe() (token-keyed /auth/me), first-login helpers.
+app/password/page.tsx      First login (choose your own password) and everyday "Change password".
 lib/schedule.ts            Schedule/calendar types, status labels, local-date helpers, fetchSchedule()/fetchCalendarRange().
 lib/theme.ts, themeScript.ts  Light/dark: useTheme()/setTheme() (localStorage `theme`); THEME_INIT_SCRIPT runs in <head> before paint.
 lib/useInstitution.ts      Public branding from /api/v1/institution.

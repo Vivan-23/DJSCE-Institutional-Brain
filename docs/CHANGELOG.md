@@ -8,6 +8,17 @@ Format: `## YYYY-MM-DD — title` then bullets of what/why.
 
 ---
 
+## 2026-10-26 — First login: people choose their own password
+
+- `User.must_change_password` (migration `0006`, server default false). Set when an administrator issues a
+  generated password (create without a password, CSV import, reset); cleared by `POST /api/v1/auth/change-password`
+  (current + new, 8+ characters, audited `password_changed`). `/auth/me` and the admin user list expose it.
+- Frontend `/password`: "Welcome, <name> — choose your own password" on first login (the temporary password typed at
+  login is reused from memory, never stored), and "Change password" for everyone (sidebar link). The Sidebar
+  redirects flagged users there from any page. Login sends them straight to it.
+- The 23 CE accounts created on 2026-10-25/26 with temporary passwords were flagged by hand (SQL), since they
+  predate the column; demo accounts were left unflagged.
+
 ## 2026-10-26 — Faculty-friendly UI for the real CE rollout
 
 The professor approved building this as real software for DJSCE (starting with CE); the users are faculty,

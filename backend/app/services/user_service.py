@@ -40,7 +40,7 @@ def serialize(u: User) -> dict[str, Any]:
     return {
         "id": str(u.id), "email": u.email, "full_name": u.full_name, "role": u.role,
         "department": u.department, "year": u.year, "semester": u.semester, "division": u.division,
-        "is_active": u.is_active, "created_at": u.created_at.isoformat(),
+        "is_active": u.is_active, "must_change_password": u.must_change_password, "created_at": u.created_at.isoformat(),
     }
 
 
@@ -139,7 +139,8 @@ class UserService:
         password = str(data.get("password") or "") or temporary_password()
         if len(password) < 6:
             raise UserError("Password must be at least 6 characters")
-        user = User(email=email, hashed_password=hash_password(password), **fields)
+        user = User(email=email, hashed_password=hash_password(password),
+                    must_change_password=not data.get("password"), **fields)
         self._check_cohort(user)
         db.add(user)
         db.commit()
@@ -187,10 +188,12 @@ class UserService:
     def reset_password(self, db: Session, actor: User, user: User, password: Optional[str] = None) -> str:
         from app.api.v1.auth import hash_password
 
+        generated = not password
         password = password or temporary_password()
         if len(password) < 6:
             raise UserError("Password must be at least 6 characters")
         user.hashed_password = hash_password(password)
+        user.must_change_password = generated
         db.add(user)
         db.commit()
         audit_service.record(db, actor=actor.email, action="user_password_reset", target_id=str(user.id),

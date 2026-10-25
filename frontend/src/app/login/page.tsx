@@ -3,7 +3,7 @@ import InstitutionMark from '@/components/layout/InstitutionMark';
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { apiFetch, setToken, API_BASE } from '@/lib/api';
-import { isStaffRole } from '@/lib/roles';
+import { isStaffRole, rememberLoginPassword } from '@/lib/roles';
 import { useInstitution } from '@/lib/useInstitution';
 
 type Mode = 'login' | 'register';
@@ -68,6 +68,12 @@ export default function LoginPage() {
       setToken(data.access_token);
       // Students land on the Help Desk; staff on the governance overview.
       const me = await apiFetch('/api/v1/auth/me').then((r) => (r.ok ? r.json() : null));
+      if (me?.must_change_password) {
+        // First login with a temporary password: choose your own before anything else.
+        rememberLoginPassword(password);
+        router.push('/password');
+        return;
+      }
       router.push(isStaffRole(me?.role) ? '/' : '/helpdesk');
     } catch (err: unknown) {
       setError(err instanceof Error ? err.message : 'An error occurred');
