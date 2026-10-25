@@ -14,5 +14,6 @@ def get_institution():
         "name": cfg.name,
         "short_code": cfg.short_code,
         "full_name": cfg.full_name,
+        "logo": cfg.logo,
         "departments": [{"code": d.code, "name": d.name} for d in cfg.departments],
     }

@@ -13,6 +13,7 @@ institution:
   name: "DJSCE Institutional Brain"
   short_code: "DJSCE"
   full_name: "Dwarkadas J. Sanghvi College of Engineering"
+  logo: "/branding/djsce-logo.png"   # served by the frontend from frontend/public/; omit for a text badge
   email_domain: "example.com"
 
 settings:
@@ -40,23 +41,29 @@ departments:
 # SYNTHETIC: replace with the dates from the official DJSCE academic calendar
 # before any real use. These are plausible placeholders for the demo only.
 academic_calendar:
-  note: "Demonstration dates (synthetic). Always check the official DJSCE academic calendar."
+  note: "DJSCE 1st term academic calendar 2026-27, B.Tech Sem III/V/VII (official sheet signed by the Principal; photo from the owner, 2026-10-26). Changes are communicated by the college in advance."
   events:
-    - { date: "2026-07-20", title: "Odd semester begins (Semesters III, V, VII)", kind: term }
-    - { date: "2026-10-12", end: "2026-10-16", title: "Mid-term practical evaluations", kind: exam, audience: students }
-    - { date: "2026-10-16", title: "Mid-term marks entry closes on the CA portal", kind: deadline, audience: staff }
-    - { date: "2026-10-20", title: "Student feedback form (end-term) opens", kind: event, audience: students }
-    - { date: "2026-10-21", title: "IQAC course-file compliance check", kind: deadline, audience: staff }
-    - { date: "2026-10-23", title: "Last date for honours / minor track change requests", kind: deadline, audience: students }
-    - { date: "2026-10-26", title: "Elective IV registration closes (Computer Engineering)", kind: deadline, audience: students, department: CE }
-    - { date: "2026-10-28", title: "Lab Readiness review (Information Technology)", kind: event, audience: staff, department: IT }
-    - { date: "2026-11-02", end: "2026-11-06", title: "Diwali vacation", kind: holiday }
-    - { date: "2026-11-13", title: "Last instructional day of the odd semester", kind: term }
-    - { date: "2026-11-16", end: "2026-11-21", title: "End-semester practical and oral examinations", kind: exam }
-    - { date: "2026-11-18", title: "Question paper moderation submission deadline", kind: deadline, audience: staff }
-    - { date: "2026-11-25", end: "2026-12-11", title: "End-semester theory examinations", kind: exam }
-    - { date: "2026-12-14", end: "2027-01-01", title: "Winter vacation", kind: holiday }
-    - { date: "2027-01-04", title: "Even semester begins (Semesters IV, VI, VIII)", kind: term }
+    - { date: "2026-07-16", title: "Commencement of classes (COC)", kind: term }
+    - { date: "2026-08-01", title: "Defaulter list (DL)", kind: deadline }
+    - { date: "2026-08-15", title: "Independence Day", kind: holiday }
+    - { date: "2026-08-26", title: "Id-E-Milad", kind: holiday }
+    - { date: "2026-08-31", end: "2026-09-02", title: "Term Test 1 (TT1)", kind: exam }
+    - { date: "2026-09-05", title: "Teacher's Day / Gopalkala", kind: event }
+    - { date: "2026-09-14", end: "2026-09-18", title: "Ganapati festival break (Ganesh Chaturthi 14 Sep)", kind: holiday }
+    - { date: "2026-09-15", title: "Engineer's Day (ED)", kind: event }
+    - { date: "2026-09-25", title: "Anant Chaturdashi", kind: holiday }
+    - { date: "2026-10-01", title: "Defaulter list (DL)", kind: deadline }
+    - { date: "2026-10-02", title: "Mahatma Gandhi Jayanti", kind: holiday }
+    - { date: "2026-10-20", title: "Dasara", kind: holiday }
+    - { date: "2026-10-21", end: "2026-10-24", title: "Term Test 2 (TT2)", kind: exam }
+    - { date: "2026-11-05", title: "Term work submission (TWS)", kind: deadline }
+    - { date: "2026-11-06", title: "Term end (TE); final defaulter list (FDL)", kind: term }
+    - { date: "2026-11-08", title: "Laxmi Pujan", kind: holiday }
+    - { date: "2026-11-09", end: "2026-11-14", title: "Diwali festival break (Balipratipada 10 Nov, Bhaubeej 11 Nov)", kind: holiday }
+    - { date: "2026-11-16", end: "2026-12-04", title: "End-semester examinations (ESE)", kind: exam }
+    - { date: "2026-11-24", title: "Guru Nanak Jayanti", kind: holiday }
+    - { date: "2026-12-07", end: "2026-12-18", title: "Oral and practical examinations (O&P)", kind: exam }
+    - { date: "2026-12-25", title: "Christmas", kind: holiday }
 
 # ── Student Help Desk ────────────────────────────────────────────────────────
 # Tickets are triaged into one of these categories and routed to its owner.

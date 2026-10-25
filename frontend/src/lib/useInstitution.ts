@@ -11,6 +11,7 @@ export interface Institution {
   name: string;
   short_code: string;
   full_name: string;
+  logo?: string | null;
   departments: Department[];
 }
 

@@ -80,6 +80,7 @@ class InstitutionConfig:
     short_code: str = "DJSCE"
     full_name: str = "Dwarkadas J. Sanghvi College of Engineering"
     email_domain: str = "example.com"
+    logo: Optional[str] = None  # frontend-served image path, e.g. /branding/logo.png
     pa_checkin_hour: int = 17
     commitment_followup_hours: int = 48
     helpdesk_categories: list[HelpdeskCategory] = field(default_factory=list)
@@ -206,6 +207,7 @@ def get_institution_config() -> InstitutionConfig:
         short_code=str(inst.get("short_code") or defaults.short_code).strip(),
         full_name=str(inst.get("full_name") or defaults.full_name).strip(),
         email_domain=str(inst.get("email_domain") or defaults.email_domain).strip(),
+        logo=(str(inst.get("logo")).strip() or None) if inst.get("logo") else None,
         pa_checkin_hour=int(settings_block.get("pa_checkin_hour", 17)),
         commitment_followup_hours=int(settings_block.get("commitment_followup_hours", 48)),
         helpdesk_categories=categories,
