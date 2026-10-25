@@ -8,6 +8,26 @@ Format: `## YYYY-MM-DD — title` then bullets of what/why.
 
 ---
 
+## 2026-10-25 — V2 (branch `v2/faculty-workflow`): faculty-centric workspace, part 1
+
+Started from V1 commit `5c5d3ad` on `main`; V1 is untouched. Driven by faculty feedback on the V1 demo.
+- **Help Desk by responsibility**: `auth.require_exact_roles()` (no rank inheritance). Students + faculty use
+  `/helpdesk`; faculty handle the queue; admins read it; coordinators get 403 (UI hides it too). The page shows
+  Ask a Question and Raise a Ticket side by side (stacked on mobile, with a jump link). "Student Help Desk" → "Help Desk".
+- **"Faculty Desk" → "End-of-day Check-in"**: faculty read the old name as "where my daily work is"; My Work is the
+  daily destination. The Procedures page has a plain-language explanation.
+- **Teaching timetable model** (migration `0004_timetable`, additive): `TimetableImport`, `TimetableEntry`,
+  `FacultyAlias`, `ScheduleException`. Recurring lectures are expanded per date on read (never one row per date) and
+  date changes never edit the weekly entry. `INSTITUTION_TIMEZONE` (default Asia/Kolkata). `/api/v1/schedule`.
+  Upload/extraction, abbreviation mapping and review/publish come next.
+- **Overview** rebuilt around the day: classes today, tasks needing attention (overdue / due today / blocked /
+  awaiting confirmation / new), notifications (existing Notices), coming up this week, one assistant entry point.
+  Coordinators add team attention and "Assign work"; system insights moved to a small coordinator-only panel.
+- **My Work** split into My Schedule | My Tasks | Team (coordinators); deep links `?view=&task=`.
+- **Calendar**: Academic Calendar | My Timetable (same `ScheduleView` and schedule API: one source of truth).
+- **Light/dark theme** toggle (sidebar + mobile header), persisted, applied before paint; dark stays the default.
+- Decision: the local test venv is pinned to the image's sqlmodel/SQLAlchemy versions (newer sqlmodel diverges).
+
 ## 2026-10-20 — IPD report as a formatted PDF
 
 - `publication/01_ipd_report/IPD_Report_final.pdf` (43 pages, A4, Times, binding margin): title page,

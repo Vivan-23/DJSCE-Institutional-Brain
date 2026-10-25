@@ -1,7 +1,7 @@
 # Usage & Operating Procedures
 
 How to set up, run, and use DJSCE Institutional Brain. For the codebase map see
-[ARCHITECTURE.md](ARCHITECTURE.md). Last verified: 2026-10-13.
+[ARCHITECTURE.md](ARCHITECTURE.md). Last verified: 2026-10-25.
 
 ---
 
@@ -105,12 +105,22 @@ the governance overview.
    with owners resolved to employees.
 3. View them under **Commitments**.
 
-### B. Track commitments  (`/commitments`)
-- Filter by status, toggle **Assigned to me**, and change a commitment's status
-  inline (`open → in_progress → blocked → done → dropped`). Updates persist via
-  `PATCH /api/v1/commitments/{id}`.
+### B. My Work  (`/commitments`)
+Two sections (three for coordinators), each linkable with `?view=`:
+- **My Schedule** (`?view=schedule`): your lectures from published class timetables, by day or week
+  (Previous / Today / Next / go to date), with cancellations, reschedules, holidays and extra lectures marked
+  in words, plus task deadlines and academic dates. Empty until a timetable mapped to you is published.
+- **My Tasks** (`?view=tasks`, `&task=<id>` opens one): tasks from meetings and coordinators with due date,
+  progress, who assigned it and the source meeting. Update progress, mark done (a coordinator then confirms or
+  sends it back), or mark blocked.
+- **Team** (`?view=team`, coordinators): assign work, tasks waiting for your confirmation, and each person's tasks.
 
-### C. Institutional Assistant / Faculty Desk  (`/assistant`)
+Date-specific timetable changes are coordinator actions via the API (a UI arrives with timetable upload):
+`POST /api/v1/schedule/exceptions` with `kind` = `cancelled` / `modified` (one occurrence of `entry_id`),
+`holiday` (a date, optional `department`) or `extra` (one-off lecture for `faculty_user_id`).
+The affected faculty get a notice; `DELETE /api/v1/schedule/exceptions/{id}` withdraws a change.
+
+### C. End-of-day Check-in  (`/assistant`; called "Faculty Desk" in V1)
 - **Follow-ups:** open/overdue commitments (older than
   `COMMITMENT_FOLLOWUP_HOURS`, default 48h) show a natural-language nudge. Reply
   in plain text — the PA records a `CommitmentUpdate`, infers a status change, and
@@ -144,12 +154,14 @@ the governance overview.
     -d '{"items":[{"content":"Refunds over $500 need manager approval","author":"Dana"}]}'
   ```
 
-### F. Student Help Desk  (`/helpdesk`, `/tickets`)
-- **Students** (`/helpdesk`): one-click quick questions per category (from
+### F. Help Desk  (`/helpdesk`, `/tickets`)
+Access is by responsibility, not rank: **students and faculty** use `/helpdesk`; **faculty** handle `/tickets`;
+**administrators** can read the queue but not reply; **coordinators** have neither (the backend returns 403).
+- **Students and faculty** (`/helpdesk`): Ask a Question and Raise a Ticket sit side by side. One-click quick questions per category (from
   `institution.yaml`) are answered instantly from *public* knowledge, with sources.
   If that doesn't help, **Raise a ticket** — it is triaged (category, priority,
   owning office) and listed under *My tickets* with the eventual reply.
-- **Staff** (`/tickets`): the queue shows the triage result and method (AI or
+- **Faculty** (`/tickets`): the queue shows the triage result and method (AI or
   keyword fallback), plus an **AI-suggested reply with its sources** (an amber
   warning appears if it used internal sources). Edit it and **Send reply** — the
   student never sees the draft, only what you send.
@@ -173,9 +185,9 @@ sync, ticket create/triage/reply) is logged. Filter by `?action=` or `?target_id
 | Role id | Shown as | Can |
 |---|---|---|
 | `student` | Student | Help Desk (ask, raise/track own tickets), assistant over **public** knowledge only |
-| `employee` | Faculty | Everything internal: meetings, commitments, Faculty Desk, procedures (read), graph, documents, ticket queue |
-| `manager` | Committee Coordinator | + approve/reject/extract procedures, sync sources, audit log |
-| `admin` | System Administrator | everything |
+| `employee` | Faculty | Everything internal: meetings, My Work, End-of-day Check-in, procedures (read), graph, documents, Help Desk + ticket queue |
+| `manager` | Committee Coordinator | Faculty features except the Help Desk, + assign/confirm tasks, change schedules, approve/reject/extract procedures, sync sources, audit log |
+| `admin` | System Administrator | everything except using the Help Desk; ticket queue read-only |
 
 New self-registrations are `student`. Change a role in `institution.yaml` (then
 restart the backend) or by setting `User.role` in the DB — takes effect without

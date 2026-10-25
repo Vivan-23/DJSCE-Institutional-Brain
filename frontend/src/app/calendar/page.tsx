@@ -3,6 +3,8 @@ import React, { useEffect, useState } from 'react';
 import { apiFetch } from '@/lib/api';
 import { Badge, type Tone } from '@/components/ui/Badge';
 import { formatDate } from '@/lib/format';
+import { isStaffRole, useMe } from '@/lib/roles';
+import ScheduleView from '@/components/schedule/ScheduleView';
 
 type Urgency = 'overdue' | 'today' | 'soon' | 'upcoming';
 
@@ -49,6 +51,9 @@ function when(item: CalendarItem): string {
 }
 
 export default function CalendarPage() {
+  const me = useMe();
+  const staff = isStaffRole(me?.role);
+  const [view, setView] = useState<'academic' | 'timetable'>('academic');
   const [days, setDays] = useState(60);
   const [data, setData] = useState<CalendarResponse | null>(null);
   const [error, setError] = useState('');
@@ -73,11 +78,34 @@ export default function CalendarPage() {
     <main className="p-4 sm:p-6 md:p-10 max-w-5xl mx-auto space-y-5">
       <div>
         <h1 className="text-xl md:text-2xl font-semibold text-slate-100 tracking-[-0.02em]">Calendar</h1>
-        <p className="text-slate-400 text-xs sm:text-sm mt-1">
-          Published academic dates for your department, plus your own commitments from meetings (faculty).
+        <p className="text-slate-400 text-sm mt-1">
+          {staff
+            ? 'Academic dates for your department and your task deadlines, or your own weekly teaching timetable.'
+            : 'Published academic dates for your department.'}
         </p>
-        {data?.note && <p className="text-amber-300/80 text-[12px] mt-2">{data.note}</p>}
       </div>
+
+      {staff && (
+        <div className="grid grid-cols-2 sm:flex gap-2" role="tablist" aria-label="Calendar views">
+          {([
+            ['academic', 'Academic Calendar', 'Holidays, exams, deadlines'],
+            ['timetable', 'My Timetable', 'Your weekly classes and changes'],
+          ] as const).map(([key, label, hint]) => (
+            <button key={key} role="tab" aria-selected={view === key} onClick={() => setView(key)}
+              className={`text-left px-4 py-2.5 rounded-lg border cursor-pointer sm:min-w-[12rem] ${
+                view === key ? 'bg-blue-600/15 border-blue-500/50' : 'border-slate-800 hover:border-slate-600'}`}>
+              <span className={`block text-sm font-semibold ${view === key ? 'text-blue-300' : 'text-slate-200'}`}>{label}</span>
+              <span className="block text-[12px] text-slate-500">{hint}</span>
+            </button>
+          ))}
+        </div>
+      )}
+
+      {staff && view === 'timetable' ? (
+        <ScheduleView defaultMode="week" showOther={false} />
+      ) : (
+      <>
+      {data?.note && <p className="text-amber-300/80 text-[13px]">{data.note}</p>}
 
       <div className="flex flex-wrap items-center gap-1.5" role="tablist" aria-label="Date range">
         {RANGES.map((r) => (
@@ -133,6 +161,8 @@ export default function CalendarPage() {
           </li>
         ))}
       </ul>
+      </>
+      )}
     </main>
   );
 }

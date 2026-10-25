@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { apiFetch, clearToken, getToken } from '@/lib/api';
 import { useInstitution } from '@/lib/useInstitution';
+import ThemeToggle from './ThemeToggle';
 import { clearMe, isCoordinatorRole, isStaffRole, ROLE_LABEL, useMe } from '@/lib/roles';
 
 // `staff: true` items are hidden from students; `coordinator: true` items need Committee
@@ -202,7 +203,8 @@ export default function Sidebar() {
       </nav>
 
       {/* Session */}
-      <div className="mt-auto pt-3 shrink-0">
+      <div className="mt-auto pt-3 shrink-0 space-y-2">
+        <div className="px-2"><ThemeToggle /></div>
         {loggedIn ? (
           <div className="flex items-center justify-between gap-2 px-2 py-1.5 rounded-md hover:bg-white/[0.04] transition-colors">
             <div className="flex items-center gap-2.5 min-w-0">
@@ -270,6 +272,8 @@ export default function Sidebar() {
           </div>
         </div>
 
+        <div className="flex items-center gap-1">
+        <ThemeToggle compact />
         {loggedIn && (
           <button
             onClick={handleLogout}
@@ -278,6 +282,7 @@ export default function Sidebar() {
             Log out
           </button>
         )}
+        </div>
       </div>
 
       {/* Mobile Overlay & Slide-in Drawer */}

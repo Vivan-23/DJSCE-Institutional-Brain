@@ -7,7 +7,7 @@ Setup/run procedures: [`docs/USAGE.md`](docs/USAGE.md). Per-institution customiz
 
 ## What this is
 **DJSCE Institutional Brain** — a college-level (multi-year academic submission) adaptation of *Company-Brain*.
-Captures institutional knowledge (committee transcripts, documents, a Faculty Desk PA) → extracts decisions /
+Captures institutional knowledge (committee transcripts, documents, an End-of-day Check-in PA) → extracts decisions /
 commitments / procedures ("skills") → human review/approval → cited RAG assistant + knowledge graph, kept fresh.
 Students use a Help Desk: instant answers from *public* knowledge, or tickets that AI triages/drafts and staff answer.
 Adapt the existing architecture with minimal change; don't rebuild it. Data is **mixed**: committee records, people
@@ -75,6 +75,8 @@ Demo logins come from `institution.yaml` (all `demo123`): `admin@example.com`, `
   (from NER, keyed by synthesized `name@<email_domain>`). They are not linked. Students have a `User` but no `Employee`.
 - **RBAC**: ranks `student < employee < manager < admin` (UI: Student / Faculty / Committee Coordinator / System Administrator,
   `frontend/src/lib/roles.ts`). Internal routers use `Depends(require_staff)`; elevated actions `require_role("manager")`.
+  Help Desk is by responsibility (`require_exact_roles`, no rank inheritance): students + faculty use it, faculty
+  handle tickets, admins read the queue, coordinators get 403.
   Self-registration creates students. Tests get a role via `tests/helpers.py:register(client, email, role=..., department=...)`.
 - **Department scope**: `department` on User/Fragment/Meeting (`all` = institution-wide). Students/faculty retrieve own +
   `all` (`auth.department_scope`, filtered in the Chroma query and re-checked); coordinators/admins unrestricted.

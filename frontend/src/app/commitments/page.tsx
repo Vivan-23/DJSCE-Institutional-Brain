@@ -1,10 +1,13 @@
 'use client';
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { Suspense, useCallback, useEffect, useMemo, useState } from 'react';
+import Link from 'next/link';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { apiFetch } from '@/lib/api';
 import { Badge, type Tone } from '@/components/ui/Badge';
 import EmptyState from '@/components/ui/EmptyState';
 import { formatDate, formatDateTime } from '@/lib/format';
 import { isCoordinatorRole, useMe } from '@/lib/roles';
+import ScheduleView from '@/components/schedule/ScheduleView';
 
 type Status = 'open' | 'in_progress' | 'blocked' | 'review' | 'done' | 'dropped';
 
@@ -337,15 +340,32 @@ function NewTaskForm({ onCreated }: { onCreated: () => void }) {
   );
 }
 
-export default function MyWorkPage() {
+type View = 'schedule' | 'tasks' | 'team';
+type TaskTab = 'mine' | 'waiting' | 'all';
+
+function MyWork() {
   const me = useMe();
   const coordinator = isCoordinatorRole(me?.role);
-  const [tab, setTab] = useState<'mine' | 'waiting' | 'team' | 'all'>('mine');
+  const params = useSearchParams();
+  const router = useRouter();
+  // Deep links from Overview: /commitments?view=tasks&task=<id>
+  const linkedTask = params.get('task');
+  const requested = params.get('view');
+  const view: View =
+    requested === 'team' && coordinator ? 'team'
+      : requested === 'tasks' || (linkedTask && requested !== 'schedule') ? 'tasks'
+        : 'schedule';
+  const [taskTab, setTaskTab] = useState<TaskTab>(params.get('tab') === 'waiting' ? 'waiting' : 'mine');
   const [mine, setMine] = useState<{ summary: Summary; items: Task[]; awaiting_my_confirmation?: Task[] } | null>(null);
   const [team, setTeam] = useState<TeamGroup[]>([]);
   const [all, setAll] = useState<Task[]>([]);
-  const [openId, setOpenId] = useState<string | null>(null);
+  const [openId, setOpenId] = useState<string | null>(linkedTask);
   const [error, setError] = useState('');
+
+  const setView = (v: View) => {
+    setOpenId(null);
+    router.replace(`/commitments?view=${v}`, { scroll: false });
+  };
 
   const loadMine = useCallback(() => {
     apiFetch('/api/v1/commitments/my-work')
@@ -354,9 +374,9 @@ export default function MyWorkPage() {
       .catch((e: Error) => setError(`Could not load your tasks (${e.message}).`));
   }, []);
   const loadOther = useCallback(() => {
-    if (tab === 'team') apiFetch('/api/v1/commitments/team').then((r) => (r.ok ? r.json() : [])).then(setTeam).catch(() => {});
-    if (tab === 'all') apiFetch('/api/v1/commitments').then((r) => (r.ok ? r.json() : [])).then(setAll).catch(() => {});
-  }, [tab]);
+    if (view === 'team') apiFetch('/api/v1/commitments/team').then((r) => (r.ok ? r.json() : [])).then(setTeam).catch(() => {});
+    if (view === 'tasks' && taskTab === 'all') apiFetch('/api/v1/commitments').then((r) => (r.ok ? r.json() : [])).then(setAll).catch(() => {});
+  }, [view, taskTab]);
 
   useEffect(() => {
     loadMine();
@@ -384,95 +404,132 @@ export default function MyWorkPage() {
   }, [mine]);
 
   const s = mine?.summary;
-  const tabs: { key: typeof tab; label: string }[] = [
-    { key: 'mine', label: 'My work' },
-    ...(coordinator ? [
-      { key: 'waiting' as const, label: `Waiting for me${mine?.awaiting_my_confirmation?.length ? ` (${mine.awaiting_my_confirmation.length})` : ''}` },
-      { key: 'team' as const, label: 'Team' },
-    ] : []),
-    { key: 'all', label: 'All tasks' },
+  const waitingCount = mine?.awaiting_my_confirmation?.length ?? 0;
+  const views: { key: View; label: string; hint: string }[] = [
+    { key: 'schedule', label: 'My Schedule', hint: 'Your classes and dated events' },
+    { key: 'tasks', label: 'My Tasks', hint: 'Work assigned to you' },
+    ...(coordinator ? [{ key: 'team' as const, label: 'Team', hint: 'Assign and track your team’s work' }] : []),
+  ];
+  const taskTabs: { key: TaskTab; label: string }[] = [
+    { key: 'mine', label: 'Assigned to me' },
+    ...(coordinator ? [{ key: 'waiting' as const, label: `Waiting for my confirmation${waitingCount ? ` (${waitingCount})` : ''}` }] : []),
+    { key: 'all', label: 'All tasks in my department' },
   ];
 
   return (
     <main className="p-4 sm:p-6 md:p-10 max-w-7xl mx-auto space-y-5">
       <div>
         <h1 className="text-xl md:text-2xl font-semibold text-slate-100 tracking-[-0.02em]">My Work</h1>
-        <p className="text-slate-400 text-xs sm:text-sm mt-1">
-          Tasks from committee meetings and coordinators. Update progress here or just describe your day on the Faculty
-          Desk; marking a task done sends it to a coordinator to confirm.
+        <p className="text-slate-400 text-sm mt-1">
+          Your teaching timetable and the tasks assigned to you, in one place. To report today&apos;s progress in your own
+          words, use the{' '}
+          <Link href="/assistant" className="text-blue-400 hover:text-blue-300 underline underline-offset-2">End-of-day Check-in</Link>.
         </p>
       </div>
 
-      {s && (
-        <div className="grid grid-cols-2 sm:grid-cols-5 gap-2">
-          {[
-            ['Open', s.open, ''], ['Overdue', s.overdue, s.overdue ? 'text-rose-300' : ''],
-            ['Due this week', s.due_this_week, ''], ['Awaiting confirmation', s.awaiting_confirmation, ''],
-            ['Average progress', s.average_progress === null ? '—' : `${s.average_progress}%`, ''],
-          ].map(([label, value, cls]) => (
-            <div key={String(label)} className="glass-panel p-3">
-              <p className="text-[11px] text-slate-400">{label}</p>
-              <p className={`text-xl font-semibold text-slate-100 ${cls}`}>{value}</p>
-            </div>
-          ))}
-        </div>
-      )}
-
-      <div className="flex flex-wrap gap-1.5" role="tablist" aria-label="Task views">
-        {tabs.map((t) => (
-          <button key={t.key} role="tab" aria-selected={tab === t.key} onClick={() => { setTab(t.key); setOpenId(null); }}
-            className={`px-3 py-1.5 rounded text-xs font-medium border cursor-pointer ${
-              tab === t.key ? 'bg-blue-600/15 text-blue-300 border-blue-500/40' : 'text-slate-400 border-slate-800 hover:text-slate-200'}`}>
-            {t.label}
+      {/* Primary sections */}
+      <div className="grid grid-cols-2 sm:flex gap-2" role="tablist" aria-label="My Work sections">
+        {views.map((v) => (
+          <button key={v.key} role="tab" aria-selected={view === v.key} onClick={() => setView(v.key)}
+            className={`text-left px-4 py-2.5 rounded-lg border cursor-pointer sm:min-w-[11rem] ${
+              view === v.key ? 'bg-blue-600/15 border-blue-500/50' : 'border-slate-800 hover:border-slate-600'}`}>
+            <span className={`block text-sm font-semibold ${view === v.key ? 'text-blue-300' : 'text-slate-200'}`}>
+              {v.label}
+              {v.key === 'team' && waitingCount > 0 ? ` · ${waitingCount} to confirm` : ''}
+            </span>
+            <span className="block text-[12px] text-slate-500">{v.hint}</span>
           </button>
         ))}
       </div>
 
-      {error && <p role="alert" className="text-rose-400 text-xs">{error}</p>}
+      {error && <p role="alert" className="text-rose-400 text-sm">{error}</p>}
 
-      <div className={`grid gap-4 ${openId ? 'lg:grid-cols-[minmax(0,1fr)_26rem]' : ''}`}>
-        <div className="space-y-5">
-          {tab === 'mine' && mine && (
-            <>
-              {mine.items.length === 0 && (
-                <div className="glass-panel"><EmptyState icon="check" title="Nothing assigned to you" body="Tasks from committee meetings and coordinators will appear here with their due dates and progress." /></div>
-              )}
-              <Section title="Overdue or due today" items={groups.overdue} onOpen={setOpenId} />
-              <Section title="Due this week" items={groups.week} onOpen={setOpenId} />
-              <Section title="Later / no due date" items={groups.later} onOpen={setOpenId} />
-              <Section title="Done, awaiting confirmation" items={groups.review} onOpen={setOpenId} />
-              <Section title="Completed" items={groups.closed} onOpen={setOpenId} />
-            </>
-          )}
-          {tab === 'waiting' && (
-            <Section title="Marked done by their owners" items={mine?.awaiting_my_confirmation ?? []} onOpen={setOpenId}
-              showOwner empty="Nothing is waiting for your confirmation." />
-          )}
-          {tab === 'team' && (
-            <>
-              <NewTaskForm onCreated={refresh} />
-              {team.map((g) => (
-                <section key={g.owner} className="space-y-2">
-                  <div className="flex flex-wrap items-baseline gap-3">
-                    <h2 className="text-sm font-semibold text-slate-100">{g.owner}</h2>
-                    <span className="text-[12px] text-slate-400">
-                      {g.summary.open} open · <span className={g.summary.overdue ? 'text-rose-300' : ''}>{g.summary.overdue} overdue</span>
-                      {' '}· {g.summary.blocked} blocked · {g.summary.awaiting_confirmation} to confirm
-                      {g.summary.average_progress !== null ? ` · ${g.summary.average_progress}% average` : ''}
-                    </span>
+      {view === 'schedule' && <ScheduleView defaultMode="day" />}
+
+      {view !== 'schedule' && (
+        <div className={`grid gap-4 ${openId ? 'lg:grid-cols-[minmax(0,1fr)_26rem]' : ''}`}>
+          <div className="space-y-5">
+            {view === 'tasks' && (
+              <>
+                {s && (
+                  <div className="grid grid-cols-2 sm:grid-cols-5 gap-2">
+                    {[
+                      ['Open', s.open, ''], ['Overdue', s.overdue, s.overdue ? 'text-rose-300' : ''],
+                      ['Due this week', s.due_this_week, ''], ['Awaiting confirmation', s.awaiting_confirmation, ''],
+                      ['Average progress', s.average_progress === null ? '—' : `${s.average_progress}%`, ''],
+                    ].map(([label, value, cls]) => (
+                      <div key={String(label)} className="glass-panel p-3">
+                        <p className="text-[12px] text-slate-400">{label}</p>
+                        <p className={`text-xl font-semibold text-slate-100 ${cls}`}>{value}</p>
+                      </div>
+                    ))}
                   </div>
-                  <ul className="space-y-2">{g.items.filter((t) => t.status !== 'done' && t.status !== 'dropped').map((t) => (
-                    <TaskCard key={t.id} t={t} onOpen={setOpenId} />))}</ul>
-                </section>
-              ))}
-            </>
-          )}
-          {tab === 'all' && (
-            <Section title="All tasks in your departments" items={all} onOpen={setOpenId} showOwner empty="No tasks." />
-          )}
+                )}
+                <div className="flex flex-wrap gap-1.5" role="tablist" aria-label="Task lists">
+                  {taskTabs.map((t) => (
+                    <button key={t.key} role="tab" aria-selected={taskTab === t.key} onClick={() => { setTaskTab(t.key); setOpenId(null); }}
+                      className={`px-3 py-1.5 rounded text-[13px] font-medium border cursor-pointer ${
+                        taskTab === t.key ? 'bg-blue-600/15 text-blue-300 border-blue-500/40' : 'text-slate-400 border-slate-800 hover:text-slate-200'}`}>
+                      {t.label}
+                    </button>
+                  ))}
+                </div>
+                {taskTab === 'mine' && mine && (
+                  <>
+                    {mine.items.length === 0 && (
+                      <div className="glass-panel"><EmptyState icon="check" title="Nothing assigned to you" body="Tasks from committee meetings and coordinators will appear here with their due dates and progress." /></div>
+                    )}
+                    <Section title="Overdue or due today" items={groups.overdue} onOpen={setOpenId} />
+                    <Section title="Due this week" items={groups.week} onOpen={setOpenId} />
+                    <Section title="Later / no due date" items={groups.later} onOpen={setOpenId} />
+                    <Section title="You marked these done — waiting for a coordinator to confirm" items={groups.review} onOpen={setOpenId} />
+                    <Section title="Completed" items={groups.closed} onOpen={setOpenId} />
+                  </>
+                )}
+                {taskTab === 'waiting' && (
+                  <Section title="Marked done by their owners" items={mine?.awaiting_my_confirmation ?? []} onOpen={setOpenId}
+                    showOwner empty="Nothing is waiting for your confirmation." />
+                )}
+                {taskTab === 'all' && (
+                  <Section title="All tasks in your departments" items={all} onOpen={setOpenId} showOwner empty="No tasks." />
+                )}
+              </>
+            )}
+            {view === 'team' && (
+              <>
+                <NewTaskForm onCreated={refresh} />
+                {waitingCount > 0 && (
+                  <Section title="Marked done — waiting for your confirmation" items={mine?.awaiting_my_confirmation ?? []}
+                    onOpen={setOpenId} showOwner />
+                )}
+                {team.map((g) => (
+                  <section key={g.owner} className="space-y-2">
+                    <div className="flex flex-wrap items-baseline gap-3">
+                      <h2 className="text-sm font-semibold text-slate-100">{g.owner}</h2>
+                      <span className="text-[13px] text-slate-400">
+                        {g.summary.open} open · <span className={g.summary.overdue ? 'text-rose-300' : ''}>{g.summary.overdue} overdue</span>
+                        {' '}· {g.summary.blocked} blocked · {g.summary.awaiting_confirmation} to confirm
+                        {g.summary.average_progress !== null ? ` · ${g.summary.average_progress}% average` : ''}
+                      </span>
+                    </div>
+                    <ul className="space-y-2">{g.items.filter((t) => t.status !== 'done' && t.status !== 'dropped').map((t) => (
+                      <TaskCard key={t.id} t={t} onOpen={setOpenId} />))}</ul>
+                  </section>
+                ))}
+              </>
+            )}
+          </div>
+          {openId && <DetailPanel key={openId} id={openId} onClose={() => setOpenId(null)} onChanged={refresh} />}
         </div>
-        {openId && <DetailPanel key={openId} id={openId} onClose={() => setOpenId(null)} onChanged={refresh} />}
-      </div>
+      )}
     </main>
+  );
+}
+
+export default function MyWorkPage() {
+  return (
+    <Suspense fallback={<main className="p-10 text-sm text-slate-400">Loading…</main>}>
+      <MyWork />
+    </Suspense>
   );
 }

@@ -52,7 +52,7 @@ review) needs to be followed again, nobody can find *how it was actually done* o
 | **Evidence & provenance** | The Evidence panel groups duplicate excerpts while keeping every underlying citation inspectable. |
 | **Knowledge graph** | People and bodies mentioned in documents are linked in Neo4j and visualised. |
 | **Q&A assistant** | RAG chat grounded in indexed transcripts and documents; every answer lists its sources. |
-| **Student Help Desk** | Students get instant answers from *public* department information (curriculum, electives, outcomes, placements), or raise a ticket. AI triages it (category, priority, owning office) and drafts a cited reply that a faculty member reviews and sends. |
+| **Help Desk** | Students (and faculty) get instant answers from *public* department information (curriculum, electives, outcomes, placements), or raise a ticket. AI triages it (category, priority, owning office) and drafts a cited reply that a faculty member reviews and sends. |
 | **Freshness** | When new evidence contradicts an approved procedure, it is flagged `stale` and routed back for review. |
 
 ---

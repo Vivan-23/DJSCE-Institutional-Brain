@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Inter, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import Sidebar from "@/components/layout/Sidebar";
+import { THEME_INIT_SCRIPT } from "@/lib/themeScript";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -27,11 +28,15 @@ export default function RootLayout({
   return (
     <html
       lang="en"
+      suppressHydrationWarning
       className={`${inter.variable} ${geistMono.variable} h-full antialiased`}
     >
+      <head>
+        <script id="theme-init" dangerouslySetInnerHTML={{ __html: THEME_INIT_SCRIPT }} />
+      </head>
       <body className="h-screen w-screen flex flex-col lg:flex-row bg-slate-950 m-0 overflow-hidden text-slate-100 text-[13px]">
         <Sidebar />
-        <div className="flex-1 flex flex-col min-w-0 min-h-0 h-full lg:h-[calc(100%-1rem)] overflow-hidden bg-[#0f1011] lg:m-2 lg:rounded-lg lg:border lg:border-white/[0.07] lg:shadow-[0_0_0_1px_rgba(0,0,0,0.4),0_8px_24px_rgba(0,0,0,0.35)]">
+        <div className="flex-1 flex flex-col min-w-0 min-h-0 h-full lg:h-[calc(100%-1rem)] overflow-hidden bg-[var(--surface)] lg:m-2 lg:rounded-lg lg:border lg:border-white/[0.07] lg:shadow-[0_0_0_1px_rgba(0,0,0,0.4),0_8px_24px_rgba(0,0,0,0.35)]">
           {/* Persistent Academic Prototype Notice */}
           <header className="demo-banner px-4 sm:px-5 h-9 flex items-center justify-between text-xs text-slate-400 shrink-0 z-10">
             <div className="flex items-center gap-2 min-w-0">

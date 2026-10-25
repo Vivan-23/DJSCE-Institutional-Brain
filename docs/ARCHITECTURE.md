@@ -2,7 +2,7 @@
 
 > **Read this first.** This file is the orientation layer so you don't have to
 > re-read the whole codebase. When you change structure, update this file in the
-> same change. Last verified: 2026-10-19.
+> same change. Last verified: 2026-10-25.
 
 DJSCE Institutional Brain turns scattered institutional knowledge (committee
 transcripts, reference documents, faculty check-ins) into decisions, tracked
@@ -76,6 +76,7 @@ tests/             pytest suite. conftest.py mocks all external services.
 | `notice_service.py` | `notice_service` | Audience filters (roles, departments, years, semesters, divisions; AND across kinds, OR within). Faculty forced to own department. Recipients resolved and stored at send time (`NoticeRecipient`); expiry hides; audited. |
 | `user_service.py` | `user_service` | User management rules: validation, cohort check (semester 2y-1/2y), no self-demotion, last active admin kept, Employee profile for staff, audited. |
 | `analytics_service.py` | `analytics_service` | Computed on read from Commitment/Meeting, Ticket, QueryLog, Fragment, Skill. Questions are grouped by normalized text; topic = offline keyword triage category. |
+| `schedule_service.py` | `schedule_service` | Teaching schedule: published `TimetableEntry` rows mapped to a faculty member, expanded per date on read (nothing materialized), adjusted by `ScheduleException` (cancelled / modified / holiday / extra). Local dates in `settings.INSTITUTION_TIMEZONE`. `weekly_load()` = teaching hours. |
 | `calendar_service.py` | `calendar_service` | Merges `academic_calendar:` (institution.yaml) with commitment due dates; `post_reminders()` writes `deadline` ActiveInsights (idempotent) for items due within 3 days. |
 | `minutes_service.py` | `minutes_service` | Formal draft minutes from a stored meeting (attendees, summary, `Meeting.decisions`, commitments with owner/due/status) → DOCX (python-docx) or PDF (reportlab). No LLM call at export time. |
 | `procedure_service.py` | `procedure_service` | SOP governance: approve (freeze `SkillVersion`, owner office, review date, publish), `publish()` indexes approved procedures as `source_type="procedure"` fragments (`Fragment.skill_id`; staff full text, students only the summary), revisions, reject/retire, feedback flagging, use counts, DOCX/PDF export + handbook. |
@@ -102,7 +103,8 @@ tests/             pytest suite. conftest.py mocks all external services.
 | `admin.py` | `/admin` | Admin only: `GET/POST /users`, `PATCH /users/{id}` (role, department, year, semester, division, active), `POST /users/{id}/reset-password`, `POST /users/import` (CSV), `GET /roles` (fixed permission table). |
 | `analytics.py` | `/analytics` | Coordinator+: `GET ?days=` → commitments per meeting (open/overdue/done), ticket status/category/median reply hours, most-asked questions + knowledge gaps, indexed knowledge by department. |
 | `calendar.py` | `/calendar` | Everyone: `GET ?days=` → academic dates (audience + department scoped) and, for staff, own open commitments with due dates; each with `days_left` + `urgency`. |
-| `helpdesk.py` | `/helpdesk` | categories · tickets (create, mine) for everyone; queue / reply / retriage 👥. Non-staff only ever see their own tickets and never the AI draft. |
+| `helpdesk.py` | `/helpdesk` | By responsibility (`auth.require_exact_roles`, no rank inheritance): categories · create · mine · close for **student + faculty**; queue read for **faculty + admin**; reply / retriage **faculty only**. Coordinators get 403. Students only ever see their own tickets and never the AI draft. |
+| `schedule.py` | `/schedule` | 👥 `GET /mine?start=&days=` (≤42; default today in institution TZ; `has_timetable`), `GET /load`, `GET /exceptions`. Coordinator: `POST /exceptions` (validated, audited, notifies affected faculty), `DELETE /exceptions/{id}`. |
 
 👥 = staff only (`require_staff`: faculty and above). 🔒 = requires `manager` role (see RBAC below).
 
@@ -110,12 +112,14 @@ tests/             pytest suite. conftest.py mocks all external services.
 
 Core tables: `User`, `Document`, `ProgressReport`, `ActiveInsight`, `Employee`,
 `Meeting`, `Fragment`, `Commitment`, `CommitmentUpdate`, `CheckIn`, `Skill`,
-`SkillCitation`, `AuditLog`, `Ticket`.
+`SkillCitation`, `AuditLog`, `Ticket`, `QueryLog`, `Notice`, `NoticeRecipient`,
+`TimetableImport`, `TimetableEntry`, `FacultyAlias`, `ScheduleException` (V2 timetable).
 
 Conventions:
 - **Lists/dicts are stored as JSON strings** (DB-agnostic: SQLite in tests, Postgres in prod). E.g. `Skill.steps`, `Meeting.participants`, `AuditLog.audit_metadata`.
 - `QueryLog` records each assistant question (text, asker role + department, number of sources; no user id) for analytics. Evaluation runs also land here.
 - `Fragment` is the universal evidence unit; `source_type` distinguishes origin (`transcript`/`document`/`checkin`/`followup`/connector name); `visibility` decides who can retrieve it. Procedure extraction only uses `internal` fragments.
+- **Timetable (V2)**: a `TimetableImport` per uploaded class timetable (`class_key`, e.g. `TY-C2`, is the stable import identity; `version`; `status` draft/published/superseded/discarded; `source_sha256`). `TimetableEntry` = one weekly slot (`weekday` 0=Mon, `"HH:MM"` times, subject, room, `faculty_abbrev`, `faculty_user_id` set only via a verified `FacultyAlias`, `issues` JSON review flags). `ScheduleException` = one date's change (DATE column `on_date`). Recurring lectures are never stored per date.
 - Any new table **must** be added to the import lists in both `core/db.py:init_db()` and `tests/conftest.py`.
 - **Migrations** (`backend/migrations/`, `backend/alembic.ini`): every schema change ships an Alembic revision.
   `0001_baseline` is the schema of 14 Oct 2026. Tests still build SQLite with `create_all`;
@@ -147,8 +151,11 @@ lazy imports so the module loads without external deps.
 lib/api.ts                 apiFetch() — base URL, JWT header, 401→/login redirect.
 lib/format.ts              formatDate()/formatDateTime() — shared date rendering.
 lib/roles.ts               ROLE_LABEL (display names), isStaffRole(), useMe() (token-keyed /auth/me).
+lib/schedule.ts            Schedule/calendar types, status labels, local-date helpers, fetchSchedule()/fetchCalendarRange().
+lib/theme.ts, themeScript.ts  Light/dark: useTheme()/setTheme() (localStorage `theme`); THEME_INIT_SCRIPT runs in <head> before paint.
 lib/useInstitution.ts      Public branding from /api/v1/institution.
-components/layout/Sidebar.tsx   Grouped, role-filtered nav (NAV_GROUPS[].items[].staff) + auth state via useSyncExternalStore.
+components/layout/Sidebar.tsx   Grouped, role-filtered nav (`staff`/`coordinator`/`admin` rank flags; `roles` = exact roles, e.g. Help Desk) + ThemeToggle.
+components/schedule/ScheduleView.tsx  Day/week schedule (lectures + dated items): My Work → My Schedule and Calendar → My Timetable.
 components/ui/Badge.tsx         Shared status Badge (tone dot) + Tag; use for every status pill.
 components/ui/EmptyState.tsx    Shared empty/unselected placeholder.
 components/knowledge/SourceList.tsx  Evidence excerpts behind an AI answer (public/internal badges).
@@ -156,31 +163,39 @@ components/helpdesk/TicketBadge.tsx  Ticket status/priority styling (single sour
 components/graph/GraphCanvas.tsx  Cytoscape.js graph: type filters, hub hiding, search, focus mode, neighbourhood loading
 components/dashboard/InsightCard.tsx
 app/
-  page.tsx           Governance overview (staff; students are redirected to /helpdesk)
-  helpdesk/          Student Help Desk: instant answers, raise ticket, my tickets
-  calendar/          Academic calendar + deadline reminders (all roles)
+  page.tsx           Overview: greeting, today at a glance, Ask your Assistant, today's classes, tasks needing attention,
+                     notifications, coming up; coordinators also get team attention, Assign work, institution alerts.
+                     (staff; students are redirected to /helpdesk)
+  helpdesk/          Help Desk (students + faculty): Ask a Question | Raise a Ticket side by side, my tickets, how-to guides
+  calendar/          Academic Calendar (all roles) | My Timetable (staff; ScheduleView week mode)
   analytics/         Coordinator dashboard (commitments, tickets, questions, knowledge)
   admin/users/       Admin user management + read-only role permission table
   notices/           Notices inbox (all roles) + compose with audience filters and sent/read counts (staff)
-  tickets/           Staff Help Desk queue: triage, AI draft + sources, reply
+  tickets/           Ticket queue (faculty; admin read-only): triage, AI draft + sources, reply
   login/             Auth
   relationships/     Graph map
   meetings/          Transcript upload + meeting list
-  commitments/       My Work: own tasks by urgency, detail panel (progress, timeline), Waiting for me / Team / assign (coordinators)
-  assistant/         Faculty Desk PA: follow-ups + end-of-day check-in chat
+  commitments/       My Work: My Schedule | My Tasks | Team (coordinators); `?view=schedule|tasks|team&task=<id>`
+  assistant/         End-of-day Check-in (V1 "Faculty Desk"): follow-ups + check-in chat
   skills/            Procedures: search/filter, detail (governance, stale evidence), edit, versions + diff, approve/reject/retire, feedback, export
-  chat/              RAG chat
+  chat/              Assistant (RAG chat); `?q=` pre-fills the question (never auto-sends)
   sources/           Data source upload
 ```
 
 Pages talk to the API only through `apiFetch`. Design tokens (`primary`,
 `danger`, `warning`, `.glass-panel`) are defined in `app/globals.css`.
+**Theme**: dark is the default (no attribute). `html[data-theme="light"]` remaps the same tokens (slate scale inverted,
+accent text darkened, `--color-white` → black so `white/[x]` overlays become dark tints), so pages keep their utility
+classes. Use tokens/utilities, not hex colours. React must not render `data-theme` (the head script owns it).
+The knowledge-graph canvas (Cytoscape) keeps its own dark palette in both themes.
 
 ---
 
 ## Cross-cutting concerns
 
-**RBAC** — roles rank `student < employee < manager < admin` (`auth.py:_ROLE_RANK`),
+**RBAC** — features that belong to a responsibility rather than a privilege level use
+`require_exact_roles(...)` (no inheritance), e.g. the Help Desk. Otherwise roles rank
+`student < employee < manager < admin` (`auth.py:_ROLE_RANK`),
 shown in the UI as Student / Faculty / Committee Coordinator / System Administrator
 (`frontend/src/lib/roles.ts`, display only). Gate internal data with
 `Depends(require_staff)`, elevated actions with `Depends(require_role("manager"))`.
@@ -222,7 +237,9 @@ Docker. Patterns:
 - The test DB (SQLite) is **shared across the session** — assert on your own seeded rows, not global counts.
 - Promote a user to manager by setting `user.role` in `db_session`.
 
-Run: `cd backend && .venv/Scripts/python -m pytest -q` (currently **88 passing**).
+Run: `cd backend && .venv/Scripts/python -m pytest -q` (currently **244 passing**). The local venv must match the
+backend image's package versions (sqlmodel 0.0.38, SQLAlchemy 2.0.x): newer sqlmodel rejects naive datetimes and
+autogenerates `UTCDateTime` columns the deployed version doesn't have.
 
 ---
 

@@ -12,7 +12,7 @@ backend reads it and reconfigures itself. Last verified: 2026-10-14.
 |---|---|---|
 | `institution.name` / `short_code` / `full_name` | UI branding (sidebar, login page) and the assistant's name | `GET /api/v1/institution` |
 | `institution.email_domain` | domain for derived graph identities | document NER → Neo4j |
-| `settings.pa_checkin_hour` | Faculty Desk end-of-day check-in time | Celery beat schedule |
+| `settings.pa_checkin_hour` | End-of-day Check-in time | Celery beat schedule |
 | `settings.commitment_followup_hours` | when a commitment counts as stale | follow-up scans |
 | `helpdesk.categories[]` | ticket categories, owning office, keyword fallback, quick questions | `/helpdesk`, ticket triage |
 | `departments[]` | department codes and names; scopes what students/faculty retrieve | registration form, upload form, retrieval |
@@ -39,7 +39,7 @@ members:
 | `role` | Shown as | Notes |
 |---|---|---|
 | `student` | Student | Login only — no Employee row, never assigned commitments |
-| `employee` | Faculty | Staff: internal data, Faculty Desk, ticket queue |
+| `employee` | Faculty | Staff: internal data, End-of-day Check-in, Help Desk + ticket queue |
 | `manager` | Committee Coordinator | + approve procedures, extraction, sources, audit |
 | `admin` | System Administrator | everything |
 

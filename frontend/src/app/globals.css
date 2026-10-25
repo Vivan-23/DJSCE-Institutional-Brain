@@ -121,3 +121,75 @@ select:focus-visible {
   border-color: #5e6ad2 !important;
   box-shadow: 0 0 0 3px rgba(94, 106, 210, 0.2);
 }
+
+/* ── Light theme ────────────────────────────────────────────────────────────
+   Dark is the default. `html[data-theme="light"]` (set before paint by the inline
+   script in layout.tsx, toggled by ThemeToggle) remaps the same tokens, so pages keep
+   their utility classes: the slate scale is inverted (slate-950 = page, slate-100 =
+   text), accent text shades are darkened for contrast on white, and translucent
+   `white/[x]` overlays become dark overlays. */
+html[data-theme="light"] {
+  color-scheme: light;
+  --color-slate-50: #08090a;
+  --color-slate-100: #111214;
+  --color-slate-200: #1f2024;
+  --color-slate-300: #3a3d44;
+  --color-slate-400: #555963;
+  --color-slate-500: #6b6f78;
+  --color-slate-600: #9a9ea6;
+  --color-slate-700: #c9ccd2;
+  --color-slate-800: #dfe1e5;
+  --color-slate-900: #eef0f2;
+  --color-slate-950: #f6f7f8;
+
+  --color-blue-100: #1a1d40;
+  --color-blue-200: #2a2f66;
+  --color-blue-300: #3d4490;
+  --color-blue-400: #4a53b0;
+  --color-emerald-300: #1f7a4f;
+  --color-emerald-400: #23845a;
+  --color-amber-300: #8a5a00;
+  --color-amber-400: #9a6700;
+  --color-rose-300: #b42323;
+  --color-rose-400: #c22b2b;
+
+  /* white/[x] overlays (hover fills, hairlines) read as dark tints on a light page */
+  --color-white: #000000;
+
+  --background: #f6f7f8;
+  --surface: #ffffff;
+  --foreground: #111214;
+  --border: #dfe1e5;
+}
+
+html[data-theme="light"] .text-white,
+html[data-theme="light"] .bg-blue-600,
+html[data-theme="light"] .bg-blue-500 {
+  color: #ffffff;
+}
+html[data-theme="light"] .hover\:text-white:hover {
+  color: var(--color-slate-100);
+}
+html[data-theme="light"] .glass-panel,
+html[data-theme="light"] .academic-panel {
+  background: #ffffff;
+  border-color: #dfe1e5;
+  box-shadow: 0 1px 2px rgba(16, 24, 40, 0.04);
+}
+html[data-theme="light"] .demo-banner {
+  border-bottom-color: #e6e8eb;
+}
+html[data-theme="light"] ::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.15);
+}
+html[data-theme="light"] * {
+  scrollbar-color: rgba(0, 0, 0, 0.2) transparent;
+}
+
+/* Keyboard focus stays visible in both themes */
+a:focus-visible,
+button:focus-visible,
+[role="tab"]:focus-visible {
+  outline: 2px solid #5e6ad2;
+  outline-offset: 2px;
+}

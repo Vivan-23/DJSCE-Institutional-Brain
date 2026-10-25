@@ -1,5 +1,6 @@
 'use client';
-import React, { useRef, useState } from 'react';
+import React, { Suspense, useRef, useState } from 'react';
+import { useSearchParams } from 'next/navigation';
 import { apiFetch } from '@/lib/api';
 import { Badge } from '@/components/ui/Badge';
 import { renderBold } from '@/lib/renderBold';
@@ -33,11 +34,13 @@ const STUDENT_QUERIES = [
   'Which companies recruit from the department?',
 ];
 
-export default function ChatPage() {
+function Chat() {
   const me = useMe();
+  // Overview links here with ?q=…; the question is pre-filled, never sent automatically.
+  const initialQuery = useSearchParams().get('q') ?? '';
   const studentScope = me !== null && !isStaffRole(me.role);
   const [messages, setMessages] = useState<Message[]>([WELCOME]);
-  const [query, setQuery] = useState('');
+  const [query, setQuery] = useState(initialQuery);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -184,5 +187,13 @@ export default function ChatPage() {
       </div>
       <p className="mt-2 text-center text-[11px] text-slate-600">Answers can be wrong. Check the cited sources.</p>
     </main>
+  );
+}
+
+export default function ChatPage() {
+  return (
+    <Suspense fallback={<main className="p-10 text-sm text-slate-400">Loading…</main>}>
+      <Chat />
+    </Suspense>
   );
 }

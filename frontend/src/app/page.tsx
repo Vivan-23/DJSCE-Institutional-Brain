@@ -3,330 +3,396 @@ import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import InsightCard, { type Insight } from '@/components/dashboard/InsightCard';
-import { Badge } from '@/components/ui/Badge';
+import { Badge, type Tone } from '@/components/ui/Badge';
 import { apiFetch } from '@/lib/api';
-import { formatDate } from '@/lib/format';
-import { isStaffRole, useMe } from '@/lib/roles';
+import { formatDateTime } from '@/lib/format';
+import { isCoordinatorRole, isStaffRole, useMe } from '@/lib/roles';
+import {
+  CAL_KIND_LABEL, dayHeading, fetchSchedule, KIND_LABEL, LECTURE_STATUS, timeRange,
+  type CalendarItem, type ScheduleResponse,
+} from '@/lib/schedule';
 
-interface MetricState {
-  totalInsights: number;
-  openCommitments: number;
-  blockedCommitments: number;
-  totalMeetings: number;
-  totalProcedures: number;
-}
+type Status = 'open' | 'in_progress' | 'blocked' | 'review' | 'done' | 'dropped';
 
-interface RecentMeeting {
-  id: string;
-  title: string;
-  occurred_at: string;
-  summary: string | null;
-}
-
-interface RecentCommitment {
+interface Task {
   id: string;
   description: string;
   assignee: string | null;
-  status: string;
+  status: Status;
+  progress: number;
   due_date: string | null;
+  assigned_by: string | null;
+  source_meeting: string | null;
+  created_at: string;
 }
 
-export default function Dashboard() {
+interface Summary {
+  open: number;
+  overdue: number;
+  due_this_week: number;
+  blocked: number;
+  awaiting_confirmation: number;
+  completed: number;
+  average_progress: number | null;
+}
+
+interface MyWork {
+  summary: Summary;
+  items: Task[];
+  awaiting_my_confirmation?: Task[];
+}
+
+interface TeamGroup {
+  owner: string;
+  summary: Summary;
+  items: Task[];
+}
+
+interface Notice {
+  id: string;
+  title: string;
+  body: string;
+  sender: string | null;
+  created_at: string;
+  read: boolean;
+}
+
+const OPEN: Status[] = ['open', 'in_progress', 'blocked'];
+const NEW_TASK_DAYS = 3;
+
+function daysLeft(due: string | null): number | null {
+  if (!due) return null;
+  return Math.ceil((new Date(due).getTime() - Date.now()) / 86_400_000);
+}
+
+/** Why a task needs attention, most urgent reason first; null if it doesn't. */
+function attention(t: Task): { label: string; tone: Tone; rank: number } | null {
+  const d = daysLeft(t.due_date);
+  if (OPEN.includes(t.status) && d !== null && d < 0) return { label: `${-d} day${d === -1 ? '' : 's'} overdue`, tone: 'danger', rank: 0 };
+  if (OPEN.includes(t.status) && d === 0) return { label: 'Due today', tone: 'warning', rank: 1 };
+  if (t.status === 'blocked') return { label: 'Blocked', tone: 'danger', rank: 2 };
+  if (t.status === 'review') return { label: 'Awaiting confirmation', tone: 'warning', rank: 3 };
+  const ageDays = (Date.now() - new Date(t.created_at).getTime()) / 86_400_000;
+  if (t.status === 'open' && t.progress === 0 && ageDays <= NEW_TASK_DAYS) return { label: 'New', tone: 'accent', rank: 4 };
+  return null;
+}
+
+const greeting = () => {
+  const h = new Date().getHours();
+  return h < 12 ? 'Good morning' : h < 17 ? 'Good afternoon' : 'Good evening';
+};
+
+function Panel({ title, action, children }: { title: string; action?: React.ReactNode; children: React.ReactNode }) {
+  return (
+    <section className="glass-panel overflow-hidden" aria-label={title}>
+      <div className="flex items-center justify-between gap-3 px-4 py-3 border-b border-white/[0.06]">
+        <h2 className="text-sm font-semibold text-slate-100">{title}</h2>
+        {action}
+      </div>
+      {children}
+    </section>
+  );
+}
+
+const linkCls = 'text-[13px] font-medium text-blue-400 hover:text-blue-300 underline-offset-2 hover:underline';
+
+export default function Overview() {
   const router = useRouter();
   const me = useMe();
-  // The governance overview is staff-only; students belong on the Help Desk.
+  const coordinator = isCoordinatorRole(me?.role);
+  // Overview is for staff; students belong on the Help Desk.
   useEffect(() => {
     if (me && !isStaffRole(me.role)) router.replace('/helpdesk');
   }, [me, router]);
 
+  const [schedule, setSchedule] = useState<ScheduleResponse | null>(null);
+  const [work, setWork] = useState<MyWork | null>(null);
+  const [upcoming, setUpcoming] = useState<CalendarItem[]>([]);
+  const [notices, setNotices] = useState<Notice[]>([]);
+  const [team, setTeam] = useState<TeamGroup[] | null>(null);
   const [insights, setInsights] = useState<Insight[]>([]);
-  const [recentMeetings, setRecentMeetings] = useState<RecentMeeting[]>([]);
-  const [recentCommitments, setRecentCommitments] = useState<RecentCommitment[]>([]);
-  const [metrics, setMetrics] = useState<MetricState | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState('');
+  const [ask, setAsk] = useState('');
 
   useEffect(() => {
-    Promise.allSettled([
-      apiFetch('/api/v1/insights/').then((r) => (r.ok ? r.json() : [])),
-      apiFetch('/api/v1/commitments').then((r) => (r.ok ? r.json() : [])),
-      apiFetch('/api/v1/transcripts').then((r) => (r.ok ? r.json() : [])),
-      apiFetch('/api/v1/skills').then((r) => (r.ok ? r.json() : [])),
-    ])
-      .then(([insightsRes, commitmentsRes, meetingsRes, skillsRes]) => {
-        const insightsData: Insight[] = insightsRes.status === 'fulfilled' ? insightsRes.value : [];
-        const commitmentsData: RecentCommitment[] = commitmentsRes.status === 'fulfilled' ? commitmentsRes.value : [];
-        const meetingsData: RecentMeeting[] = meetingsRes.status === 'fulfilled' ? meetingsRes.value : [];
-        const skillsData: unknown[] = skillsRes.status === 'fulfilled' ? skillsRes.value : [];
-
-        setInsights(insightsData);
-        setRecentMeetings(meetingsData.slice(0, 3));
-        setRecentCommitments(commitmentsData.filter((c) => c.status !== 'done' && c.status !== 'dropped').slice(0, 4));
-
-        const openCount = commitmentsData.filter((c) => c.status === 'open' || c.status === 'in_progress').length;
-        const blockedCount = commitmentsData.filter((c) => c.status === 'blocked').length;
-
-        setMetrics({
-          totalInsights: insightsData.length,
-          openCommitments: openCount,
-          blockedCommitments: blockedCount,
-          totalMeetings: meetingsData.length,
-          totalProcedures: skillsData.length,
-        });
-        setLoading(false);
-      })
-      .catch(() => {
-        setError('Could not reach backend services. Please ensure the API is running.');
-        setLoading(false);
-      });
-  }, []);
-
-  const handleDismiss = async (id: string) => {
-    try {
-      await apiFetch(`/api/v1/insights/${id}/dismiss`, { method: 'POST' });
-      setInsights((prev) => prev.filter((i) => i.id !== id));
-      setMetrics((prev) => prev ? { ...prev, totalInsights: Math.max(0, prev.totalInsights - 1) } : null);
-    } catch {
-      // non-critical
+    if (!me || !isStaffRole(me.role)) return;
+    fetchSchedule(null, 1).then(setSchedule).catch(() => setSchedule(null));
+    apiFetch('/api/v1/commitments/my-work')
+      .then((r) => (r.ok ? r.json() : Promise.reject(new Error(`HTTP ${r.status}`))))
+      .then(setWork)
+      .catch((e: Error) => setError(`Could not load your work (${e.message}).`));
+    apiFetch('/api/v1/calendar?days=7')
+      .then((r) => (r.ok ? r.json() : { items: [] }))
+      .then((d: { items: CalendarItem[] }) => setUpcoming(d.items.filter((i) => i.urgency !== 'overdue')))
+      .catch(() => {});
+    apiFetch('/api/v1/notices/mine')
+      .then((r) => (r.ok ? r.json() : []))
+      .then((d: Notice[]) => setNotices(d))
+      .catch(() => {});
+    if (isCoordinatorRole(me.role)) {
+      apiFetch('/api/v1/commitments/team').then((r) => (r.ok ? r.json() : [])).then(setTeam).catch(() => setTeam([]));
+      apiFetch('/api/v1/insights/').then((r) => (r.ok ? r.json() : [])).then(setInsights).catch(() => {});
     }
+  }, [me]);
+
+  const dismissInsight = async (id: string) => {
+    await apiFetch(`/api/v1/insights/${id}/dismiss`, { method: 'POST' }).catch(() => {});
+    setInsights((prev) => prev.filter((i) => i.id !== id));
   };
 
+  const firstName = (me?.full_name || '').replace(/^(Dr|Prof|Mr|Ms|Mrs)\.?\s+/i, '').split(' ')[0];
+  const today = schedule?.today;
+  const lectures = schedule?.items ?? [];
+  const classesToday = lectures.filter((l) => l.status !== 'cancelled' && l.status !== 'holiday').length;
+  const attentionList = (work?.items ?? [])
+    .map((t) => ({ t, a: attention(t) }))
+    .filter((x): x is { t: Task; a: NonNullable<ReturnType<typeof attention>> } => x.a !== null)
+    .sort((x, y) => x.a.rank - y.a.rank);
+  const dueNow = attentionList.filter((x) => x.a.rank <= 1).length;
+  const unread = notices.filter((n) => !n.read).length;
+  const otherUpcoming = upcoming.filter((i) => i.source !== 'commitment');
+
+  const teamTotals = (team ?? []).reduce(
+    (acc, g) => ({
+      open: acc.open + g.summary.open, overdue: acc.overdue + g.summary.overdue,
+      blocked: acc.blocked + g.summary.blocked, review: acc.review + g.summary.awaiting_confirmation,
+    }),
+    { open: 0, overdue: 0, blocked: 0, review: 0 },
+  );
+
+  const examples = [
+    'What do I need to complete today?',
+    'Which of my tasks are overdue?',
+    'Show my classes tomorrow.',
+    'Summarize my pending work.',
+  ];
+  const goAsk = (q: string) => router.push(`/chat?q=${encodeURIComponent(q)}`);
+
+  const stats: { label: string; value: number | string; href: string; tone?: string }[] = [
+    { label: 'Classes today', value: schedule ? (schedule.has_timetable ? classesToday : '—') : '…', href: '/commitments?view=schedule' },
+    { label: 'Tasks needing attention', value: work ? attentionList.length : '…', href: '/commitments?view=tasks' },
+    { label: 'Due today or overdue', value: work ? dueNow : '…', href: '/commitments?view=tasks', tone: dueNow ? 'text-rose-300' : '' },
+    { label: 'Upcoming dates (7 days)', value: upcoming.length, href: '/calendar' },
+    { label: 'Unread notifications', value: unread, href: '/notices' },
+  ];
+
   return (
-    <main className="p-6 md:p-10 max-w-7xl mx-auto space-y-8">
-      {/* Header section */}
-      <div>
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-          <div>
-            <h1 className="text-xl md:text-2xl font-semibold text-slate-100 tracking-[-0.02em]">
-              Overview
-            </h1>
-            <p className="text-slate-400 text-sm mt-1">
-              Connect institutional knowledge, decisions, procedures and follow-up responsibilities.
-            </p>
-          </div>
-          <div className="flex items-center gap-2 shrink-0">
-            <Link
-              href="/chat"
-              className="px-3.5 py-2 text-xs font-semibold rounded bg-blue-600 hover:bg-blue-500 text-white transition-colors flex items-center gap-1.5 shadow-sm"
-            >
-              <span>Ask Assistant</span>
-              <span aria-hidden="true">→</span>
-            </Link>
-          </div>
+    <main className="p-4 sm:p-6 md:p-10 max-w-7xl mx-auto space-y-6">
+      {/* A. Welcome + today's summary */}
+      <div className="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-4">
+        <div>
+          <h1 className="text-xl md:text-2xl font-semibold text-slate-100 tracking-[-0.02em]">
+            {/* Time-of-day text only after client data loads, so prerendered HTML and hydration match. */}
+            {today ? greeting() : 'Welcome'}{firstName ? `, ${firstName}` : ''}
+          </h1>
+          <p className="text-slate-400 text-sm mt-1">{today ? dayHeading(today, { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' }) : ' '}</p>
         </div>
+        {coordinator && (
+          <Link href="/commitments?view=team" className="self-start lg:self-auto inline-flex items-center gap-2 px-4 h-10 rounded-lg bg-blue-600 hover:bg-blue-500 text-white text-sm font-semibold">
+            + Assign work
+          </Link>
+        )}
       </div>
 
-      {/* Real-time Genuine Metrics Strip */}
-      {metrics !== null && (
-        <section aria-label="Summary Metrics" className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          <div className="glass-panel p-4 flex flex-col justify-between">
-            <span className="text-xs font-medium text-slate-400">Active Insights</span>
-            <div className="mt-2 flex items-baseline gap-2">
-              <span className="text-2xl font-semibold text-slate-100">{metrics.totalInsights}</span>
-              <span className="text-[12px] text-slate-400">system flags</span>
-            </div>
-          </div>
-          <div className="glass-panel p-4 flex flex-col justify-between">
-            <span className="text-xs font-medium text-slate-400">Pending Commitments</span>
-            <div className="mt-2 flex items-baseline gap-2">
-              <span className="text-2xl font-semibold text-slate-100">{metrics.openCommitments}</span>
-              {metrics.blockedCommitments > 0 && (
-                <span className="text-[12px] text-rose-400 font-medium">({metrics.blockedCommitments} blocked)</span>
-              )}
-            </div>
-          </div>
-          <div className="glass-panel p-4 flex flex-col justify-between">
-            <span className="text-xs font-medium text-slate-400">Committee Records</span>
-            <div className="mt-2 flex items-baseline gap-2">
-              <span className="text-2xl font-semibold text-slate-100">{metrics.totalMeetings}</span>
-              <span className="text-[12px] text-slate-400">indexed</span>
-            </div>
-          </div>
-          <div className="glass-panel p-4 flex flex-col justify-between">
-            <span className="text-xs font-medium text-slate-400">Institutional Procedures</span>
-            <div className="mt-2 flex items-baseline gap-2">
-              <span className="text-2xl font-semibold text-slate-100">{metrics.totalProcedures}</span>
-              <span className="text-[12px] text-slate-400">SOPs</span>
-            </div>
-          </div>
-        </section>
-      )}
+      <section aria-label="Today at a glance" className="grid grid-cols-2 md:grid-cols-5 gap-2">
+        {stats.map((s) => (
+          <Link key={s.label} href={s.href} className="glass-panel p-3.5 hover:border-blue-500/40 transition-colors">
+            <p className="text-[13px] text-slate-400">{s.label}</p>
+            <p className={`text-2xl font-semibold text-slate-100 mt-1 ${s.tone ?? ''}`}>{s.value}</p>
+          </Link>
+        ))}
+      </section>
 
-      {/* Main Content Grid: Insights + Activity Feeds */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        {/* Left Column (2 cols): Actionable Governance Insights */}
-        <div className="lg:col-span-2 space-y-4">
-          <div className="flex items-center justify-between">
-            <h2 className="text-base font-semibold text-slate-100 flex items-center gap-2">
-              <span>Insights</span>
-              {insights.length > 0 && (
-                <span className="px-2 py-0.5 text-xs font-semibold rounded-full bg-blue-500/20 text-blue-400 border border-blue-500/30">
-                  {insights.length}
-                </span>
-              )}
-            </h2>
-          </div>
+      {error && <p role="alert" className="text-rose-400 text-sm">{error}</p>}
 
-          {loading && (
-            <div className="space-y-4">
-              {[1, 2, 3].map((i) => (
-                <div key={i} className="glass-panel p-6 animate-pulse space-y-3">
-                  <div className="h-3 w-20 bg-slate-800 rounded" />
-                  <div className="h-5 w-3/4 bg-slate-800 rounded" />
-                  <div className="h-4 w-full bg-slate-800/60 rounded" />
-                </div>
-              ))}
-            </div>
+      {/* E. Assistant entry point */}
+      <section className="glass-panel p-4 sm:p-5 space-y-3" aria-labelledby="ask-assistant">
+        <div>
+          <h2 id="ask-assistant" className="text-base font-semibold text-slate-100">Ask your Assistant</h2>
+          <p className="text-[13px] text-slate-400">
+            Type a question in plain words — about your work, your classes, or college records.
+          </p>
+        </div>
+        <form
+          className="flex gap-2"
+          onSubmit={(e) => {
+            e.preventDefault();
+            if (ask.trim()) goAsk(ask.trim());
+          }}
+        >
+          <label htmlFor="overview-ask" className="sr-only">Ask your Assistant</label>
+          <input
+            id="overview-ask"
+            value={ask}
+            onChange={(e) => setAsk(e.target.value)}
+            placeholder="e.g. What do I need to complete today?"
+            className="flex-1 min-w-0 bg-slate-900 border border-slate-700 rounded-lg px-3.5 h-11 text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:border-blue-500"
+          />
+          <button type="submit" disabled={!ask.trim()} className="px-5 h-11 rounded-lg bg-blue-600 hover:bg-blue-500 text-white text-sm font-semibold disabled:opacity-40 cursor-pointer">
+            Ask
+          </button>
+        </form>
+        <div className="flex flex-wrap gap-2">
+          {examples.map((q) => (
+            <button key={q} type="button" onClick={() => goAsk(q)}
+              className="px-3 h-8 rounded-full border border-slate-700 text-[13px] text-slate-300 hover:text-slate-100 hover:border-slate-500 cursor-pointer">
+              {q}
+            </button>
+          ))}
+        </div>
+      </section>
+
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
+        <div className="lg:col-span-2 space-y-5">
+          {/* Coordinator: team first */}
+          {coordinator && (
+            <Panel title="Team work needing attention" action={<Link href="/commitments?view=team" className={linkCls}>Open Team</Link>}>
+              {team === null ? (
+                <p className="px-4 py-4 text-sm text-slate-400">Loading…</p>
+              ) : team.length === 0 ? (
+                <p className="px-4 py-4 text-sm text-slate-400">No team tasks yet. Use “Assign work” to create one.</p>
+              ) : (
+                <>
+                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-px bg-white/[0.04]">
+                    {[
+                      ['Open', teamTotals.open, ''], ['Overdue', teamTotals.overdue, teamTotals.overdue ? 'text-rose-300' : ''],
+                      ['Blocked', teamTotals.blocked, teamTotals.blocked ? 'text-rose-300' : ''], ['To confirm', teamTotals.review, teamTotals.review ? 'text-amber-300' : ''],
+                    ].map(([l, v, c]) => (
+                      <div key={String(l)} className="bg-[var(--surface)] px-4 py-3">
+                        <p className="text-[12px] text-slate-400">{l}</p>
+                        <p className={`text-lg font-semibold text-slate-100 ${c}`}>{v}</p>
+                      </div>
+                    ))}
+                  </div>
+                  <ul className="divide-y divide-white/[0.05]">
+                    {team
+                      .filter((g) => g.summary.overdue || g.summary.blocked || g.summary.awaiting_confirmation)
+                      .slice(0, 6)
+                      .map((g) => (
+                        <li key={g.owner} className="px-4 py-2.5 flex flex-wrap items-center justify-between gap-2">
+                          <span className="text-sm text-slate-200">{g.owner}</span>
+                          <span className="flex flex-wrap gap-1.5">
+                            {g.summary.overdue > 0 && <Badge tone="danger">{g.summary.overdue} overdue</Badge>}
+                            {g.summary.blocked > 0 && <Badge tone="danger">{g.summary.blocked} blocked</Badge>}
+                            {g.summary.awaiting_confirmation > 0 && <Badge tone="warning">{g.summary.awaiting_confirmation} to confirm</Badge>}
+                          </span>
+                        </li>
+                      ))}
+                  </ul>
+                  {(work?.awaiting_my_confirmation?.length ?? 0) > 0 && (
+                    <p className="px-4 py-3 border-t border-white/[0.06] text-[13px] text-slate-300">
+                      {work?.awaiting_my_confirmation?.length} task(s) marked done are waiting for your confirmation.{' '}
+                      <Link href="/commitments?view=team" className={linkCls}>Review now</Link>
+                    </p>
+                  )}
+                </>
+              )}
+            </Panel>
           )}
 
-          {!loading && error && (
-            <div className="glass-panel p-6 text-center border-rose-900/40">
-              <p className="text-rose-400 text-sm font-medium mb-1">Backend Connection Notice</p>
-              <p className="text-slate-400 text-xs">{error}</p>
-            </div>
-          )}
-
-          {!loading && !error && insights.length === 0 && (
-            <div className="glass-panel p-8 text-center space-y-3">
-              <div className="w-10 h-10 rounded-full bg-slate-800/80 border border-slate-700 flex items-center justify-center mx-auto text-slate-400 text-lg">
-                ✓
-              </div>
-              <h3 className="text-sm font-medium text-slate-200">No Pending Bottlenecks or Governance Alerts</h3>
-              <p className="text-xs text-slate-400 max-w-md mx-auto">
-                All tracked committee commitments and institutional procedures are currently aligned. Ingest committee
-                transcripts or documents to generate automated governance observations.
+          {/* B. Today's schedule preview */}
+          <Panel title="Today's classes" action={<Link href="/commitments?view=schedule" className={linkCls}>View full schedule</Link>}>
+            {!schedule ? (
+              <p className="px-4 py-4 text-sm text-slate-400">Loading…</p>
+            ) : !schedule.has_timetable ? (
+              <p className="px-4 py-4 text-sm text-slate-400">
+                No teaching timetable has been published for you yet. Your lectures will appear here once your department publishes the class timetables.
               </p>
-              <div className="pt-2 flex justify-center gap-3">
-                <Link
-                  href="/meetings"
-                  className="px-3 py-1.5 rounded bg-slate-800 hover:bg-slate-700 text-xs font-medium text-slate-200 border border-slate-700 transition-colors"
-                >
-                  Upload Meeting Minutes
-                </Link>
-                <Link
-                  href="/sources"
-                  className="px-3 py-1.5 rounded bg-slate-800 hover:bg-slate-700 text-xs font-medium text-slate-200 border border-slate-700 transition-colors"
-                >
-                  Ingest Documents
-                </Link>
-              </div>
-            </div>
-          )}
+            ) : lectures.length === 0 ? (
+              <p className="px-4 py-4 text-sm text-slate-400">No classes today.</p>
+            ) : (
+              <ul className="divide-y divide-white/[0.05]">
+                {lectures.slice(0, 5).map((l, i) => (
+                  <li key={`${l.entry_id}-${i}`} className="px-4 py-2.5 flex flex-wrap sm:flex-nowrap items-center gap-x-4 gap-y-1">
+                    <span className="w-28 text-sm font-semibold text-slate-100 tabular-nums">{timeRange(l)}</span>
+                    <span className="flex-1 min-w-0 text-sm text-slate-200">
+                      {KIND_LABEL[l.kind] ?? 'Lecture'}: {l.subject ?? 'Subject not set'}
+                      <span className="text-slate-400"> · {[l.class_label, l.room ? `Room ${l.room}` : null].filter(Boolean).join(' · ')}</span>
+                    </span>
+                    <Badge tone={LECTURE_STATUS[l.status].tone}>{LECTURE_STATUS[l.status].label}</Badge>
+                  </li>
+                ))}
+                {lectures.length > 5 && <li className="px-4 py-2 text-[13px] text-slate-400">+{lectures.length - 5} more today</li>}
+              </ul>
+            )}
+          </Panel>
 
-          <div className="glass-panel divide-y divide-white/[0.05] overflow-hidden">
-            {insights.map((insight) => (
-              <InsightCard
-                key={insight.id}
-                insight={insight}
-                onDismiss={handleDismiss}
-              />
-            ))}
-          </div>
+          {/* C. Tasks needing attention */}
+          <Panel title="My tasks needing attention" action={<Link href="/commitments?view=tasks" className={linkCls}>Open My Tasks</Link>}>
+            {!work ? (
+              <p className="px-4 py-4 text-sm text-slate-400">Loading…</p>
+            ) : attentionList.length === 0 ? (
+              <p className="px-4 py-4 text-sm text-slate-400">
+                Nothing urgent. {work.summary.open ? `You have ${work.summary.open} open task(s), none overdue or blocked.` : 'No open tasks.'}
+              </p>
+            ) : (
+              <ul className="divide-y divide-white/[0.05]">
+                {attentionList.slice(0, 6).map(({ t, a }) => (
+                  <li key={t.id}>
+                    <Link href={`/commitments?view=tasks&task=${t.id}`} className="px-4 py-2.5 flex items-start justify-between gap-3 hover:bg-white/[0.03]">
+                      <span className="min-w-0">
+                        <span className="block text-sm text-slate-100">{t.description}</span>
+                        <span className="block text-[13px] text-slate-400 mt-0.5">
+                          {t.assigned_by ? `Assigned by ${t.assigned_by}` : t.source_meeting ? `From “${t.source_meeting}”` : 'Assigned directly'}
+                          {` · ${t.progress}% done`}
+                        </span>
+                      </span>
+                      <Badge tone={a.tone}>{a.label}</Badge>
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </Panel>
         </div>
 
-        {/* Right Column (1 col): Recent Activity & Quick Navigation */}
-        <div className="space-y-6">
-          {/* Quick Navigation Panel */}
-          <div className="glass-panel p-5 space-y-3">
-            <h3 className="text-xs font-semibold text-slate-300">
-              Shortcuts
-            </h3>
-            <div className="grid grid-cols-1 gap-2 text-xs">
-              <Link
-                href="/chat"
-                className="p-2.5 rounded bg-slate-900/80 hover:bg-slate-800/80 border border-slate-800 flex items-center justify-between group transition-colors"
-              >
-                <div>
-                  <p className="font-medium text-slate-200 group-hover:text-blue-400 transition-colors">Institutional Assistant</p>
-                  <p className="text-[12px] text-slate-400">Query decisions, syllabus &amp; records</p>
-                </div>
-                <span className="text-slate-500 group-hover:text-blue-400">→</span>
-              </Link>
-              <Link
-                href="/meetings"
-                className="p-2.5 rounded bg-slate-900/80 hover:bg-slate-800/80 border border-slate-800 flex items-center justify-between group transition-colors"
-              >
-                <div>
-                  <p className="font-medium text-slate-200 group-hover:text-blue-400 transition-colors">Minutes &amp; Meetings</p>
-                  <p className="text-[12px] text-slate-400">Upload &amp; extract action points</p>
-                </div>
-                <span className="text-slate-500 group-hover:text-blue-400">→</span>
-              </Link>
-              <Link
-                href="/commitments"
-                className="p-2.5 rounded bg-slate-900/80 hover:bg-slate-800/80 border border-slate-800 flex items-center justify-between group transition-colors"
-              >
-                <div>
-                  <p className="font-medium text-slate-200 group-hover:text-blue-400 transition-colors">Action Commitments</p>
-                  <p className="text-[12px] text-slate-400">Track assigned deliverables &amp; deadlines</p>
-                </div>
-                <span className="text-slate-500 group-hover:text-blue-400">→</span>
-              </Link>
-              <Link
-                href="/skills"
-                className="p-2.5 rounded bg-slate-900/80 hover:bg-slate-800/80 border border-slate-800 flex items-center justify-between group transition-colors"
-              >
-                <div>
-                  <p className="font-medium text-slate-200 group-hover:text-blue-400 transition-colors">Institutional Procedures</p>
-                  <p className="text-[12px] text-slate-400">Review synthesized SOPs</p>
-                </div>
-                <span className="text-slate-500 group-hover:text-blue-400">→</span>
-              </Link>
-            </div>
-          </div>
-
-          {/* Active Commitments Feed */}
-          {recentCommitments.length > 0 && (
-            <div className="glass-panel p-5 space-y-3">
-              <div className="flex items-center justify-between">
-                <h3 className="text-xs font-semibold text-slate-300">
-                  Upcoming commitments
-                </h3>
-                <Link href="/commitments" className="text-[12px] text-blue-400 hover:underline">
-                  View all
-                </Link>
-              </div>
-              <div className="space-y-2.5">
-                {recentCommitments.map((c) => (
-                  <div key={c.id} className="p-2.5 rounded bg-slate-900/60 border border-slate-800/80 text-xs space-y-1">
-                    <p className="font-medium text-slate-200 line-clamp-2">{c.description}</p>
-                    <div className="flex items-center justify-between text-[12px] text-slate-400 pt-1">
-                      <span>{c.assignee || 'Unassigned'}</span>
-                      <Badge tone={c.status === 'blocked' ? 'danger' : c.status === 'in_progress' ? 'accent' : 'neutral'}>
-                        {c.status === 'in_progress' ? 'In progress' : c.status === 'blocked' ? 'Blocked' : 'Not started'}
-                      </Badge>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {/* Recent Indexed Committee Records */}
-          {recentMeetings.length > 0 && (
-            <div className="glass-panel p-5 space-y-3">
-              <div className="flex items-center justify-between">
-                <h3 className="text-xs font-semibold text-slate-300">
-                  Recent Committee Records
-                </h3>
-                <Link href="/meetings" className="text-[12px] text-blue-400 hover:underline">
-                  View all
-                </Link>
-              </div>
-              <div className="space-y-2.5">
-                {recentMeetings.map((m) => (
-                  <div key={m.id} className="p-2.5 rounded bg-slate-900/60 border border-slate-800/80 text-xs space-y-1">
-                    <p className="font-medium text-slate-200 truncate">{m.title}</p>
-                    {m.summary && (
-                      <p className="text-[12px] text-slate-400 line-clamp-2">{m.summary}</p>
-                    )}
-                    <p className="text-[11px] text-slate-500 pt-0.5">
-                      {formatDate(m.occurred_at)}
+        <div className="space-y-5">
+          {/* D. Notifications / recent activity */}
+          <Panel title="Recent notifications" action={<Link href="/notices" className={linkCls}>All</Link>}>
+            {notices.length === 0 ? (
+              <p className="px-4 py-4 text-sm text-slate-400">
+                No notifications. New assignments, deadline changes and timetable changes will appear here.
+              </p>
+            ) : (
+              <ul className="divide-y divide-white/[0.05]">
+                {notices.slice(0, 5).map((n) => (
+                  <li key={n.id} className="px-4 py-2.5">
+                    <p className="text-sm text-slate-100">
+                      {!n.read && <span className="sr-only">Unread: </span>}
+                      {!n.read && <span className="inline-block w-1.5 h-1.5 rounded-full bg-blue-500 mr-2 align-middle" aria-hidden="true" />}
+                      {n.title}
                     </p>
-                  </div>
+                    <p className="text-[13px] text-slate-400 line-clamp-2">{n.body}</p>
+                    <p className="text-[12px] text-slate-500 mt-0.5">{n.sender ? `${n.sender} · ` : ''}{formatDateTime(n.created_at)}</p>
+                  </li>
                 ))}
+              </ul>
+            )}
+          </Panel>
+
+          <Panel title="Coming up this week" action={<Link href="/calendar" className={linkCls}>Calendar</Link>}>
+            {upcoming.length === 0 ? (
+              <p className="px-4 py-4 text-sm text-slate-400">No deadlines or academic dates in the next 7 days.</p>
+            ) : (
+              <ul className="divide-y divide-white/[0.05]">
+                {[...upcoming.filter((i) => i.source === 'commitment'), ...otherUpcoming].slice(0, 6).map((i, n) => (
+                  <li key={`${i.title}-${n}`} className="px-4 py-2.5">
+                    <p className="text-sm text-slate-100">{i.title}</p>
+                    <p className="text-[13px] text-slate-400">
+                      {CAL_KIND_LABEL[i.kind] ?? 'Date'} · {i.days_left === 0 ? 'Today' : i.days_left === 1 ? 'Tomorrow' : dayHeading(i.date, { weekday: 'short', day: 'numeric', month: 'short' })}
+                    </p>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </Panel>
+
+          {coordinator && insights.length > 0 && (
+            <Panel title={`Institution alerts (${insights.length})`}>
+              <div className="divide-y divide-white/[0.05]">
+                {insights.slice(0, 3).map((i) => <InsightCard key={i.id} insight={i} onDismiss={dismissInsight} />)}
               </div>
-            </div>
+            </Panel>
           )}
         </div>
       </div>
