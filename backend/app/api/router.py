@@ -1,7 +1,7 @@
 from fastapi import APIRouter
 from app.api.v1 import (
     auth, ingest, insights, chat, graph, transcripts, commitments, pa, skills,
-    sources, audit, institution, helpdesk, calendar, analytics, admin, notices, schedule, timetables,
+    sources, audit, institution, helpdesk, calendar, analytics, admin, notices, schedule, timetables, assistant,
 )
 
 api_router = APIRouter()
@@ -9,6 +9,7 @@ api_router.include_router(auth.router, prefix="/auth", tags=["auth"])
 api_router.include_router(ingest.router, prefix="/ingest", tags=["ingest"])
 api_router.include_router(insights.router, prefix="/insights", tags=["insights"])
 api_router.include_router(chat.router, prefix="/chat", tags=["chat"])
+api_router.include_router(assistant.router, prefix="/assistant", tags=["assistant"])
 api_router.include_router(graph.router, prefix="/graph", tags=["graph"])
 api_router.include_router(transcripts.router, prefix="/transcripts", tags=["transcripts"])
 api_router.include_router(commitments.router, prefix="/commitments", tags=["commitments"])

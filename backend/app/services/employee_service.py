@@ -52,10 +52,13 @@ class EmployeeService:
         if existing:
             return existing
 
-        # Try to adopt a stub that matches the user's name before creating a new one
+        # Try to adopt a stub that matches the user's name before creating a new one — but never a profile
+        # another login already owns, or two people with the same name would share each other's tasks.
         emp: Optional[Employee] = None
         if user.full_name:
             emp = self.resolve_or_create(db, user.full_name)
+            if emp is not None and emp.user_id is not None and emp.user_id != user.id:
+                emp = None
         if emp is None:
             emp = Employee(display_name=user.full_name or user.email)
             db.add(emp)
