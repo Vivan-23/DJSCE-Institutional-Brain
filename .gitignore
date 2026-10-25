@@ -58,3 +58,6 @@ brag-output/work/*
 !brag-output/work/composition-*.html
 !brag-output/work/timeline.json
 !brag-output/work/music.py
+
+# Real department onboarding data (names, emails, initials, timetable files) — never commit
+onboarding/

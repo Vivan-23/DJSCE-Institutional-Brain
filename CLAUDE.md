@@ -3,7 +3,7 @@
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
 **Before working in this repo, read [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md)** (codebase map, "where to change X").
-Setup/run procedures: [`docs/USAGE.md`](docs/USAGE.md). Per-institution customization: [`docs/CUSTOMIZING.md`](docs/CUSTOMIZING.md).
+Setup/run procedures: [`docs/USAGE.md`](docs/USAGE.md). Onboarding a real department: [`docs/DEPARTMENT_SETUP.md`](docs/DEPARTMENT_SETUP.md). Per-institution customization: [`docs/CUSTOMIZING.md`](docs/CUSTOMIZING.md).
 
 ## What this is
 **DJSCE Institutional Brain** — a college-level (multi-year academic submission) adaptation of *Company-Brain*.
