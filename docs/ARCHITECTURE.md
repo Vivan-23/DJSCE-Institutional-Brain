@@ -90,6 +90,7 @@ tests/             pytest suite. conftest.py mocks all external services.
 
 | Router | Prefix | Notes |
 |---|---|---|
+| `assistant.py` | `/assistant` | 🔑 One box: `message` routes to check-in updates / RAG answers / own schedule (`assistant_service`); `undo` reverts an assistant task change (owner). |
 | `auth.py` | `/auth` | register (creates a **student**)/login/me/`change-password`. **`require_role()`, `require_staff`, `is_staff()` live here.** `User.must_change_password` is set whenever an admin issues a generated password (create, CSV import, reset); the Sidebar sends such users to `/password` until they choose their own. |
 | `ingest.py` | `/ingest` | 👥 Document upload (`visibility` and `department` form fields) → `process_document` task; `GET /documents` lists uploaded files (grouped `source_type="document"` fragments, `department_scope`-filtered). |
 | `insights.py` | `/insights` | 👥 Active Feed insights (list/dismiss). |

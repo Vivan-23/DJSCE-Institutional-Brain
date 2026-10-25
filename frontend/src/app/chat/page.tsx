@@ -1,191 +1,181 @@
 'use client';
 import React, { Suspense, useRef, useState } from 'react';
+import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import { apiFetch } from '@/lib/api';
-import { Badge } from '@/components/ui/Badge';
 import { renderBold } from '@/lib/renderBold';
 import SourceList, { type Source } from '@/components/knowledge/SourceList';
 import { isStaffRole, useMe } from '@/lib/roles';
+
+/** One task change the assistant made, with what it was before so it can be undone. */
+interface TaskUpdate {
+  commitment_id: string;
+  description?: string | null;
+  status: string | null;
+  progress?: number;
+  remaining?: string | null;
+  blocked_reason?: string | null;
+  new?: boolean;
+  before?: Record<string, unknown> | null;
+  undone?: boolean;
+}
 
 interface Message {
   role: 'user' | 'assistant';
   content: string;
   sources?: Source[];
+  updates?: TaskUpdate[];
 }
 
-const WELCOME: Message = {
-  role: 'assistant',
-  content:
-    'Welcome to the DJSCE Institutional Assistant. Ask questions about institutional documents, committee decisions, procedures, and assigned responsibilities grounded in indexed records.',
+const STATUS_WORD: Record<string, string> = {
+  open: 'not started', in_progress: 'in progress', blocked: 'stuck', review: 'done (waiting for confirmation)',
+  done: 'completed', dropped: 'removed',
 };
 
-const SUGGESTED_QUERIES = [
-  'What decisions were made in the latest Academic Council meeting?',
-  'Which actions remain pending after the curriculum review?',
-  'What procedure was documented for laboratory examination moderation?',
-  'Which source supports the decision about the proposed elective?',
-  'Summarize the responsibilities assigned during the IQAC review.',
+const STAFF_EXAMPLES = [
+  'What are my classes tomorrow?',
+  'Finished the C31 lab marks today.',
+  'When is Term Test 2?',
+  'What is the procedure for applying for leave?',
 ];
 
-const STUDENT_QUERIES = [
+const STUDENT_EXAMPLES = [
   'What courses are in Semester V of Computer Engineering?',
   'Which electives are offered in Semester VI?',
-  'What are the Program Outcomes of Information Technology?',
+  'When is Term Test 2?',
   'Which companies recruit from the department?',
 ];
 
 function Chat() {
   const me = useMe();
-  // Overview links here with ?q=…; the question is pre-filled, never sent automatically.
+  // Today links here with ?q=…; the text is pre-filled, never sent automatically.
   const initialQuery = useSearchParams().get('q') ?? '';
-  const studentScope = me !== null && !isStaffRole(me.role);
-  const [messages, setMessages] = useState<Message[]>([WELCOME]);
+  const staff = isStaffRole(me?.role);
+  const [messages, setMessages] = useState<Message[]>([]);
   const [query, setQuery] = useState(initialQuery);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const inputRef = useRef<HTMLInputElement>(null);
+  const inputRef = useRef<HTMLTextAreaElement>(null);
 
-  const handleSend = async (textToSend?: string) => {
+  const send = async (textToSend?: string) => {
     const text = (textToSend ?? query).trim();
     if (!text || loading) return;
-
-    const outgoing: Message[] = [...messages, { role: 'user', content: text }];
-    setMessages(outgoing);
+    setMessages((prev) => [...prev, { role: 'user', content: text }]);
     setQuery('');
     setLoading(true);
-    setError(null);
-
     try {
-      const res = await apiFetch('/api/v1/chat/', {
-        method: 'POST',
-        body: JSON.stringify({ messages: outgoing.map(({ role, content }) => ({ role, content })) }),
-      });
-
-      if (!res.ok) {
-        const err = await res.json().catch(() => ({}));
-        throw new Error(err.detail ?? `HTTP ${res.status}`);
-      }
-
-      const data = await res.json();
-      setMessages((prev) => [
-        ...prev,
-        { role: 'assistant', content: data.response, sources: data.sources ?? [] },
-      ]);
+      const res = await apiFetch('/api/v1/assistant/message', { method: 'POST', body: JSON.stringify({ text }) });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(data.detail ?? 'Something went wrong.');
+      setMessages((prev) => [...prev, { role: 'assistant', content: data.reply, sources: data.sources ?? [], updates: data.updates ?? [] }]);
     } catch (err: unknown) {
-      const msg =
-        err instanceof Error ? err.message : 'Could not reach the institutional intelligence service.';
-      setError(msg);
-      setMessages((prev) => [
-        ...prev,
-        {
-          role: 'assistant',
-          content: `Notice: Query could not be completed (${msg}). Verify that backend and vector stores are reachable.`,
-        },
-      ]);
+      const why = err instanceof Error ? err.message : 'Something went wrong.';
+      setMessages((prev) => [...prev, { role: 'assistant', content: `Sorry, that didn't work (${why}). Please try again.` }]);
     } finally {
       setLoading(false);
       inputRef.current?.focus();
     }
   };
 
-  const fresh = messages.length <= 1 && !loading;
+  const undo = async (msgIndex: number, u: TaskUpdate) => {
+    const res = await apiFetch('/api/v1/assistant/undo', {
+      method: 'POST',
+      body: JSON.stringify({ commitment_id: u.commitment_id, before: u.before ?? null, new: !!u.new }),
+    });
+    if (!res.ok) return;
+    setMessages((prev) => prev.map((m, i) => i !== msgIndex ? m : {
+      ...m, updates: m.updates?.map((x) => x.commitment_id === u.commitment_id ? { ...x, undone: true } : x),
+    }));
+  };
+
+  const fresh = messages.length === 0 && !loading;
 
   return (
     <main className="px-4 sm:px-6 pt-6 pb-4 max-w-3xl mx-auto flex flex-col h-full min-h-[520px] w-full">
-      {/* Header */}
-      <div className="mb-4 shrink-0 flex items-start justify-between gap-4">
-        <div>
-          <h1 className="text-xl sm:text-2xl font-semibold text-slate-100 tracking-[-0.02em]">Ask</h1>
-          <p className="text-[0.8125rem] text-slate-400 mt-0.5">
-            Answers grounded in institutional documents, committee decisions and approved procedures, with sources.
-          </p>
-        </div>
-        <span className="hidden sm:inline-flex"><Badge tone="accent">{studentScope ? 'Public knowledge only' : 'Cited answers'}</Badge></span>
+      <div className="mb-4 shrink-0">
+        <h1 className="text-xl sm:text-2xl font-semibold text-slate-100 tracking-[-0.02em]">Assistant</h1>
+        <p className="text-sm text-slate-400 mt-1">
+          {staff
+            ? 'Ask a question, check your classes, or tell me what you did today. I will update your tasks and show you what changed.'
+            : 'Ask a question about the college. Answers come from public college information, with sources.'}
+        </p>
       </div>
 
-      {/* Conversation */}
-      <div className="flex-1 min-h-[260px] overflow-y-auto -mx-2 px-2 space-y-6 pb-4">
+      <div className="flex-1 min-h-[260px] overflow-y-auto -mx-2 px-2 space-y-5 pb-4" aria-live="polite">
+        {fresh && (
+          <div className="space-y-2">
+            <p className="text-sm text-slate-400">For example:</p>
+            <div className="grid sm:grid-cols-2 gap-2">
+              {(staff ? STAFF_EXAMPLES : STUDENT_EXAMPLES).map((q) => (
+                <button key={q} onClick={() => setQuery(q)}
+                  className="text-left px-4 py-3 rounded-lg border border-slate-700 hover:border-slate-500 text-sm text-slate-200 cursor-pointer">
+                  {q}
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
+
         {messages.map((msg, i) =>
           msg.role === 'user' ? (
             <div key={i} className="flex justify-end">
-              <div className="max-w-[85%] rounded-xl px-4 py-2.5 text-[0.8125rem] leading-relaxed bg-white/[0.06] border border-white/[0.06] text-slate-100 whitespace-pre-wrap">
+              <div className="max-w-[85%] rounded-xl px-4 py-2.5 text-base leading-relaxed bg-blue-600/15 border border-blue-500/20 text-slate-100 whitespace-pre-wrap">
                 {msg.content}
               </div>
             </div>
           ) : (
-            <div key={i} className="flex gap-3">
-              <div className="w-6 h-6 mt-0.5 rounded-md bg-gradient-to-br from-blue-500 to-blue-700 flex items-center justify-center shrink-0" aria-hidden="true">
-                <svg className="w-3.5 h-3.5 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M12 3l1.9 5.1L19 10l-5.1 1.9L12 17l-1.9-5.1L5 10l5.1-1.9z" />
-                </svg>
-              </div>
-              <div className="min-w-0 flex-1 text-[0.875rem] leading-relaxed text-slate-200">
-                <p className="text-[0.75rem] font-medium text-slate-400 mb-1">Assistant</p>
-                <div className="whitespace-pre-wrap">{renderBold(msg.content)}</div>
-                {msg.sources && <SourceList sources={msg.sources} />}
-              </div>
+            <div key={i} className="space-y-3">
+              <div className="text-base leading-relaxed text-slate-200 whitespace-pre-wrap">{renderBold(msg.content)}</div>
+              {(msg.updates?.length ?? 0) > 0 && (
+                <div className="rounded-lg border border-emerald-500/30 bg-emerald-500/5 p-3 space-y-2" aria-label="Task changes">
+                  <p className="text-sm font-semibold text-emerald-300">I changed these tasks</p>
+                  {msg.updates!.map((u) => (
+                    <div key={u.commitment_id} className="flex flex-wrap items-center justify-between gap-2 text-sm">
+                      <span className={`min-w-0 ${u.undone ? 'line-through text-slate-500' : 'text-slate-100'}`}>
+                        {u.new ? 'New task: ' : ''}{u.description ?? 'Task'}
+                        {!u.new && u.status && <span className="text-slate-400"> → {STATUS_WORD[u.status] ?? u.status}{typeof u.progress === 'number' ? `, ${u.progress}%` : ''}</span>}
+                      </span>
+                      {u.undone ? (
+                        <span className="text-[0.8125rem] text-slate-500">Undone</span>
+                      ) : (
+                        <button onClick={() => undo(i, u)}
+                          className="px-3 h-8 rounded-md border border-slate-600 text-[0.8125rem] text-slate-200 hover:border-rose-400 hover:text-rose-300 cursor-pointer">
+                          Undo
+                        </button>
+                      )}
+                    </div>
+                  ))}
+                  <Link href="/commitments?view=tasks" className="inline-block text-[0.8125rem] text-blue-300 hover:underline">See all my work →</Link>
+                </div>
+              )}
+              {msg.sources && msg.sources.length > 0 && <SourceList sources={msg.sources} />}
             </div>
           ),
         )}
 
-        {fresh && (
-          <div className="grid sm:grid-cols-2 gap-2 pt-2">
-            {(studentScope ? STUDENT_QUERIES : SUGGESTED_QUERIES).map((sq, i) => (
-              <button
-                key={i}
-                onClick={() => handleSend(sq)}
-                disabled={loading}
-                className="text-left px-3.5 py-3 rounded-lg border border-white/[0.07] bg-white/[0.02] hover:bg-white/[0.05] hover:border-white/[0.12] text-[0.8125rem] text-slate-300 transition-colors cursor-pointer disabled:opacity-50"
-              >
-                {sq}
-              </button>
-            ))}
-          </div>
-        )}
-
-        {loading && (
-          <div className="flex gap-3 items-center text-[0.8125rem] text-slate-500">
-            <span className="w-6 flex justify-center gap-0.5" aria-hidden="true">
-              {[0, 1, 2].map((i) => (
-                <span key={i} className="w-1 h-1 bg-slate-400 rounded-full animate-bounce" style={{ animationDelay: `${i * 150}ms` }} />
-              ))}
-            </span>
-            Searching records…
-          </div>
-        )}
+        {loading && <p className="text-sm text-slate-400">Working on it…</p>}
       </div>
 
-      {error && (
-        <p role="alert" className="text-rose-400 text-[0.75rem] mb-2 px-1">
-          {error}
-        </p>
-      )}
-
-      {/* Composer */}
-      <div className="shrink-0 flex items-center gap-2 rounded-xl border border-white/[0.09] bg-white/[0.03] p-1.5 pl-4 focus-within:border-blue-600 focus-within:shadow-[0_0_0_3px_rgba(94,106,210,0.2)] transition-colors">
-        <label htmlFor="chat-input" className="sr-only">
-          Ask a question
-        </label>
-        <input
-          id="chat-input"
-          ref={inputRef}
-          value={query}
-          onChange={(e) => setQuery(e.target.value)}
-          onKeyDown={(e) => e.key === 'Enter' && !e.shiftKey && handleSend()}
-          placeholder="Ask about decisions, procedures or commitments…"
-          disabled={loading}
-          className="flex-1 bg-transparent text-[0.875rem] text-slate-100 placeholder-slate-500 !outline-none !border-0 !shadow-none disabled:opacity-50"
-        />
-        <button
-          onClick={() => handleSend()}
-          disabled={loading || !query.trim()}
-          aria-label="Send question"
-          className="bg-blue-600 hover:bg-blue-500 text-white h-8 px-4 rounded-lg text-[0.8125rem] font-medium transition-colors disabled:opacity-40 cursor-pointer shrink-0"
-        >
-          Send
-        </button>
-      </div>
-      <p className="mt-2 text-center text-[0.6875rem] text-slate-600">Answers can be wrong. Check the cited sources.</p>
+      <form className="shrink-0 space-y-2" onSubmit={(e) => { e.preventDefault(); send(); }}>
+        <label htmlFor="chat-input" className="sr-only">Type a message</label>
+        <div className="flex items-end gap-2">
+          <textarea
+            id="chat-input"
+            ref={inputRef}
+            rows={2}
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            onKeyDown={(e) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); send(); } }}
+            placeholder={staff ? 'Ask something, or tell me what you did today…' : 'Ask a question…'}
+            disabled={loading}
+            className="flex-1 bg-slate-900 border border-slate-700 rounded-lg px-3.5 py-2.5 text-base text-slate-100 placeholder-slate-500 focus:outline-none focus:border-blue-500 disabled:opacity-50 resize-none"
+          />
+          <button type="submit" disabled={loading || !query.trim()}
+            className="h-12 px-5 rounded-lg bg-blue-600 hover:bg-blue-500 text-white text-base font-semibold disabled:opacity-40 cursor-pointer shrink-0">
+            Send
+          </button>
+        </div>
+        <p className="text-center text-[0.75rem] text-slate-500">Answers can be wrong. Check the sources shown under an answer.</p>
+      </form>
     </main>
   );
 }

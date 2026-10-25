@@ -8,6 +8,19 @@ Format: `## YYYY-MM-DD — title` then bullets of what/why.
 
 ---
 
+## 2026-10-26 — One Assistant box (questions + work updates + my classes)
+
+- `POST /api/v1/assistant/message` (`assistant_service`): routes each message (one small model call, keyword
+  fallback) to the check-in extraction (task updates), grounded answers (`rag_service`) and/or the published
+  schedule ("my classes tomorrow"); several at once. Students only get answers.
+- Every task change returns its previous state; `POST /api/v1/assistant/undo` restores it (owner only, audited);
+  a task the assistant created is dropped.
+- Fix: `employee_service.get_or_create_for_user` no longer adopts a same-name profile owned by another login.
+- Frontend: `/chat` is the Assistant (change cards with Undo, sources, examples); faculty menu shows one
+  "Assistant" item (End-of-day Check-in hidden for faculty, still at `/assistant`). Sidebar account actions
+  (Change password, Log out) moved into a menu behind the name.
+- Not yet tried end to end in a browser.
+
 ## 2026-10-26 — First login: people choose their own password
 
 - `User.must_change_password` (migration `0006`, server default false). Set when an administrator issues a
