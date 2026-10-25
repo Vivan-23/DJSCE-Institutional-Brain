@@ -93,7 +93,7 @@ Fill in during each department's run. These rows are the evidence for what to au
 | Date | Dept | Step | Time taken | What was needed / what went wrong | Automation idea |
 |---|---|---|---|---|---|
 | | CE | 0 | | | |
-| | CE | 2 | | | |
+| 2026-10-25 | CE | 2 | ~15 min (1 sheet) | Roster drafted from one class sheet (TY C3): legend gives subject → full names, cells give initials; matched by subject + initials, then confirmed by the owner. 14 of 17 initials matched; MA, AK, MT unresolved (legend says "All Faculties" for IPD; one name in the legend had no initials in the cells). Roles decided by the owner: HOD + Associate HOD = Committee Coordinator. One visiting faculty member. Real emails not yet available, so placeholder `@example.com` addresses are used for now | Extract roster suggestions from every uploaded sheet's legend automatically; track "visiting" as a flag; allow changing an email later without losing the account |
 | | CE | 3 | | | |
 | | CE | 4 | | | |
 | | CE | 5 | | | |
