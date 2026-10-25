@@ -95,10 +95,10 @@ Fill in during each department's run. These rows are the evidence for what to au
 
 | Date | Dept | Step | Time taken | What was needed / what went wrong | Automation idea |
 |---|---|---|---|---|---|
-| | CE | 0 | | | |
+| 2026-10-26 | CE | 0 | ~2 min | Named admin created via the API as the demo admin, then the demo admin deactivated. The create form rejects department `all`; leave it empty for an institution-wide admin | Accept `all` (or explain it) on the admin create form |
 | 2026-10-25 | CE | 2 | ~15 min (1 sheet) | Roster drafted from one class sheet (TY C3): legend gives subject → full names, cells give initials; matched by subject + initials, then confirmed by the owner. 14 of 17 initials matched; MA, AK, MT unresolved (legend says "All Faculties" for IPD; one name in the legend had no initials in the cells). Roles decided by the owner: HOD + Associate HOD = Committee Coordinator. One visiting faculty member. Real emails not yet available, so placeholder `@example.com` addresses are used for now | Extract roster suggestions from every uploaded sheet's legend automatically; track "visiting" as a flag; allow changing an email later without losing the account |
-| | CE | 3 | | | |
-| | CE | 4 | | | |
+| 2026-10-26 | CE | 3 | ~1 min | 17 accounts via CSV import (`initials`/`notes` columns stripped first; the importer takes only `email,full_name,role,department`). Placeholder emails. Found on the way: `openpyxl` was missing from `requirements.lock`, so `.xlsx` uploads would have failed in Docker (fixed) | `initials` column on the import |
+| 2026-10-26 | CE | 4 | ~1 min | 15 initials mapped (HOD and one timetable co-ordinator have no initials on TY C3). AK and MT still unresolved, pending more sheets | Done together with step 3 once the import takes initials |
 | | CE | 5 | | | |
 
 ## Automation candidates (to confirm from the run log)

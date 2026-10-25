@@ -8,6 +8,15 @@ Format: `## YYYY-MM-DD — title` then bullets of what/why.
 
 ---
 
+## 2026-10-26 — openpyxl in the lock; backend runs one process
+
+- `backend/requirements.lock` was missing `openpyxl` (+ `et_xmlfile`), so `.xlsx` timetable uploads failed in the
+  Docker image (which installs only from the lock); `test_csv_and_xlsx_grids` caught it. Pinned both.
+- `docker-compose.yml` overrides the backend command to a single uvicorn process (Dockerfile keeps `--workers 2`):
+  each worker loads its own spaCy/embedding models, ~550 MB apiece, and one process is enough for this deployment.
+  Backend memory 2.5 GB → ~450 MB.
+- CE onboarding steps 0, 3, 4 done and logged in `docs/DEPARTMENT_SETUP.md`.
+
 ## 2026-10-25 — Admins can change an account's email
 
 - `PATCH /api/v1/admin/users/{id}` accepts `email` (admin only): validated, unique, audited (`user_email_changed`).
