@@ -2,7 +2,7 @@
 
 > **Read this first.** This file is the orientation layer so you don't have to
 > re-read the whole codebase. When you change structure, update this file in the
-> same change. Last verified: 2026-10-25.
+> same change. Last verified: 2026-10-26.
 
 DJSCE Institutional Brain turns scattered institutional knowledge (committee
 transcripts, reference documents, faculty check-ins) into decisions, tracked
@@ -91,7 +91,7 @@ tests/             pytest suite. conftest.py mocks all external services.
 | Router | Prefix | Notes |
 |---|---|---|
 | `auth.py` | `/auth` | register (creates a **student**)/login/me. **`require_role()`, `require_staff`, `is_staff()` live here.** |
-| `ingest.py` | `/ingest` | 👥 Document upload (`visibility` and `department` form fields) → `process_document` task. |
+| `ingest.py` | `/ingest` | 👥 Document upload (`visibility` and `department` form fields) → `process_document` task; `GET /documents` lists uploaded files (grouped `source_type="document"` fragments, `department_scope`-filtered). |
 | `insights.py` | `/insights` | 👥 Active Feed insights (list/dismiss). |
 | `chat.py` | `/chat` | Grounded Q&A with `sources`; students get `public_only` retrieval. |
 | `graph.py` | `/graph` | 👥 `/data?limit=` (whole graph, bounded, `truncated` flag), `/neighbors/{id}?depth=` (a node's neighbourhood, for large graphs), `/stats`. Department-scoped: Document/Meeting nodes carry `department`. |

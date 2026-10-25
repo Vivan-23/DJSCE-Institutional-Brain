@@ -142,3 +142,38 @@ class TestSourceUrls:
         from app.services.parser import source_urls
 
         assert source_urls("Internal SOP text", ["Internal SOP text"]) == [None]
+
+
+class TestDocumentList:
+    def _seed(self):
+        from sqlmodel import Session
+        from app.models.structured import Fragment
+        from tests.helpers import _engine
+        with Session(_engine) as db:
+            for ref, dept, n in (("ce-syllabus.pdf", "CE", 2), ("it-rules.pdf", "IT", 1), ("calendar.pdf", "all", 1)):
+                for i in range(n):
+                    db.add(Fragment(content=f"{ref} part {i}", source_type="document", source_ref=ref, department=dept))
+            db.add(Fragment(content="said in a meeting", source_type="transcript", source_ref="m1", department="CE"))
+            db.commit()
+
+    def test_faculty_see_own_department_and_institution_wide(self, client):
+        self._seed()
+        token = register(client, "fac.docs@test.com", role="employee", department="CE")
+        res = client.get("/api/v1/ingest/documents", headers={"Authorization": f"Bearer {token}"})
+        assert res.status_code == 200
+        docs = {d["filename"]: d for d in res.json()}
+        assert {"ce-syllabus.pdf", "calendar.pdf"} <= set(docs)
+        assert "it-rules.pdf" not in docs and "m1" not in docs  # not IT's, not transcripts
+        assert all(d["department"] in ("CE", "all") for d in docs.values())
+        assert docs["ce-syllabus.pdf"]["passages"] >= 2
+
+    def test_coordinator_sees_every_department(self, client):
+        self._seed()
+        token = register(client, "coord.docs@test.com", role="manager")
+        res = client.get("/api/v1/ingest/documents", headers={"Authorization": f"Bearer {token}"})
+        assert {"ce-syllabus.pdf", "it-rules.pdf", "calendar.pdf"} <= {d["filename"] for d in res.json()}
+
+    def test_students_cannot_list(self, client):
+        token = register(client, "stud.docs@test.com", role="student")
+        res = client.get("/api/v1/ingest/documents", headers={"Authorization": f"Bearer {token}"})
+        assert res.status_code == 403

@@ -22,6 +22,8 @@ mostly 40-50, with little time. Changes aim at fewer things per screen and plain
   attention, coming up, notices, ask — each linking to its full page. Coordinator/admin dashboard unchanged.
 - End-of-day Check-in: one card with a large text box, starter phrases, "Save today's update" and
   "I'm done for today"; follow-ups listed only when there are some; plain-language errors.
+- Documents page: plain choices ("Staff only" / "Students too", department), a list of documents already added
+  (new `GET /api/v1/ingest/documents`, scoped like retrieval), and no database-internals panel.
 - Timetable review: entries as a compact Day/Time/Subject/Faculty/Room table (sheet text as tooltip); the
   source panel only takes a column for photo/PDF uploads.
 
