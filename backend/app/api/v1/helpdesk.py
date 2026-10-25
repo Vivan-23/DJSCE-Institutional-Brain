@@ -1,4 +1,7 @@
-"""Student Help Desk API — raise tickets; staff triage queue and human-approved replies."""
+"""Help Desk API — students raise tickets; faculty triage and send human-approved replies.
+
+Access is by responsibility, not rank: students and faculty use the Help Desk, faculty
+handle the queue, administrators may read it. Coordinators get 403 (V2 product rule)."""
 import json
 from typing import Any, Optional
 from uuid import UUID
@@ -7,13 +10,18 @@ from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel, Field
 from sqlmodel import Session
 
-from app.api.v1.auth import get_current_user, is_staff, require_staff
+from app.api.v1.auth import (
+    is_staff, require_exact_roles, require_helpdesk_user, require_ticket_handler, require_ticket_reader,
+)
 from app.core.db import get_session
 from app.core.institution_config import get_institution_config
 from app.models.structured import Ticket, User
 from app.services.ticket_service import TICKET_STATUSES, ticket_service
 
 router = APIRouter()
+
+# Reading one ticket: its requester (student/faculty), faculty handlers, or an admin.
+require_ticket_viewer = require_exact_roles("student", "employee", "admin")
 
 
 class TicketCreate(BaseModel):
@@ -74,7 +82,7 @@ def _get_visible(db: Session, ticket_id: str, user: User) -> Ticket:
 
 
 @router.get("/categories")
-def list_categories(current_user: User = Depends(get_current_user)):
+def list_categories(current_user: User = Depends(require_helpdesk_user)):
     return [
         {"key": c.key, "label": c.label, "routed_to": c.routed_to, "quick_questions": c.quick_questions}
         for c in get_institution_config().helpdesk_categories
@@ -84,7 +92,7 @@ def list_categories(current_user: User = Depends(get_current_user)):
 @router.post("/tickets", status_code=201)
 def create_ticket(
     req: TicketCreate,
-    current_user: User = Depends(get_current_user),
+    current_user: User = Depends(require_helpdesk_user),
     db: Session = Depends(get_session),
 ):
     ticket = ticket_service.create(db, current_user, req.subject.strip(), req.description.strip())
@@ -92,7 +100,7 @@ def create_ticket(
 
 
 @router.get("/tickets/mine")
-def my_tickets(current_user: User = Depends(get_current_user), db: Session = Depends(get_session)):
+def my_tickets(current_user: User = Depends(require_helpdesk_user), db: Session = Depends(get_session)):
     return [_serialize(db, t, staff_view=False) for t in ticket_service.for_user(db, current_user.id)]
 
 
@@ -100,7 +108,7 @@ def my_tickets(current_user: User = Depends(get_current_user), db: Session = Dep
 def ticket_queue(
     status: Optional[str] = None,
     category: Optional[str] = None,
-    current_user: User = Depends(require_staff),
+    current_user: User = Depends(require_ticket_reader),
     db: Session = Depends(get_session),
 ):
     if status and status not in TICKET_STATUSES:
@@ -109,7 +117,7 @@ def ticket_queue(
 
 
 @router.get("/tickets/{ticket_id}")
-def get_ticket(ticket_id: str, current_user: User = Depends(get_current_user), db: Session = Depends(get_session)):
+def get_ticket(ticket_id: str, current_user: User = Depends(require_ticket_viewer), db: Session = Depends(get_session)):
     ticket = _get_visible(db, ticket_id, current_user)
     return _serialize(db, ticket, staff_view=is_staff(current_user))
 
@@ -118,7 +126,7 @@ def get_ticket(ticket_id: str, current_user: User = Depends(get_current_user), d
 def reply_ticket(
     ticket_id: str,
     req: TicketReply,
-    current_user: User = Depends(require_staff),
+    current_user: User = Depends(require_ticket_handler),
     db: Session = Depends(get_session),
 ):
     ticket = _get_visible(db, ticket_id, current_user)
@@ -127,7 +135,7 @@ def reply_ticket(
 
 
 @router.post("/tickets/{ticket_id}/retriage")
-def retriage_ticket(ticket_id: str, current_user: User = Depends(require_staff), db: Session = Depends(get_session)):
+def retriage_ticket(ticket_id: str, current_user: User = Depends(require_ticket_handler), db: Session = Depends(get_session)):
     ticket = _get_visible(db, ticket_id, current_user)
     return _serialize(db, ticket_service.retriage(db, ticket, current_user.email), staff_view=True)
 
@@ -136,7 +144,7 @@ def retriage_ticket(ticket_id: str, current_user: User = Depends(require_staff),
 def update_ticket_status(
     ticket_id: str,
     req: TicketStatus,
-    current_user: User = Depends(get_current_user),
+    current_user: User = Depends(require_helpdesk_user),
     db: Session = Depends(get_session),
 ):
     ticket = _get_visible(db, ticket_id, current_user)

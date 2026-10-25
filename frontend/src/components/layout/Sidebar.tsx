@@ -7,8 +7,12 @@ import { useInstitution } from '@/lib/useInstitution';
 import { clearMe, isCoordinatorRole, isStaffRole, ROLE_LABEL, useMe } from '@/lib/roles';
 
 // `staff: true` items are hidden from students; `coordinator: true` items need Committee
-// Coordinator or above. Cosmetic only: the backend refuses these requests anyway.
-type NavItem = { href: string; label: string; icon: string; staff: boolean; coordinator?: boolean; admin?: boolean };
+// Coordinator or above; `roles` lists the exact roles that see an item (no inheritance by
+// higher ranks, e.g. the Help Desk is for students and faculty only). Cosmetic only: the
+// backend refuses these requests anyway.
+type NavItem = {
+  href: string; label: string; icon: string; staff: boolean; coordinator?: boolean; admin?: boolean; roles?: string[];
+};
 
 // 24x24 stroke icon paths (lucide-style).
 const ICON = {
@@ -33,14 +37,14 @@ const NAV_GROUPS: { title?: string; items: NavItem[] }[] = [
     items: [
       { href: '/', label: 'Overview', icon: ICON.home, staff: true },
       { href: '/commitments', label: 'My Work', icon: ICON.check, staff: true },
-      { href: '/assistant', label: 'Faculty Desk', icon: ICON.coffee, staff: true },
+      { href: '/assistant', label: 'End-of-day Check-in', icon: ICON.coffee, staff: true },
     ],
   },
   {
-    title: 'Help Desk',
+    title: 'Support',
     items: [
-      { href: '/helpdesk', label: 'Student Help Desk', icon: ICON.lifebuoy, staff: false },
-      { href: '/tickets', label: 'Ticket Queue', icon: ICON.inbox, staff: true },
+      { href: '/helpdesk', label: 'Help Desk', icon: ICON.lifebuoy, staff: false, roles: ['student', 'employee'] },
+      { href: '/tickets', label: 'Ticket Queue', icon: ICON.inbox, staff: true, roles: ['employee', 'admin'] },
       { href: '/chat', label: 'Assistant', icon: ICON.sparkle, staff: false },
     ],
   },
@@ -98,7 +102,8 @@ export default function Sidebar() {
   const groups = NAV_GROUPS.map((g) => ({
     ...g,
     items: g.items.filter(
-      (item) => (!item.staff || staff) && (!item.coordinator || coordinator) && (!item.admin || me?.role === 'admin'),
+      (item) => (!item.staff || staff) && (!item.coordinator || coordinator) && (!item.admin || me?.role === 'admin') &&
+        (!item.roles || (!!me && item.roles.includes(me.role))),
     ),
   })).filter((g) => g.items.length > 0);
   const initials = (me?.full_name || me?.email || '?')

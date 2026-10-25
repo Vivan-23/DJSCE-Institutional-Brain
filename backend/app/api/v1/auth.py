@@ -99,6 +99,27 @@ def require_role(*allowed_roles: str):
 require_staff = require_role("employee")
 
 
+def require_exact_roles(*roles: str):
+    """Dependency factory: only the listed roles, with no inheritance by higher ranks.
+    For features that belong to a responsibility rather than a privilege level
+    (e.g. the Help Desk is for students and faculty, not coordinators)."""
+    allowed = set(roles)
+
+    def _checker(current_user: User = Depends(get_current_user)) -> User:
+        if current_user.role not in allowed:
+            raise HTTPException(status_code=403, detail=f"Available to: {', '.join(roles)}")
+        return current_user
+
+    return _checker
+
+
+# Help Desk: students raise tickets, faculty answer them (V2 product rule).
+require_helpdesk_user = require_exact_roles("student", "employee")
+# Ticket queue: faculty handle it; administrators may read it for oversight.
+require_ticket_reader = require_exact_roles("employee", "admin")
+require_ticket_handler = require_exact_roles("employee")
+
+
 def is_staff(user: User) -> bool:
     return _ROLE_RANK.get(user.role, -1) >= _ROLE_RANK["employee"]
 

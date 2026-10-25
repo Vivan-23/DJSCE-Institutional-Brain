@@ -1,4 +1,5 @@
 'use client';
+import Link from 'next/link';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { apiFetch } from '@/lib/api';
 import { Badge } from '@/components/ui/Badge';
@@ -139,10 +140,12 @@ export default function AssistantPage() {
       {/* Header */}
       <div>
         <h1 className="text-xl md:text-2xl font-semibold text-slate-100 tracking-[-0.02em]">
-          Faculty Desk
+          End-of-day Check-in
         </h1>
         <p className="text-slate-400 text-[13px] mt-1">
-          Follow-ups on your committee commitments, and an end-of-day check-in that keeps your tasks up to date.
+          Update your progress and tell your assistant what you worked on today. To see your classes and
+          assigned tasks, open{' '}
+          <Link href="/commitments" className="text-blue-400 hover:text-blue-300 underline underline-offset-2">My Work</Link>.
         </p>
       </div>
 

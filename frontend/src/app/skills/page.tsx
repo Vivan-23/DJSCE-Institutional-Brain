@@ -294,8 +294,10 @@ export default function SkillsPage() {
         <div>
           <h1 className="text-xl md:text-2xl font-semibold text-slate-100 tracking-[-0.02em]">Procedures</h1>
           <p className="text-slate-400 text-xs sm:text-sm mt-1">
-            How things are done here: reviewed, versioned procedures with an owning office and a review date. Approved
-            procedures are what the assistant cites first.
+            Step-by-step guides for recurring college work. Each guide explains what to do, who is responsible, and
+            which rules or checks to follow. Guides are written from committee records and must be reviewed by a
+            coordinator before they count as approved; approved guides are what the assistant cites first. Demo guides
+            are illustrative, not official DJSCE regulations.
           </p>
         </div>
         <div className="flex flex-wrap gap-2 shrink-0">

@@ -6,6 +6,7 @@ import SourceList, { type Source } from '@/components/knowledge/SourceList';
 import { PRIORITY_STYLE, TICKET_STATUS, TicketBadge, type TicketStatus } from '@/components/helpdesk/TicketBadge';
 import EmptyState from '@/components/ui/EmptyState';
 import { renderBold } from '@/lib/renderBold';
+import { useMe } from '@/lib/roles';
 
 interface StaffTicket {
   id: string;
@@ -28,6 +29,9 @@ interface StaffTicket {
 const FILTERS: (TicketStatus | 'all')[] = ['open', 'answered', 'closed', 'all'];
 
 export default function TicketQueuePage() {
+  const me = useMe(true);
+  // Administrators may read the queue for oversight; only faculty reply (enforced by the backend).
+  const readOnly = me?.role === 'admin';
   const [filter, setFilter] = useState<TicketStatus | 'all'>('open');
   const [tickets, setTickets] = useState<StaffTicket[]>([]);
   const [selectedId, setSelectedId] = useState<string | null>(null);
@@ -39,7 +43,7 @@ export default function TicketQueuePage() {
     const qs = status === 'all' ? '' : `?status=${status}`;
     apiFetch(`/api/v1/helpdesk/tickets${qs}`)
       .then(async (r) => {
-        if (!r.ok) throw new Error(r.status === 403 ? 'The help desk queue is available to faculty and coordinators.' : `HTTP ${r.status}`);
+        if (!r.ok) throw new Error(r.status === 403 ? 'The ticket queue is handled by faculty (administrators can read it).' : `HTTP ${r.status}`);
         return r.json();
       })
       .then((data: StaffTicket[]) => {
@@ -92,6 +96,9 @@ export default function TicketQueuePage() {
         <p className="text-slate-400 text-xs sm:text-sm mt-1">
           Tickets are triaged and drafted by AI. Review every draft — nothing reaches the student until you send it.
         </p>
+        {readOnly && (
+          <p className="mt-2 text-[13px] text-amber-300" role="note">Read-only view: faculty members reply to tickets.</p>
+        )}
       </div>
 
       <div className="flex flex-wrap gap-1.5" role="tablist" aria-label="Filter tickets by status">
@@ -164,6 +171,7 @@ export default function TicketQueuePage() {
                   <span className="text-slate-200">{selected.routed_to}</span>
                 </p>
                 {selected.triage_rationale && <p className="text-slate-400">{selected.triage_rationale}</p>}
+                {!readOnly && (
                 <button
                   type="button"
                   onClick={retriage}
@@ -172,6 +180,7 @@ export default function TicketQueuePage() {
                 >
                   Re-run triage &amp; draft
                 </button>
+                )}
               </div>
 
               <div className="rounded border border-blue-500/20 bg-blue-500/5 p-3">
@@ -193,6 +202,7 @@ export default function TicketQueuePage() {
                 <SourceList sources={selected.ai_sources} warnInternal />
               </div>
 
+              {!readOnly && (
               <div className="space-y-2">
                 <label htmlFor="staff-reply" className="text-[11px] font-semibold text-slate-400">
                   Your reply to the {selected.raised_by_role === 'student' ? 'student' : 'requester'}
@@ -223,6 +233,7 @@ export default function TicketQueuePage() {
                   </button>
                 </div>
               </div>
+              )}
             </>
           )}
         </section>

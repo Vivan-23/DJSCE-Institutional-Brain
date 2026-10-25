@@ -144,3 +144,31 @@ class TestLayaTriage:
     def test_not_installed_falls_through(self):
         with patch("app.services.ticket_service._laya", return_value=None):
             assert ticket_service.triage("hello", engines=["laya"])["method"] == "keyword"
+
+
+class TestHelpdeskRoleSeparation:
+    """V2: the Help Desk belongs to students and faculty; higher ranks don't inherit it."""
+
+    def test_coordinator_cannot_use_helpdesk_or_queue(self, client):
+        coord = register(client, "hd-coord@test.com", role="manager")
+        assert client.get("/api/v1/helpdesk/categories", headers=_h(coord)).status_code == 403
+        assert _create(client, coord, "Coordinator ticket", "Should be refused").status_code == 403
+        assert client.get("/api/v1/helpdesk/tickets", headers=_h(coord)).status_code == 403
+
+    def test_admin_reads_queue_but_cannot_reply(self, client):
+        student = register(client, "hd-stu@test.com", role="student")
+        admin = register(client, "hd-admin@test.com", role="admin")
+        tid = _create(client, student, "Library card", "How do I renew my library card?").json()["id"]
+        assert client.get("/api/v1/helpdesk/tickets", headers=_h(admin)).status_code == 200
+        assert client.get(f"/api/v1/helpdesk/tickets/{tid}", headers=_h(admin)).status_code == 200
+        res = client.post(f"/api/v1/helpdesk/tickets/{tid}/reply", json={"reply": "x"}, headers=_h(admin))
+        assert res.status_code == 403
+        assert _create(client, admin, "Admin ticket", "Should be refused").status_code == 403
+
+    def test_faculty_can_raise_and_handle(self, client):
+        student = register(client, "hd-stu2@test.com", role="student")
+        faculty = register(client, "hd-fac@test.com", role="employee")
+        assert _create(client, faculty, "Projector broken", "Room 301 projector is broken").status_code == 201
+        tid = _create(client, student, "Fee receipt", "Where do I get my fee receipt?").json()["id"]
+        res = client.post(f"/api/v1/helpdesk/tickets/{tid}/reply", json={"reply": "Accounts office."}, headers=_h(faculty))
+        assert res.status_code == 200

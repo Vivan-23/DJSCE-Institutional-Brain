@@ -96,7 +96,7 @@ function categorizeEvidence(
   if (st === 'checkin') {
     return {
       key: 'checkin',
-      label: 'Faculty Desk Updates & Check-ins',
+      label: 'End-of-day Check-ins & Updates',
       description: 'Operational status reports and readiness confirmations received from departmental faculty.',
       badgeStyle: 'bg-amber-500/15 border-amber-500/30 text-amber-300',
     };
