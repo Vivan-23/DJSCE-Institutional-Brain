@@ -8,6 +8,14 @@ Format: `## YYYY-MM-DD — title` then bullets of what/why.
 
 ---
 
+## 2026-10-25 — Admins can change an account's email
+
+- `PATCH /api/v1/admin/users/{id}` accepts `email` (admin only): validated, unique, audited (`user_email_changed`).
+  Lets the CE onboarding use placeholder emails now and swap in real ones later without recreating accounts.
+  The person's current session ends (tokens carry the email); they log in with the new one. Users page edit row has
+  an email field. Note: `institution.yaml` members are matched by email, so changing a *yaml-seeded* person's email
+  makes the next restart re-create the old one — only change emails of people created on the Users page.
+
 ## 2026-10-25 — V2: timetable upload, review and publish (Phase 3)
 
 - `/timetables` (coordinators) + `/api/v1/timetables`. Photos/PDFs are transcribed by a Groq vision model

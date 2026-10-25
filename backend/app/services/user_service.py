@@ -7,6 +7,8 @@ Rules enforced here (not just in the UI):
   - an administrator cannot demote or deactivate themselves, and the last active
     administrator cannot be demoted or deactivated;
   - staff users always get a linked Employee (the Faculty Desk PA serves Employees);
+  - an email (the login) can be changed by an administrator, e.g. replacing a placeholder; it must
+    stay unique, and the person's current session ends (tokens carry the old email);
   - every change is written to the audit log.
 """
 import csv
@@ -163,6 +165,23 @@ class UserService:
         if changed:
             audit_service.record(db, actor=actor.email, action="user_update", target_id=str(user.id),
                                  metadata={"email": user.email, "changes": changed})
+        return user
+
+    def change_email(self, db: Session, actor: User, user: User, email: str) -> User:
+        email = (email or "").strip().lower()
+        if "@" not in email or email.startswith("@") or email.endswith("@") or " " in email:
+            raise UserError("A valid email is required")
+        if email == user.email:
+            return user
+        if db.exec(select(User).where(User.email == email, User.id != user.id)).first():
+            raise UserError(f"{email} already belongs to another account")
+        old = user.email
+        user.email = email
+        db.add(user)
+        db.commit()
+        db.refresh(user)
+        audit_service.record(db, actor=actor.email, action="user_email_changed", target_id=str(user.id),
+                             metadata={"from": old, "to": email})
         return user
 
     def reset_password(self, db: Session, actor: User, user: User, password: Optional[str] = None) -> str:

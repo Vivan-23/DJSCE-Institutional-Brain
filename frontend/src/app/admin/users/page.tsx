@@ -102,14 +102,20 @@ export default function AdminUsersPage() {
   const startEdit = (u: AdminUser) => {
     setEditing(u.id);
     setEdit({
-      full_name: u.full_name ?? '', role: u.role, department: u.department ?? '',
+      email: u.email, full_name: u.full_name ?? '', role: u.role, department: u.department ?? '',
       year: u.year?.toString() ?? '', semester: u.semester?.toString() ?? '', division: u.division ?? '',
     });
   };
 
   const save = async (u: AdminUser) => {
-    const { ok, data } = await call(`/api/v1/admin/users/${u.id}`, { method: 'PATCH', body: JSON.stringify(payload(edit)) });
-    report(ok, data, `Saved ${u.email}.`);
+    const body = payload(edit);
+    const newEmail = edit.email.trim().toLowerCase();
+    // Only send the email when it changed: changing it signs the person out (they log in with the new one).
+    if (newEmail === u.email) delete body.email;
+    const { ok, data } = await call(`/api/v1/admin/users/${u.id}`, { method: 'PATCH', body: JSON.stringify(body) });
+    report(ok, data, newEmail !== u.email
+      ? `Saved. ${u.email} now logs in as ${newEmail} (their current session has ended).`
+      : `Saved ${u.email}.`);
     if (ok) setEditing(null);
   };
 
@@ -229,7 +235,12 @@ export default function AdminUsersPage() {
                     ) : (
                       <span className="font-medium">{u.full_name ?? '—'}</span>
                     )}
-                    <span className="block text-slate-500">{u.email}{isMe ? ' (you)' : ''}</span>
+                    {on ? (
+                      <input type="email" value={edit.email} className={`${field} mt-1`} aria-label="Email (login)"
+                        onChange={(e) => setEdit({ ...edit, email: e.target.value })} />
+                    ) : (
+                      <span className="block text-slate-500">{u.email}{isMe ? ' (you)' : ''}</span>
+                    )}
                   </td>
                   <td className="p-2">
                     {on ? (

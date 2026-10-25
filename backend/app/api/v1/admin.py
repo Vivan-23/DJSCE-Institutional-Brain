@@ -43,6 +43,7 @@ class UserCreate(BaseModel):
 
 
 class UserUpdate(BaseModel):
+    email: Optional[str] = None  # the login; changing it ends the person's current session
     full_name: Optional[str] = None
     role: Optional[str] = None
     department: Optional[str] = None
@@ -93,8 +94,14 @@ def create_user(req: UserCreate, current_user: User = Depends(require_admin), db
 def update_user(
     user_id: str, req: UserUpdate, current_user: User = Depends(require_admin), db: Session = Depends(get_session)
 ):
+    data = req.model_dump(exclude_unset=True)
+    email = data.pop("email", None)
     try:
-        user = user_service.update(db, current_user, _get(db, user_id), req.model_dump(exclude_unset=True))
+        user = _get(db, user_id)
+        if email is not None:
+            user = user_service.change_email(db, current_user, user, email)
+        if data:
+            user = user_service.update(db, current_user, user, data)
     except UserError as e:
         raise HTTPException(status_code=400, detail=str(e))
     return serialize(user)

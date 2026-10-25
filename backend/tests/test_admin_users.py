@@ -173,3 +173,38 @@ class TestSeedDoesNotRevert:
             seed_institution(db_session)
         db_session.refresh(user)
         assert user.role == "employee"
+
+
+class TestChangeEmail:
+    """Placeholder emails can be replaced by real ones without recreating the account."""
+
+    def test_admin_changes_email_and_person_logs_in_with_new_one(self, client, db_session):
+        h = _admin(client)
+        old, new = _email("placeholder"), _email("real")
+        res = client.post("/api/v1/admin/users", json={"email": old, "full_name": "Prof. Placeholder",
+                                                       "role": "employee", "password": "secret12"}, headers=h)
+        uid = res.json()["id"]
+        old_token = client.post("/api/v1/auth/login", json={"email": old, "password": "secret12"}).json()["access_token"]
+        res = client.patch(f"/api/v1/admin/users/{uid}", json={"email": new.upper(), "full_name": "Prof. Real"}, headers=h)
+        assert res.status_code == 200 and res.json()["email"] == new and res.json()["full_name"] == "Prof. Real"
+        assert client.post("/api/v1/auth/login", json={"email": new, "password": "secret12"}).status_code == 200
+        assert client.post("/api/v1/auth/login", json={"email": old, "password": "secret12"}).status_code == 401
+        assert client.get("/api/v1/auth/me", headers=_h(old_token)).status_code == 401  # old session ends
+        log = db_session.exec(select(AuditLog).where(AuditLog.action == "user_email_changed",
+                                                     AuditLog.target_id == uid)).first()
+        assert log is not None
+
+    def test_email_must_be_valid_and_unique(self, client):
+        h = _admin(client)
+        a, b = _email("a"), _email("b")
+        uid = client.post("/api/v1/admin/users", json={"email": a}, headers=h).json()["id"]
+        client.post("/api/v1/admin/users", json={"email": b}, headers=h)
+        assert client.patch(f"/api/v1/admin/users/{uid}", json={"email": "nope"}, headers=h).status_code == 400
+        res = client.patch(f"/api/v1/admin/users/{uid}", json={"email": b}, headers=h)
+        assert res.status_code == 400 and "another account" in res.json()["detail"]
+
+    def test_only_admins_change_emails(self, client):
+        h = _admin(client)
+        uid = client.post("/api/v1/admin/users", json={"email": _email()}, headers=h).json()["id"]
+        coord = _h(register(client, f"coord-{uuid4().hex[:6]}@test.com", role="manager"))
+        assert client.patch(f"/api/v1/admin/users/{uid}", json={"email": _email()}, headers=coord).status_code == 403

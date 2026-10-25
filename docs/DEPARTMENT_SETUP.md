@@ -53,6 +53,7 @@ or anything else that is committed. The demo people in `institution.yaml` stay s
 | Where | **Users** → Add user (by hand for this run). Bulk alternative: on **Users**, "Or import a CSV" under Add user, with columns `email,full_name,role,department` |
 | Roles | Faculty = **Faculty** (`employee`); coordinators = **Committee Coordinator** (`manager`) |
 | Passwords | A temporary password is shown once per account; hand it to the person privately |
+| Placeholder emails | Allowed when real ones aren't known yet: an administrator can change an account's email later on **Users** (edit row). The person then logs in with the new email |
 | Done when | Every roster row has an active account in the right department and role |
 
 ## 4. Map faculty initials
