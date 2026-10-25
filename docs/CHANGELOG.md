@@ -8,6 +8,18 @@ Format: `## YYYY-MM-DD — title` then bullets of what/why.
 
 ---
 
+## 2026-10-25 — V2: timetable upload, review and publish (Phase 3)
+
+- `/timetables` (coordinators) + `/api/v1/timetables`. Photos/PDFs are transcribed by a Groq vision model
+  (`TIMETABLE_VISION_MODEL`, default `qwen/qwen3.8-27b`, the only vision-capable model on the project key); Word/
+  Excel/CSV grids are read directly. Decision: the model only *transcribes* cells; `timetable_parser` interprets them
+  with tested rules, and nothing is published without review. On the real TY C3 sample the model misplaced several
+  cells by one row and misread one, so a second pass flags disagreements and the review screen shows the sheet.
+- Faculty initials map to accounts only via coordinator-confirmed `FacultyAlias`; legend/initial suggestions are hints.
+- Re-upload: SHA-256 dedupe for identical files; same class → next version with a diff; publishing supersedes only that
+  class and moves date exceptions to matching lectures. Migration `0005_timetable_review` (source file table, review columns).
+- New deps: `openpyxl`, `pymupdf`, `Pillow` (explicit).
+
 ## 2026-10-25 — V2 (branch `v2/faculty-workflow`): faculty-centric workspace, part 1
 
 Started from V1 commit `5c5d3ad` on `main`; V1 is untouched. Driven by faculty feedback on the V1 demo.

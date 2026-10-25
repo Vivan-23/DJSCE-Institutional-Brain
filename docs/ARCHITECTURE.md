@@ -77,6 +77,9 @@ tests/             pytest suite. conftest.py mocks all external services.
 | `user_service.py` | `user_service` | User management rules: validation, cohort check (semester 2y-1/2y), no self-demotion, last active admin kept, Employee profile for staff, audited. |
 | `analytics_service.py` | `analytics_service` | Computed on read from Commitment/Meeting, Ticket, QueryLog, Fragment, Skill. Questions are grouped by normalized text; topic = offline keyword triage category. |
 | `schedule_service.py` | `schedule_service` | Teaching schedule: published `TimetableEntry` rows mapped to a faculty member, expanded per date on read (nothing materialized), adjusted by `ScheduleException` (cancelled / modified / holiday / extra). Local dates in `settings.INSTITUTION_TIMEZONE`. `weekly_load()` = teaching hours. |
+| `timetable_extract.py` | `extract()` | File → transcribed boxes `{day,start,end,text}` + header + legend, no interpretation. .docx/.xlsx/.csv grids read directly (position-based box ids; identical text below = merged); photos/PDF (pymupdf renders page 1) transcribed twice by `settings.TIMETABLE_VISION_MODEL`, disagreeing boxes marked `check`. |
+| `timetable_parser.py` | (funcs) | Deterministic cell grammar → `Slot`s (subject, batch, faculty list, room, kind), header → class_key, 12h→24h. Unreadable text kept with `unparsed`. |
+| `timetable_service.py` | `timetable_service` | Upload (SHA-256 dedupe) → extraction draft → review flags (blocking vs warning) → diff vs published → publish (supersedes that class only, carries date exceptions, notifies, audits). Initials resolve only via `FacultyAlias`; `suggestions()` from legend/initials are hints. |
 | `calendar_service.py` | `calendar_service` | Merges `academic_calendar:` (institution.yaml) with commitment due dates; `post_reminders()` writes `deadline` ActiveInsights (idempotent) for items due within 3 days. |
 | `minutes_service.py` | `minutes_service` | Formal draft minutes from a stored meeting (attendees, summary, `Meeting.decisions`, commitments with owner/due/status) → DOCX (python-docx) or PDF (reportlab). No LLM call at export time. |
 | `procedure_service.py` | `procedure_service` | SOP governance: approve (freeze `SkillVersion`, owner office, review date, publish), `publish()` indexes approved procedures as `source_type="procedure"` fragments (`Fragment.skill_id`; staff full text, students only the summary), revisions, reject/retire, feedback flagging, use counts, DOCX/PDF export + handbook. |
@@ -104,6 +107,7 @@ tests/             pytest suite. conftest.py mocks all external services.
 | `analytics.py` | `/analytics` | Coordinator+: `GET ?days=` → commitments per meeting (open/overdue/done), ticket status/category/median reply hours, most-asked questions + knowledge gaps, indexed knowledge by department. |
 | `calendar.py` | `/calendar` | Everyone: `GET ?days=` → academic dates (audience + department scoped) and, for staff, own open commitments with due dates; each with `days_left` + `urgency`. |
 | `helpdesk.py` | `/helpdesk` | By responsibility (`auth.require_exact_roles`, no rank inheritance): categories · create · mine · close for **student + faculty**; queue read for **faculty + admin**; reply / retriage **faculty only**. Coordinators get 403. Students only ever see their own tickets and never the AI draft. |
+| `timetables.py` | `/timetables` | 🔒 Coordinator+: `POST` upload (202; 200 + `duplicate` for an identical file), list, `GET /{id}` (entries + issues + diff + legend), `/source`, `/suggestions`, `PATCH` header, entries CRUD, `/publish` (`acknowledge_warnings`), `/discard`, `/reextract`; `/aliases` CRUD; `/staff`. |
 | `schedule.py` | `/schedule` | 👥 `GET /mine?start=&days=` (≤42; default today in institution TZ; `has_timetable`), `GET /load`, `GET /exceptions`. Coordinator: `POST /exceptions` (validated, audited, notifies affected faculty), `DELETE /exceptions/{id}`. |
 
 👥 = staff only (`require_staff`: faculty and above). 🔒 = requires `manager` role (see RBAC below).
@@ -113,7 +117,7 @@ tests/             pytest suite. conftest.py mocks all external services.
 Core tables: `User`, `Document`, `ProgressReport`, `ActiveInsight`, `Employee`,
 `Meeting`, `Fragment`, `Commitment`, `CommitmentUpdate`, `CheckIn`, `Skill`,
 `SkillCitation`, `AuditLog`, `Ticket`, `QueryLog`, `Notice`, `NoticeRecipient`,
-`TimetableImport`, `TimetableEntry`, `FacultyAlias`, `ScheduleException` (V2 timetable).
+`TimetableImport`, `TimetableEntry`, `TimetableSource` (uploaded file bytes), `FacultyAlias`, `ScheduleException` (V2 timetable).
 
 Conventions:
 - **Lists/dicts are stored as JSON strings** (DB-agnostic: SQLite in tests, Postgres in prod). E.g. `Skill.steps`, `Meeting.participants`, `AuditLog.audit_metadata`.
@@ -127,7 +131,7 @@ Conventions:
 
 ### Background jobs (`backend/app/core/celery.py`)
 
-Tasks: `process_document`, `process_transcript`, `run_daily_active_intelligence`,
+Tasks: `process_document`, `process_transcript`, `process_timetable`, `run_daily_active_intelligence`,
 `run_daily_checkins`, `run_commitment_followups`, `run_skill_extraction`,
 `run_freshness_scan`, `run_deadline_reminders` (07:30). Beat schedule is defined in the same file. Task bodies use
 lazy imports so the module loads without external deps.
@@ -168,6 +172,7 @@ app/
                      (staff; students are redirected to /helpdesk)
   helpdesk/          Help Desk (students + faculty): Ask a Question | Raise a Ticket side by side, my tickets, how-to guides
   calendar/          Academic Calendar (all roles) | My Timetable (staff; ScheduleView week mode)
+  timetables/        Coordinator: Uploads (review: source sheet beside editable entries, initials mapping, diff, publish), Faculty initials, Date changes
   analytics/         Coordinator dashboard (commitments, tickets, questions, knowledge)
   admin/users/       Admin user management + read-only role permission table
   notices/           Notices inbox (all roles) + compose with audience filters and sent/read counts (staff)

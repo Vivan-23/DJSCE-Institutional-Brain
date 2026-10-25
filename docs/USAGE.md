@@ -115,7 +115,20 @@ Two sections (three for coordinators), each linkable with `?view=`:
   sends it back), or mark blocked.
 - **Team** (`?view=team`, coordinators): assign work, tasks waiting for your confirmation, and each person's tasks.
 
-Date-specific timetable changes are coordinator actions via the API (a UI arrives with timetable upload):
+Timetables are uploaded and published on **Timetables** (`/timetables`, coordinators):
+1. **Uploads**: choose one or many files (photo, PDF, .docx, .xlsx, .csv). Each is read into a draft in the
+   background; the same file twice opens the existing one. Photos/PDFs are read by an AI vision model
+   (`TIMETABLE_VISION_MODEL`, needs `GROQ_API_KEY`) — always check each entry against the sheet shown alongside.
+2. **Review**: fix class details, confirm who each set of initials belongs to (suggestions come from the
+   sheet's legend and matching initials; nothing is mapped automatically), edit/add/delete entries. Entries marked
+   *Fix* block publishing; warnings (overlap, clash with another class, missing room, read differently on a second
+   pass) need a tick to confirm. A re-upload of the same class shows added/removed/changed lectures.
+3. **Publish**: the class's lectures join each faculty member's My Schedule; the previous version of that class
+   is replaced, other classes are untouched, and faculty are notified.
+4. **Date changes**: cancel/move one lecture from the published timetable ("Change a date"), declare a holiday,
+   or add an extra lecture. The weekly timetable is never edited.
+
+The same date changes are available through the API:
 `POST /api/v1/schedule/exceptions` with `kind` = `cancelled` / `modified` (one occurrence of `entry_id`),
 `holiday` (a date, optional `department`) or `extra` (one-off lecture for `faculty_user_id`).
 The affected faculty get a notice; `DELETE /api/v1/schedule/exceptions/{id}` withdraws a change.

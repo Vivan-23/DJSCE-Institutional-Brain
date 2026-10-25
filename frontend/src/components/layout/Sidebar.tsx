@@ -68,6 +68,7 @@ const NAV_GROUPS: { title?: string; items: NavItem[] }[] = [
   {
     title: 'Admin',
     items: [
+      { href: '/timetables', label: 'Timetables', icon: ICON.calendar, staff: true, coordinator: true },
       { href: '/analytics', label: 'Analytics', icon: ICON.chart, staff: true, coordinator: true },
       { href: '/admin/users', label: 'Users', icon: ICON.shield, staff: true, coordinator: true, admin: true },
     ],
