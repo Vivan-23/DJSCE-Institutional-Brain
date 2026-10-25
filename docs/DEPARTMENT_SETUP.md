@@ -48,7 +48,7 @@ or anything else that is committed. The demo people in `institution.yaml` stay s
 
 | | |
 |---|---|
-| Where | **Users** → Add user (by hand for this run). Bulk alternative: **Users → Import CSV** with `email,full_name,role,department` |
+| Where | **Users** → Add user (by hand for this run). Bulk alternative: on **Users**, "Or import a CSV" under Add user, with columns `email,full_name,role,department` |
 | Roles | Faculty = **Faculty** (`employee`); coordinators = **Committee Coordinator** (`manager`) |
 | Passwords | A temporary password is shown once per account; hand it to the person privately |
 | Done when | Every roster row has an active account in the right department and role |
