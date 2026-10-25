@@ -24,7 +24,7 @@ def upgrade() -> None:
     sa.Column('abbrev', sqlmodel.sql.sqltypes.AutoString(), nullable=False),
     sa.Column('user_id', sa.Uuid(), nullable=False),
     sa.Column('verified_by_user_id', sa.Uuid(), nullable=True),
-    sa.Column('created_at', sqlmodel.sql.sqltypes.UTCDateTime(), nullable=False),
+    sa.Column('created_at', sa.DateTime(), nullable=False),
     sa.ForeignKeyConstraint(['user_id'], ['user.id'], ),
     sa.ForeignKeyConstraint(['verified_by_user_id'], ['user.id'], ),
     sa.PrimaryKeyConstraint('id')
@@ -49,8 +49,8 @@ def upgrade() -> None:
     sa.Column('extraction_notes', sqlmodel.sql.sqltypes.AutoString(), nullable=True),
     sa.Column('uploaded_by_user_id', sa.Uuid(), nullable=True),
     sa.Column('published_by_user_id', sa.Uuid(), nullable=True),
-    sa.Column('created_at', sqlmodel.sql.sqltypes.UTCDateTime(), nullable=False),
-    sa.Column('published_at', sqlmodel.sql.sqltypes.UTCDateTime(), nullable=True),
+    sa.Column('created_at', sa.DateTime(), nullable=False),
+    sa.Column('published_at', sa.DateTime(), nullable=True),
     sa.ForeignKeyConstraint(['published_by_user_id'], ['user.id'], ),
     sa.ForeignKeyConstraint(['uploaded_by_user_id'], ['user.id'], ),
     sa.PrimaryKeyConstraint('id')
@@ -98,7 +98,7 @@ def upgrade() -> None:
     sa.Column('class_label', sqlmodel.sql.sqltypes.AutoString(), nullable=True),
     sa.Column('reason', sqlmodel.sql.sqltypes.AutoString(), nullable=True),
     sa.Column('created_by_user_id', sa.Uuid(), nullable=True),
-    sa.Column('created_at', sqlmodel.sql.sqltypes.UTCDateTime(), nullable=False),
+    sa.Column('created_at', sa.DateTime(), nullable=False),
     sa.ForeignKeyConstraint(['created_by_user_id'], ['user.id'], ),
     sa.ForeignKeyConstraint(['entry_id'], ['timetableentry.id'], ),
     sa.ForeignKeyConstraint(['faculty_user_id'], ['user.id'], ),
