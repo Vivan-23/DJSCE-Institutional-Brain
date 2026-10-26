@@ -26,6 +26,12 @@ async def lifespan(app: FastAPI):
                 procedure_service.publish_missing(session)
             except Exception as e:  # noqa: BLE001 - never block startup on indexing
                 log.warning("Publishing approved procedures failed", error=str(e))
+            try:  # the academic calendar is answerable by the assistant
+                from app.services.calendar_service import calendar_service
+
+                calendar_service.sync_fragments(session)
+            except Exception as e:  # noqa: BLE001 - never block startup on indexing
+                log.warning("Indexing the academic calendar failed", error=str(e))
     yield
 
 

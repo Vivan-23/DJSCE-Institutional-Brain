@@ -97,7 +97,10 @@ class FragmentService:
 
     def delete_for_skill(self, db: Session, skill_id: UUID) -> int:
         """Remove the searchable copy of a procedure (Postgres rows + Chroma vectors)."""
-        frags = list(db.exec(select(Fragment).where(Fragment.skill_id == skill_id)))
+        return self.delete(db, list(db.exec(select(Fragment).where(Fragment.skill_id == skill_id))))
+
+    def delete(self, db: Session, frags: list[Fragment]) -> int:
+        """Remove fragments everywhere they live (Postgres rows + Chroma vectors)."""
         ids = [f.embedding_id for f in frags if f.embedding_id]
         collection = getattr(chroma_mod.chroma_conn, "collection", None)
         if ids and collection is not None:

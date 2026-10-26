@@ -33,6 +33,10 @@ def _urgency(days_left: int) -> str:
     return "soon" if days_left <= SOON_DAYS else "upcoming"
 
 
+def _day(d: date) -> str:
+    return f"{d.strftime('%A')} {d.day} {d.strftime('%B %Y')}"  # e.g. "Monday 31 August 2026"
+
+
 class CalendarService:
     def events_for(
         self, *, staff: bool, departments: Optional[list[str]], today: date, days: int
@@ -115,6 +119,49 @@ class CalendarService:
                         "kind": "review", "audience": "staff", "department": s.department, "source": "procedure",
                         "skill_id": str(s.id), "days_left": days_left, "urgency": _urgency(days_left)})
         return out
+
+    def fragment_texts(self) -> list[tuple[str, str, str]]:
+        """Searchable (content, visibility, department) for every published date, plus one public overview.
+
+        Student-facing dates (audience all/students) are public; staff-only dates stay internal.
+        """
+        cfg = get_institution_config()
+        out = []
+        overview = []
+        for ev in sorted(cfg.calendar, key=lambda e: e.start):
+            when = _day(ev.start) + (f" to {_day(ev.end)}" if ev.end else "")
+            line = f"{ev.title} ({ev.kind}): {when}"
+            vis = "internal" if ev.audience == "staff" else "public"
+            out.append((f"Academic calendar — {line}.", vis, ev.department))
+            if vis == "public" and ev.department == ALL_DEPARTMENTS:
+                overview.append(f"- {line}")
+        if overview:
+            head = "Academic calendar (all published dates)"
+            note = f"\n{cfg.calendar_note}" if cfg.calendar_note else ""
+            out.append((f"{head}:{note}\n" + "\n".join(overview), "public", ALL_DEPARTMENTS))
+        return out
+
+    def sync_fragments(self, db: Session) -> dict[str, int]:
+        """Make the calendar searchable by the assistant: index new dates, drop ones no longer published.
+
+        Idempotent; runs on startup so an edit to ``academic_calendar:`` takes effect on the next restart.
+        """
+        from app.models.structured import Fragment
+        from app.services.fragment_service import fragment_service
+
+        wanted = set(self.fragment_texts())
+        existing = list(db.exec(select(Fragment).where(Fragment.source_type == "calendar")))
+        have = {(f.content, f.visibility, f.department) for f in existing}
+        removed = fragment_service.delete(db, [f for f in existing
+                                               if (f.content, f.visibility, f.department) not in wanted])
+        added = 0
+        for content, vis, dept in sorted(wanted - have):
+            fragment_service.create_fragment(db, source_type="calendar", content=content,
+                                             source_ref="Academic calendar", visibility=vis, department=dept)
+            added += 1
+        if added or removed:
+            log.info("Academic calendar indexed", added=added, removed=removed)
+        return {"added": added, "removed": removed}
 
     def upcoming(
         self,

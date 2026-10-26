@@ -57,7 +57,7 @@ services:
     ports:
       - "8002:8000"
     volumes:
-      - chromadata:/chroma/data
+      - chromadata:/data  # current chroma images persist to /data (older ones used /chroma/data)
     # NOTE: the chromadb/chroma image is minimal (no curl/python/wget), so an
     # in-container HTTP healthcheck isn't possible. Dependents use
     # `service_started`; the backend's Chroma connection is fault-tolerant and

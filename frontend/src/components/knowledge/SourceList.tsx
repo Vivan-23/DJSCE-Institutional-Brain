@@ -32,6 +32,7 @@ const TYPE_LABEL: Record<string, string> = {
   checkin: 'Faculty check-in',
   followup: 'Follow-up reply',
   procedure: 'Approved procedure',
+  calendar: 'Academic calendar',
 };
 
 /**

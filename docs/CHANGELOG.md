@@ -8,6 +8,17 @@ Format: `## YYYY-MM-DD — title` then bullets of what/why.
 
 ---
 
+## 2026-10-26 — Academic calendar is answerable by the assistant
+
+- `calendar_service.sync_fragments()` runs on startup and keeps one `calendar` Fragment per `academic_calendar:` date
+  (+ a public overview of institution-wide dates). Visibility follows `audience` (`staff` → internal), department
+  scope is kept. Idempotent; dates removed from `institution.yaml` are deleted from Postgres + Chroma.
+- `fragment_service.delete()` generalises the procedure-copy delete. Calendar fragments are not procedure evidence
+  (`_PROCEDURE_SOURCES` allowlist). SourceList labels them "Academic calendar".
+- Fix: `docker-compose.yml` mounted `chromadata` at `/chroma/data`, but current chroma images persist to `/data`, so
+  every container recreate silently emptied the vector index (answers then found nothing). Now mounted at `/data`.
+- Live deployment: demo data cleared; public kb fragments re-indexed after the Chroma loss.
+
 ## 2026-10-26 — One Assistant box (questions + work updates + my classes)
 
 - `POST /api/v1/assistant/message` (`assistant_service`): routes each message (one small model call, keyword

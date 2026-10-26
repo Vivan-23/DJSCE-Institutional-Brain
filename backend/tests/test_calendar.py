@@ -130,3 +130,41 @@ class TestEndpoint:
 
     def test_requires_login(self, client):
         assert client.get("/api/v1/calendar").status_code == 401
+
+
+def _no_index():
+    return patch("app.services.fragment_service.FragmentService._index_embedding", return_value=None)
+
+
+class TestSearchable:
+    def test_dates_are_indexed_with_audience_visibility(self, db_session):
+        from app.models.structured import Fragment
+        from app.services.calendar_service import calendar_service
+
+        with _cfg(), _no_index():
+            first = calendar_service.sync_fragments(db_session)
+            again = calendar_service.sync_fragments(db_session)
+        rows = list(db_session.exec(select(Fragment).where(Fragment.source_type == "calendar")))
+        by = {r.content: r for r in rows}
+        assert first == {"added": len(_EVENTS) + 1, "removed": 0} and again == {"added": 0, "removed": 0}
+        exam = by["Academic calendar — Exam week (exam): Monday 19 October 2026 to Friday 23 October 2026."]
+        assert exam.visibility == "public" and exam.department == "all"
+        staff = by["Academic calendar — Marks entry closes (deadline): Thursday 22 October 2026."]
+        assert staff.visibility == "internal"  # staff-only dates never reach students
+        ce = by["Academic calendar — CE elective registration (deadline): Monday 26 October 2026."]
+        assert ce.visibility == "public" and ce.department == "CE"
+        overview = next(r for r in rows if r.content.startswith("Academic calendar (all published dates)"))
+        assert "Exam week" in overview.content and "Marks entry" not in overview.content
+        assert "CE elective" not in overview.content  # department dates keep their own scope
+
+    def test_removed_dates_are_dropped(self, db_session):
+        from app.models.structured import Fragment
+        from app.services.calendar_service import calendar_service
+
+        with _cfg(), _no_index():
+            calendar_service.sync_fragments(db_session)
+        with _no_index(), patch("app.services.calendar_service.get_institution_config",
+                   return_value=InstitutionConfig(calendar=_EVENTS[:1])):
+            result = calendar_service.sync_fragments(db_session)
+        rows = list(db_session.exec(select(Fragment).where(Fragment.source_type == "calendar")))
+        assert result["removed"] == len(_EVENTS) + 1 - 2 and len(rows) == 2
