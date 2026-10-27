@@ -1,7 +1,7 @@
 # Usage & Operating Procedures
 
 How to set up, run, and use DJSCE Institutional Brain. For the codebase map see
-[ARCHITECTURE.md](ARCHITECTURE.md). Last verified: 2026-10-27.
+[ARCHITECTURE.md](ARCHITECTURE.md). Last verified: 2026-10-28.
 
 ---
 
@@ -241,7 +241,9 @@ Governance Overview → Meetings → Commitments →
 Procedures (review, open the Evidence panel) → Institutional Assistant (ask a
 question about a committee decision) → Knowledge Graph.
 
-### Remote demo (ngrok)
+### Remote demo (ngrok) — retired
+
+Demos now use production, https://djsce.tanishthar.com (see [DEPLOYMENT.md](DEPLOYMENT.md)). Kept for offline use:
 
 `./start_public_share.ps1` (PowerShell) brings the stack up, checks backend
 health, and opens an ngrok tunnel to the frontend on port 3000. The frontend
@@ -267,6 +269,8 @@ Q&A, student visibility leaks and commitment extraction, and writes
 Details: [`evaluation/README.md`](../evaluation/README.md).
 
 ## 8. Database migrations and backups
+
+This section is for **development**. Production backups, deploys and rollback: [DEPLOYMENT.md](DEPLOYMENT.md).
 
 Startup applies migrations automatically (`alembic upgrade head`), so rebuilding and restarting
 (`docker compose up -d --build`) **keeps all data**. Only `docker compose down -v` deletes it.
@@ -297,7 +301,8 @@ privately, **never commit it** (`.gitignore` blocks `djsce-brain-snapshot-*.zip`
 ./snapshot_restore.ps1 -Snapshot path\to\djsce-brain-snapshot-<stamp>.zip   # replaces ALL local data
 docker compose up -d --build
 ```
-Copies drift apart after that; send a fresh snapshot after data changes.
+Copies drift apart after that; send a fresh snapshot after data changes. Real data now lives in **production**: take the
+latest nightly snapshot from the VM (`~/backups/`, see DEPLOYMENT.md §4) instead of exporting from a laptop.
 
 ## 9. Testing
 

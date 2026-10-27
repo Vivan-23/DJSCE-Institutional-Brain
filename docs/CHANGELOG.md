@@ -8,6 +8,17 @@ Format: `## YYYY-MM-DD — title` then bullets of what/why.
 
 ---
 
+## 2026-10-28 — Production on an Oracle VM, Jenkins CI/CD
+- Production is now https://djsce.tanishthar.com (Oracle Always Free ARM VM, Cloudflare → Caddy). The laptop is
+  development only. Runbook: `docs/DEPLOYMENT.md`; agent rules in `CLAUDE.md` → Environments.
+- `Jenkinsfile` + `deploy/jenkins/`: push to `v2/faculty-workflow` → tests → pre-deploy pg_dump → rsync → rebuild → health check.
+  The VM keeps its own `.env` and `institution.yaml`.
+- `deploy/prod/`: compose overrides, Caddyfile, nightly `backup.sh` (snapshot-compatible zips), env example.
+- New settings `ALLOW_SELF_REGISTRATION`, `SHOW_DEMO_LOGINS` (both off in production), exposed on `/api/v1/institution`.
+- Decision: no OpenTelemetry. One host and one API process; structured logs, Docker log rotation and uptime checks
+  are enough. `keepalive` holds memory so Oracle doesn't reclaim the "idle" VM until the account is Pay-As-You-Go.
+- Fixed `test_calendar.py::TestSearchable` (leftover startup fragments in the shared test DB; overview replacement).
+
 ## 2026-10-27 — Data snapshots for teammates
 - `snapshot_export.ps1` / `snapshot_restore.ps1`: zip and restore the pgdata, neo4jdata and chromadata volumes
   (raw volume copies with the stack stopped, so all three stay consistent with each other).

@@ -3,7 +3,7 @@
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
 **Before working in this repo, read [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md)** (codebase map, "where to change X").
-Setup/run procedures: [`docs/USAGE.md`](docs/USAGE.md). Onboarding a real department: [`docs/DEPARTMENT_SETUP.md`](docs/DEPARTMENT_SETUP.md). Per-institution customization: [`docs/CUSTOMIZING.md`](docs/CUSTOMIZING.md).
+Setup/run procedures (development): [`docs/USAGE.md`](docs/USAGE.md). Production server, deploys, backups: [`docs/DEPLOYMENT.md`](docs/DEPLOYMENT.md). Onboarding a real department: [`docs/DEPARTMENT_SETUP.md`](docs/DEPARTMENT_SETUP.md). Per-institution customization: [`docs/CUSTOMIZING.md`](docs/CUSTOMIZING.md).
 
 ## What this is
 **DJSCE Institutional Brain** — a college-level (multi-year academic submission) adaptation of *Company-Brain*.
@@ -14,11 +14,21 @@ Adapt the existing architecture with minimal change; don't rebuild it. Data is *
 and internal procedures are **synthetic** (never label them official DJSCE policy or imply real ratification);
 `djsce_public_data/kb/` is authentic public website content, cited per file by URL + retrieval date, ingested as public.
 
+## Environments (production vs development)
+- **Production** = Oracle VM at https://djsce.tanishthar.com with **real CE faculty data**. **Development** = the laptop
+  (`docker compose up`, synthetic or snapshot data). Runbook: `docs/DEPLOYMENT.md`.
+- Code reaches production **only** by pushing to the deploy branch (`v2/faculty-workflow`); Jenkins tests, dumps the DB,
+  deploys and health-checks. Never hand-edit files on the VM, never run ingestion/eval/tests against production.
+- Every schema change must have a migration safe for existing rows (startup migrates the real DB).
+- Production-only config lives in `deploy/prod/` (compose overrides, Caddyfile, backup) and `deploy/jenkins/`.
+  The VM keeps its own `.env` and `institution.yaml`; production sets `ALLOW_SELF_REGISTRATION=false`, `SHOW_DEMO_LOGINS=false`.
+- Secrets live in the VM `.env`, `~/jenkins/secrets` and the private `PASSWORDS.md` outside the repo. Never commit or print them.
+
 ## Repo / git
 - Layout: **development** = `backend/`, `frontend/`, `docs/`, `mock_institutional_data/`, root scripts;
   **publication** = `publication/` (mentor brief, IPD report, poster, slides, paper, guide-meeting notes). Never put code
   in `publication/` or report drafts in `docs/`. Report/poster numbers must come from reproducible runs (`TBD` until then).
-- Remote `origin` = github.com/Vivan-23/DJSCE-Institutional-Brain. **Work on `main` only** (the `demo` branch was retired).
+- Remote `origin` = github.com/Vivan-23/DJSCE-Institutional-Brain. The deploy branch is **`v2/faculty-workflow`** (what Jenkins deploys); `main` is behind it until merged. The `demo` branch was retired.
 - `upstream` = the original Tanishthar/Company-Brain; don't push there.
 
 ## Commands
@@ -38,7 +48,7 @@ cd frontend && npm run lint && npx tsc --noEmit
 # Load synthetic data through the real API pipeline (stack must be running)
 python ingest_institutional.py [--approve]   # transcripts, doc_* (internal), public/ + djsce_public_data/kb (student-visible)
 
-./start_public_share.ps1   # ngrok tunnel to :3000 (frontend proxies /api → backend)
+# Production deploys: push to v2/faculty-workflow → Jenkins (see docs/DEPLOYMENT.md). ngrok (start_public_share.ps1) is retired.
 
 # Evaluation (stack up + data loaded): writes publication/01_ipd_report/results/RESULTS.md
 docker compose --profile eval run --rm evaluator
