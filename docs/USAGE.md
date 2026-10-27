@@ -1,7 +1,7 @@
 # Usage & Operating Procedures
 
 How to set up, run, and use DJSCE Institutional Brain. For the codebase map see
-[ARCHITECTURE.md](ARCHITECTURE.md). Last verified: 2026-10-25.
+[ARCHITECTURE.md](ARCHITECTURE.md). Last verified: 2026-10-27.
 
 ---
 
@@ -285,6 +285,19 @@ docker exec djsce_postgres pg_dump -U djsce_brain_user -Fc djsce_brain_db > back
 docker exec -i djsce_postgres pg_restore -U djsce_brain_user -d djsce_brain_db --clean < backup.dump
 ```
 (Chroma and Neo4j have their own volumes; re-running `ingest_institutional.py` rebuilds the demo content.)
+
+### Sharing the live data with a teammate
+Git carries code only. To give a teammate the same data (Postgres + Neo4j + Chroma), export a snapshot:
+```powershell
+./snapshot_export.ps1        # -> ~/Documents/djsce-brain-private/snapshots/djsce-brain-snapshot-<stamp>.zip
+```
+It briefly stops the stack if running. The zip holds real staff data and password hashes: send it
+privately, **never commit it** (`.gitignore` blocks `djsce-brain-snapshot-*.zip`). The teammate runs:
+```powershell
+./snapshot_restore.ps1 -Snapshot path\to\djsce-brain-snapshot-<stamp>.zip   # replaces ALL local data
+docker compose up -d --build
+```
+Copies drift apart after that; send a fresh snapshot after data changes.
 
 ## 9. Testing
 

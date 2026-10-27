@@ -61,3 +61,6 @@ brag-output/work/*
 
 # Real department onboarding data (names, emails, initials, timetable files) — never commit
 onboarding/
+
+# Data snapshots hold real staff data - share privately, never commit
+djsce-brain-snapshot-*.zip

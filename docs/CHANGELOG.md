@@ -8,6 +8,12 @@ Format: `## YYYY-MM-DD — title` then bullets of what/why.
 
 ---
 
+## 2026-10-27 — Data snapshots for teammates
+- `snapshot_export.ps1` / `snapshot_restore.ps1`: zip and restore the pgdata, neo4jdata and chromadata volumes
+  (raw volume copies with the stack stopped, so all three stay consistent with each other).
+- Decision: live data is **not** shared through git. It holds real staff data and password hashes, and binary
+  volumes can't be merged. Snapshots are sent privately; a shared hosted DB is the later fix.
+
 ## 2026-10-26 — Academic calendar is answerable by the assistant
 
 - `calendar_service.sync_fragments()` runs on startup and keeps one `calendar` Fragment per `academic_calendar:` date
