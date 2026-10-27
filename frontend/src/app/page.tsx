@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import InsightCard, { type Insight } from '@/components/dashboard/InsightCard';
 import { Badge, type Tone } from '@/components/ui/Badge';
-import { apiFetch } from '@/lib/api';
+import { apiFetch, getToken } from '@/lib/api';
 import { formatDateTime } from '@/lib/format';
 import { isCoordinatorRole, isStaffRole, useMe } from '@/lib/roles';
 import {
@@ -100,9 +100,10 @@ export default function Overview() {
   const router = useRouter();
   const me = useMe();
   const coordinator = isCoordinatorRole(me?.role);
-  // Overview is for staff; students belong on the Help Desk.
+  // Overview is for staff; students belong on the Help Desk, signed-out visitors on the login page.
   useEffect(() => {
-    if (me && !isStaffRole(me.role)) router.replace('/helpdesk');
+    if (!getToken()) router.replace('/login');
+    else if (me && !isStaffRole(me.role)) router.replace('/helpdesk');
   }, [me, router]);
 
   const [schedule, setSchedule] = useState<ScheduleResponse | null>(null);
