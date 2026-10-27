@@ -5,7 +5,11 @@
 > operator (for CE, Claude Code working through the app's API on the owner's instructions) carries out each step
 > individually and records what it needed and what went wrong, so later departments can follow a checklist and the
 > slow steps can be automated.
-> Last verified: 2026-10-25 (written before the first run; update it as you go).
+> Last verified: 2026-10-28 (written before the first run; update it as you go).
+>
+> **Since 28 Oct, departments are onboarded on production** (https://djsce.tanishthar.com), through the admin pages
+> on the live site (accounts, timetables, documents), not on a laptop. Production's `institution.yaml` lives only on
+> the server and deploys never overwrite it. Changing it is a server task (see [DEPLOYMENT.md](DEPLOYMENT.md)).
 
 **Who does what**
 - **System Administrator**: one named admin account (see step 0). Creates accounts and roles, and owns this runbook.

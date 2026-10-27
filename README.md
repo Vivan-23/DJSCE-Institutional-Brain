@@ -14,6 +14,15 @@ institutional knowledge: decisions, tracked commitments, documented procedures, 
 
 Built on the open-source *Company Brain* architecture and adapted for a college setting.
 
+> 🟢 **Live:** https://djsce.tanishthar.com is in real use by the Computer Engineering (CE) department
+> (real staff accounts and timetables). That **production** server is an Oracle Cloud VM, deployed
+> automatically by Jenkins when the `v2/faculty-workflow` branch is pushed. Your laptop is **development**
+> only. New to the project or coming back? Read **[NEXT_STEPS.md](NEXT_STEPS.md)** (what changed, how we work
+> now) and **[docs/DEPLOYMENT.md](docs/DEPLOYMENT.md)** (the production runbook).
+>
+> The data notice below applies to the repository and to development. Production holds real CE staff data,
+> which never goes into git.
+
 ---
 
 ## Repository layout
@@ -27,7 +36,10 @@ Built on the open-source *Company Brain* architecture and adapted for a college 
 
 | Doc | Purpose |
 |---|---|
-| **[docs/USAGE.md](docs/USAGE.md)** | Setup, running (Docker or local dev), feature walkthrough, troubleshooting |
+| **[NEXT_STEPS.md](NEXT_STEPS.md)** | Handoff: what changed recently, current environment, what's pending |
+| **[docs/DEPLOYMENT.md](docs/DEPLOYMENT.md)** | Production: server, deploys (Jenkins), rollback, backups, logs, rules |
+| **[docs/USAGE.md](docs/USAGE.md)** | Development: setup, running (Docker or local dev), feature walkthrough, troubleshooting |
+| **[docs/DEPARTMENT_SETUP.md](docs/DEPARTMENT_SETUP.md)** | Onboarding a real department (roster, timetables, accounts) |
 | **[docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)** | Codebase map — services, routes, models, jobs, "where to change X" |
 | **[docs/CUSTOMIZING.md](docs/CUSTOMIZING.md)** | Institution profile (`institution.yaml`): branding, settings, help desk, people and roles |
 | **[docs/CHANGELOG.md](docs/CHANGELOG.md)** | What changed and why |
@@ -101,6 +113,8 @@ python ingest_institutional.py     # load the synthetic DJSCE dataset (optional:
 
 Open http://localhost:3000 and use the one-click demo logins (all synthetic,
 password `demo123`): System Administrator, Committee Coordinator, Faculty, Student. Full instructions: [docs/USAGE.md](docs/USAGE.md).
+This is your **development** copy. To change the live site, commit and push to `v2/faculty-workflow`;
+Jenkins tests and deploys it ([docs/DEPLOYMENT.md](docs/DEPLOYMENT.md)). The live site has no demo logins.
 
 ---
 

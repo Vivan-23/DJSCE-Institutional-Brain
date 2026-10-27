@@ -2,7 +2,11 @@
 
 Branding, settings, help-desk routing and the people roster all live in **one
 file — [`institution.yaml`](../institution.yaml)** at the repo root. On startup the
-backend reads it and reconfigures itself. Last verified: 2026-10-14.
+backend reads it and reconfigures itself. Last verified: 2026-10-28.
+
+> **Development vs production:** the repo's `institution.yaml` is the development profile (synthetic members,
+> demo logins). Production keeps its own copy on the server (real members, no passwords), which deploys never
+> overwrite. See [DEPLOYMENT.md](DEPLOYMENT.md).
 
 ---
 

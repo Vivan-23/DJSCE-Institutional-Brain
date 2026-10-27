@@ -1,3 +1,66 @@
+# Where we are — 28 Oct 2026 (handoff)
+
+**The project is live.** https://djsce.tanishthar.com runs on an Oracle Cloud server with **real CE department data**:
+43 staff accounts, 9 published SY/TY/LY CE timetables and the official 2026-27 academic calendar.
+Faculty sign in with their own accounts. Demo data and demo logins are switched off there.
+
+## How we work now
+
+| | Development (your laptop) | Production (the live site) |
+|---|---|---|
+| What | `docker compose up -d --build` → http://localhost:3000 | https://djsce.tanishthar.com |
+| Data | synthetic demo data (`ingest_institutional.py`) or a snapshot of production | real staff data, backed up nightly |
+| How changes get there | you edit and test | **push to `v2/faculty-workflow`** → Jenkins runs the tests, backs up the DB, deploys, checks health |
+
+Rules (also in `CLAUDE.md` → Environments and `docs/DEPLOYMENT.md`):
+1. Build and test on your laptop first: `cd backend && python -m pytest -q`, `cd frontend && npm run lint && npx tsc --noEmit`.
+2. Deploy only by pushing to `v2/faculty-workflow`. Nobody edits files on the server. If tests fail, Jenkins doesn't deploy.
+3. Any change to `backend/app/models/structured.py` needs an Alembic migration that works on existing rows.
+   The live database migrates itself on deploy.
+4. Real data never goes into git. If you need production data locally, ask Tanish for a snapshot
+   (sent privately) and load it with `./snapshot_restore.ps1`.
+5. Server logins, Jenkins and secrets are in Tanish's private passwords file. Ask for what you need.
+
+**First time on your machine:** clone, `git checkout v2/faculty-workflow`, `cp .env.example .env` (add `GROQ_API_KEY`,
+`SECRET_KEY`), `docker compose up -d --build`, `python ingest_institutional.py`. See `docs/USAGE.md`.
+
+## What changed since the 19 Oct notes (branch `v2/faculty-workflow`, not yet merged into `main`)
+
+**Faculty workflow (25–26 Oct)**
+- Teaching timetables: upload a sheet/PDF/photo → extraction → review beside the source → map initials to faculty →
+  publish. Weekly entries, date exceptions, diffs (`/timetables`).
+- Faculty-first UI: larger text, a short menu, a Today/Overview page, My Work (My Schedule | My Tasks | Team),
+  Calendar (Academic | My Timetable), light/dark theme.
+- One Assistant box for questions, work updates and "my classes", with undo cards. It also answers academic-calendar
+  questions (official 2026-27 calendar + college logo in `institution.yaml`).
+- Help Desk is for students and faculty only; admins read the queue; "Faculty Desk" was renamed End-of-day Check-in.
+- Accounts: admins can change an account's email (placeholder → real). On first login people must replace their
+  temporary password. Documents page lists what was added.
+- `docs/DEPARTMENT_SETUP.md`: the runbook for onboarding a real department, with the CE run log.
+
+**Production (27–28 Oct)**
+- Live on an Oracle Cloud Always Free ARM server behind Cloudflare and Caddy (`deploy/prod/`).
+- Jenkins CI/CD (`Jenkinsfile`, `deploy/jenkins/`) deploys pushes to `v2/faculty-workflow`.
+- Nightly full backups on the server plus a database dump before every deploy.
+- Production switches: self-registration closed, demo logins hidden (`ALLOW_SELF_REGISTRATION`, `SHOW_DEMO_LOGINS`).
+- `snapshot_export.ps1` / `snapshot_restore.ps1`: move a full data copy between machines privately.
+- The ngrok demo path is retired; demos use the live site.
+- Fixes: signed-out visitors now land on the login page; two calendar tests repaired (291 backend tests pass).
+
+## Pending
+
+- [ ] Vivan (repo owner): add the read-only **deploy key** and the **GitHub webhook** for Jenkins (values from Tanish).
+      Until then, deploys are done by hand. Watch the first automatic Jenkins deploy.
+- [ ] Oracle: $1 budget alert, then upgrade to Pay-As-You-Go. After that, remove the `keepalive` service in
+      `deploy/prod/docker-compose.prod.yml`.
+- [ ] Free uptime monitor (UptimeRobot) on the live URL; an off-server copy of the nightly backups.
+- [ ] Faculty: send real emails and temporary passwords to the CE staff, then collect feedback.
+- [ ] Decide when to merge `v2/faculty-workflow` into `main` (and whether Jenkins should then deploy `main`).
+
+---
+
+*(Older notes follow for history. The 19 Oct publication/evaluation status still applies.)*
+
 # Where we left off — 19 Oct 2026
 
 ## Update 19 Oct 2026
