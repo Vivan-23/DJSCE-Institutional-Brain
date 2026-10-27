@@ -51,8 +51,8 @@ Rules (also in `CLAUDE.md` → Environments and `docs/DEPLOYMENT.md`):
 
 - [ ] Vivan (repo owner): add the read-only **deploy key** and the **GitHub webhook** for Jenkins (values from Tanish).
       Until then, deploys are done by hand. Watch the first automatic Jenkins deploy.
-- [ ] Oracle: $1 budget alert, then upgrade to Pay-As-You-Go. After that, remove the `keepalive` service in
-      `deploy/prod/docker-compose.prod.yml`.
+- [x] Oracle: $1 budget alert set. The account stays on Always Free (no paid upgrade), so the `keepalive`
+      service is permanent.
 - [ ] Free uptime monitor (UptimeRobot) on the live URL; an off-server copy of the nightly backups.
 - [ ] Faculty: send real emails and temporary passwords to the CE staff, then collect feedback.
 - [ ] Decide when to merge `v2/faculty-workflow` into `main` (and whether Jenkins should then deploy `main`).

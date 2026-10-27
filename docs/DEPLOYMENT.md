@@ -84,8 +84,9 @@ Jenkins UI: `ssh -i ~/.ssh/oracle_djsce -L 8080:127.0.0.1:8080 ubuntu@132.226.19
 ## 6. Oracle Always Free notes
 
 - Always Free VMs run indefinitely, but Oracle **stops** ones that stay under 20% CPU, network and memory
-  for 7 days. The `keepalive` service holds ~2 GB of memory to stay above that line. Remove it once the
-  account is upgraded to Pay-As-You-Go (no idle reclamation; Always Free usage stays free; budget alert set at $1).
+  for 7 days. The `keepalive` service holds ~2 GB of memory to stay above that line. **Keep it**: the account
+  stays on Always Free (decision 2026-10-28, no Pay-As-You-Go upgrade). A $1 budget alert is set as a safety net.
+  If the site is ever down for no clear reason, check the Oracle console first: the instance may have been stopped.
 - Don't resize above the Always Free A1 cap (check Governance → Limits). Stopping the VM gives back its
   capacity, and Mumbai has been out of A1 capacity before.
 

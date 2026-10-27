@@ -36,7 +36,7 @@ services:
       - caddydata:/data
     depends_on: [frontend]
   # Oracle stops Always Free VMs whose CPU, network AND memory all stay under 20% for a week.
-  # Holding ~2 GB keeps memory above that line. Remove once the account is Pay-As-You-Go.
+  # Holding ~2 GB keeps memory above that line. Permanent: the account stays on Always Free (no Pay-As-You-Go).
   keepalive:
     image: python:3.12-alpine
     restart: unless-stopped
