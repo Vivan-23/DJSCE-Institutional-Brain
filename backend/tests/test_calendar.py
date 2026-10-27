@@ -3,6 +3,7 @@ from datetime import date, datetime, timezone
 from unittest.mock import patch
 from uuid import uuid4
 
+import pytest
 from sqlmodel import select
 
 from app.core.institution_config import CalendarEvent, InstitutionConfig
@@ -137,6 +138,15 @@ def _no_index():
 
 
 class TestSearchable:
+    @pytest.fixture(autouse=True)
+    def _no_leftover_calendar_fragments(self, db_session):
+        # The test DB is shared; app startup (client fixture) syncs the real institution.yaml calendar.
+        from app.models.structured import Fragment
+
+        for row in db_session.exec(select(Fragment).where(Fragment.source_type == "calendar")):
+            db_session.delete(row)
+        db_session.commit()
+
     def test_dates_are_indexed_with_audience_visibility(self, db_session):
         from app.models.structured import Fragment
         from app.services.calendar_service import calendar_service
@@ -167,4 +177,5 @@ class TestSearchable:
                    return_value=InstitutionConfig(calendar=_EVENTS[:1])):
             result = calendar_service.sync_fragments(db_session)
         rows = list(db_session.exec(select(Fragment).where(Fragment.source_type == "calendar")))
-        assert result["removed"] == len(_EVENTS) + 1 - 2 and len(rows) == 2
+        # 5 dropped dates + the old overview (its text changes); kept: 1 date + the new overview.
+        assert result["removed"] == len(_EVENTS) and len(rows) == 2

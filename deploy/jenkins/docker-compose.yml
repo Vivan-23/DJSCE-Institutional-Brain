@@ -1,0 +1,26 @@
+# Jenkins, separate from the app stack so a deploy never restarts it mid-job. Joins the app network so
+# Caddy can route /github-webhook/ to it and the pipeline can health-check the app containers.
+# UI is only on 127.0.0.1:8080 — reach it with: ssh -L 8080:127.0.0.1:8080 ubuntu@<vm>
+services:
+  jenkins:
+    build: .
+    container_name: djsce_jenkins
+    restart: unless-stopped
+    mem_limit: 1536m
+    group_add: ["${DOCKER_GID}"]
+    ports: ["127.0.0.1:8080:8080"]
+    volumes:
+      - jenkins_home:/var/jenkins_home
+      - ./casc.yaml:/var/jenkins_home/casc.yaml:ro
+      - ./secrets:/run/secrets:ro
+      - /var/run/docker.sock:/var/run/docker.sock
+      # Same path as on the host: compose's relative bind mounts resolve against host paths.
+      - /home/ubuntu/djsce-brain:/home/ubuntu/djsce-brain
+      - /home/ubuntu/backups:/home/ubuntu/backups
+    networks: [app]
+volumes:
+  jenkins_home:
+networks:
+  app:
+    name: djsce-brain_default
+    external: true

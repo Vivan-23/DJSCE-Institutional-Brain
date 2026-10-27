@@ -1,6 +1,7 @@
 """Institution branding — non-sensitive identity for the frontend (name + logo badge)."""
 from fastapi import APIRouter
 
+from app.core.config import settings
 from app.core.institution_config import get_institution_config
 
 router = APIRouter()
@@ -16,4 +17,6 @@ def get_institution():
         "full_name": cfg.full_name,
         "logo": cfg.logo,
         "departments": [{"code": d.code, "name": d.name} for d in cfg.departments],
+        "allow_registration": settings.ALLOW_SELF_REGISTRATION,
+        "show_demo_logins": settings.SHOW_DEMO_LOGINS,
     }

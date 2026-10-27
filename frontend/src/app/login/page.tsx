@@ -95,6 +95,7 @@ export default function LoginPage() {
         </div>
 
         {/* Tab switcher */}
+        {institution.allow_registration && (
         <div className="flex bg-slate-900 rounded-lg p-1 border border-slate-800">
           {(['login', 'register'] as Mode[]).map((m) => (
             <button
@@ -110,6 +111,7 @@ export default function LoginPage() {
             </button>
           ))}
         </div>
+        )}
 
         <form onSubmit={handleSubmit} className="space-y-3.5">
           {mode === 'register' && (
@@ -203,7 +205,7 @@ export default function LoginPage() {
               : 'Register New Academic Account'}
           </button>
 
-          {mode === 'login' && (
+          {mode === 'login' && institution.show_demo_logins && (
             <div className="space-y-1.5">
               <p className="text-[0.75rem] text-slate-500 text-center">Sign in as a demo user (synthetic accounts):</p>
               <div className="grid grid-cols-2 gap-1.5">
@@ -222,7 +224,7 @@ export default function LoginPage() {
           )}
         </form>
 
-        {mode === 'login' && (
+        {mode === 'login' && institution.show_demo_logins && (
           <p className="text-center text-slate-500 text-[0.75rem]">
             All demo accounts use the password <span className="text-slate-300 font-mono">demo123</span>
           </p>

@@ -1,0 +1,46 @@
+# Production overrides, layered on the root docker-compose.yml via COMPOSE_FILE in the VM's .env:
+#   COMPOSE_FILE=docker-compose.yml:deploy/prod/docker-compose.prod.yml
+# Only Caddy is reachable from outside; every other port is bound to the VM itself. See docs/DEPLOYMENT.md.
+services:
+  postgres:
+    restart: unless-stopped
+    ports: !override ["127.0.0.1:5432:5432"]
+  neo4j:
+    restart: unless-stopped
+    ports: !override ["127.0.0.1:7474:7474", "127.0.0.1:7687:7687"]
+    environment:
+      NEO4J_server_memory_heap_max__size: 1G
+      NEO4J_server_memory_pagecache_size: 512M
+  chromadb:
+    restart: unless-stopped
+    ports: !override ["127.0.0.1:8002:8000"]
+  redis:
+    restart: unless-stopped
+    ports: !override ["127.0.0.1:6379:6379"]
+  backend:
+    restart: unless-stopped
+    ports: !override ["127.0.0.1:8001:8001"]
+  celery_worker:
+    restart: unless-stopped
+  celery_beat:
+    restart: unless-stopped
+  frontend:
+    restart: unless-stopped
+    ports: !override ["127.0.0.1:3000:3000"]
+  caddy:
+    image: caddy:2
+    restart: unless-stopped
+    ports: ["80:80", "443:443"]
+    volumes:
+      - ./deploy/prod/Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddydata:/data
+    depends_on: [frontend]
+  # Oracle stops Always Free VMs whose CPU, network AND memory all stay under 20% for a week.
+  # Holding ~2 GB keeps memory above that line. Remove once the account is Pay-As-You-Go.
+  keepalive:
+    image: python:3.12-alpine
+    restart: unless-stopped
+    mem_limit: 2300m
+    command: ["python", "-c", "import time; b = b'\x01' * (2 * 1024**3); time.sleep(10**9)"]
+volumes:
+  caddydata:

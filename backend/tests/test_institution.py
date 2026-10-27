@@ -84,6 +84,19 @@ class TestBrandingAPI:
         body = res.json()
         assert {"name", "short_code", "full_name"} <= body.keys()
 
+    def test_production_switches_hide_demo_and_close_registration(self, client, monkeypatch):
+        from app.core.config import settings
+
+        monkeypatch.setattr(settings, "ALLOW_SELF_REGISTRATION", False)
+        monkeypatch.setattr(settings, "SHOW_DEMO_LOGINS", False)
+        body = client.get("/api/v1/institution").json()
+        assert body["allow_registration"] is False and body["show_demo_logins"] is False
+        res = client.post(
+            "/api/v1/auth/register",
+            json={"email": "stranger@example.org", "password": "longpassword1", "full_name": "Stranger"},
+        )
+        assert res.status_code == 403
+
 
 class TestInstitutionSeeding:
     def test_seed_is_idempotent_and_students_are_not_staff(self, db_session, monkeypatch, tmp_path):

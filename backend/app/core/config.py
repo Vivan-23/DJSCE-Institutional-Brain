@@ -42,6 +42,10 @@ class Settings(BaseSettings):
     ALGORITHM: str = "HS256"
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 60
 
+    # Production switches (set false in the production .env, see docs/DEPLOYMENT.md).
+    ALLOW_SELF_REGISTRATION: bool = True   # public "Register" creates student accounts
+    SHOW_DEMO_LOGINS: bool = True          # login page shows the synthetic demo accounts
+
     # CORS — accepts a comma-separated string (env/.env) or a list (code default).
     # NoDecode disables pydantic-settings' default JSON parsing so a plain string
     # like "http://localhost:3000,http://localhost:3001" is handled by the validator.

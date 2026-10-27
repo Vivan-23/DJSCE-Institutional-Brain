@@ -156,6 +156,8 @@ def parse_department(value: Optional[str]) -> str:
 
 @router.post("/register", status_code=201)
 def register(req: RegisterRequest, db: Session = Depends(get_session)):
+    if not settings.ALLOW_SELF_REGISTRATION:
+        raise HTTPException(status_code=403, detail="Registration is closed. Ask an administrator for an account.")
     if db.exec(select(User).where(User.email == req.email)).first():
         raise HTTPException(status_code=400, detail="Email already registered")
     department = get_institution_config().department_code(req.department)

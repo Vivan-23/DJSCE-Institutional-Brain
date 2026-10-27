@@ -1,0 +1,11 @@
+# Cloudflare (proxied, SSL mode "Full") terminates public HTTPS; Caddy uses its own internal certificate.
+http://djsce.tanishthar.com, https://djsce.tanishthar.com {
+	tls internal
+	# GitHub push webhook -> Jenkins (deploy/jenkins). The Jenkins UI itself is not exposed.
+	handle /github-webhook/* {
+		reverse_proxy djsce_jenkins:8080
+	}
+	handle {
+		reverse_proxy frontend:3000
+	}
+}

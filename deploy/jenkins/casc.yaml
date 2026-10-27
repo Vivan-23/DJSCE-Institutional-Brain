@@ -1,0 +1,56 @@
+# Jenkins configuration as code. Secrets come from files in ./secrets on the VM (never committed).
+jenkins:
+  numExecutors: 1
+  securityRealm:
+    local:
+      allowsSignup: false
+      users:
+        - id: admin
+          password: "${readFile:/run/secrets/admin_password}"
+  authorizationStrategy:
+    loggedInUsersCanDoAnything:
+      allowAnonymousRead: false
+security:
+  gitHostKeyVerificationConfiguration:
+    sshHostKeyVerificationStrategy: "acceptFirstConnectionStrategy"
+credentials:
+  system:
+    domainCredentials:
+      - credentials:
+          - basicSSHUserPrivateKey:
+              scope: GLOBAL
+              id: github-deploy-key
+              username: git
+              privateKeySource:
+                directEntry:
+                  privateKey: "${readFile:/run/secrets/deploy_key}"
+          - string:
+              scope: GLOBAL
+              id: github-webhook-secret
+              secret: "${readFile:/run/secrets/webhook_secret}"
+unclassified:
+  location:
+    url: "https://djsce.tanishthar.com/"
+  gitHubPluginConfig:
+    hookSecretConfigs:
+      - credentialsId: github-webhook-secret
+jobs:
+  - script: >
+      pipelineJob('djsce-brain-deploy') {
+        properties { pipelineTriggers { triggers { githubPush() } } }
+        definition {
+          cpsScm {
+            scm {
+              git {
+                remote {
+                  url('git@github.com:Vivan-23/DJSCE-Institutional-Brain.git')
+                  credentials('github-deploy-key')
+                }
+                branch('*/v2/faculty-workflow')
+              }
+            }
+            scriptPath('Jenkinsfile')
+            lightweight(false)
+          }
+        }
+      }
