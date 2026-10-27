@@ -108,3 +108,6 @@ Jenkins UI: `ssh -i ~/.ssh/oracle_djsce -L 8080:127.0.0.1:8080 ubuntu@132.226.19
    (read-only) and the webhook (`https://djsce.tanishthar.com/github-webhook/`, JSON, push events, secret) on GitHub.
 6. Cron: `30 20 * * * /home/ubuntu/djsce-brain/deploy/prod/backup.sh >> /home/ubuntu/backups/backup.log 2>&1` (UTC).
 7. DNS: Cloudflare A record `djsce` → VM IP, proxied, SSL mode Full.
+8. Cloudflare custom rules: the zone's "Block the scanners" rule (for the portfolio) blocks `/login`, among other paths.
+   Rule #1 **"Allow DJSCE Brain"** (`http.host eq "djsce.tanishthar.com"` → Skip all remaining custom rules + rate
+   limiting; managed rules stay on) must stay first, or faculty get "Sorry, you have been blocked".
