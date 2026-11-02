@@ -70,7 +70,9 @@ The `Jenkinsfile` and `deploy/jenkins/` are kept for reference only; nothing run
   `snapshot_export.ps1`, so `snapshot_restore.ps1` loads it onto a laptop.
 - **Before every deploy**: Postgres dump (above).
 - **Off the server**: not automated yet. Copy a snapshot to the laptop now and then with `scp`.
-- On tanish-lab, the nightly cron for `backup.sh` has not been verified since the move. Confirm it is installed.
+- `backup.sh` uses the three tanish-lab compose files and only stops/starts the 8 app services (never `caddy`/`keepalive`).
+  Cron (host in UTC): `30 20 * * * ~/djsce-brain/deploy/prod/backup.sh >> ~/backups/backup.log 2>&1`.
+  Installation on tanish-lab not yet confirmed.
 - Restore on the server: stop the stack, then for each volume run the alpine `find -delete && tar xzf` step from
   `snapshot_restore.ps1` against `djsce-brain_<volume>`, then `docker compose up -d`.
 
