@@ -69,10 +69,10 @@ The `Jenkinsfile` and `deploy/jenkins/` are kept for reference only; nothing run
   Neo4j and Chroma volumes into `~/backups/djsce-brain-snapshot-<stamp>.zip` (14 kept). The format matches
   `snapshot_export.ps1`, so `snapshot_restore.ps1` loads it onto a laptop.
 - **Before every deploy**: Postgres dump (above).
-- **Off the server**: not automated yet. Copy a snapshot to the laptop now and then with `scp`.
+- **Off the server**: not automated yet (planned: TanPi pulls the zips). Copy a snapshot to the laptop now and then with `scp`.
 - `backup.sh` uses the three tanish-lab compose files and only stops/starts the 8 app services (never `caddy`/`keepalive`).
   Cron (host in UTC): `30 20 * * * ~/djsce-brain/deploy/prod/backup.sh >> ~/backups/backup.log 2>&1`.
-  Installation on tanish-lab not yet confirmed.
+  Installed and verified on tanish-lab 2026-11-03 (48 s run, ~15 MB zip, all 8 services back, backend healthy ~30 s later).
 - Restore on the server: stop the stack, then for each volume run the alpine `find -delete && tar xzf` step from
   `snapshot_restore.ps1` against `djsce-brain_<volume>`, then `docker compose up -d`.
 
@@ -81,7 +81,8 @@ The `Jenkinsfile` and `deploy/jenkins/` are kept for reference only; nothing run
 - `cd ~/djsce-brain && docker compose logs -f --tail=100 backend` (also `celery_worker`, `frontend`).
 - Docker rotates container logs (20 MB × 5 per container, `/etc/docker/daemon.json`).
 - `docker compose ps`, `free -m`, `df -h /`.
-- Uptime: add a free UptimeRobot check on https://djsce.tanishthar.com/ (email alert).
+- Uptime: the homelab's Uptime Kuma checks https://djsce.tanishthar.com/ and http://127.0.0.1:8001/health every 60 s.
+  No alert channel is configured yet.
 - OpenTelemetry/tracing: deliberately not used. One server and one API process; structured logs + uptime
   checks are enough. Revisit only if the app grows to multiple servers.
 

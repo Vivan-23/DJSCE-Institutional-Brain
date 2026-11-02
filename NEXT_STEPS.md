@@ -51,8 +51,8 @@ Rules (also in `CLAUDE.md` → Environments and `docs/DEPLOYMENT.md`):
 
 - [x] 3 Nov: production moved from the Oracle VM to tanish-lab. Jenkins, the GitHub webhook/deploy key and
       `keepalive` are retired; deploys are manual (`docs/DEPLOYMENT.md` §3). Vivan can skip the webhook setup.
-- [ ] Confirm the nightly backup cron runs on tanish-lab.
-- [ ] Free uptime monitor (UptimeRobot) on the live URL; an off-server copy of the nightly backups.
+- [x] 3 Nov: nightly backup fixed and verified on tanish-lab (it had never run); Uptime Kuma monitors the site.
+- [ ] Uptime Kuma alert channel (email/phone); off-server copy of the nightly backups (TanPi pull).
 - [ ] Faculty: send real emails and temporary passwords to the CE staff, then collect feedback.
 - [ ] Decide when to merge `v2/faculty-workflow` into `main` (and whether production should then track `main`).
 
