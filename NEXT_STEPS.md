@@ -1,6 +1,6 @@
 # Where we are — 28 Oct 2026 (handoff)
 
-**The project is live.** https://djsce.tanishthar.com runs on an Oracle Cloud server with **real CE department data**:
+**The project is live.** https://djsce.tanishthar.com runs on Tanish's homelab server (tanish-lab, since 3 Nov) with **real CE department data**:
 43 staff accounts, 9 published SY/TY/LY CE timetables and the official 2026-27 academic calendar.
 Faculty sign in with their own accounts. Demo data and demo logins are switched off there.
 
@@ -10,16 +10,16 @@ Faculty sign in with their own accounts. Demo data and demo logins are switched 
 |---|---|---|
 | What | `docker compose up -d --build` → http://localhost:3000 | https://djsce.tanishthar.com |
 | Data | synthetic demo data (`ingest_institutional.py`) or a snapshot of production | real staff data, backed up nightly |
-| How changes get there | you edit and test | **push to `v2/faculty-workflow`** → Jenkins runs the tests, backs up the DB, deploys, checks health |
+| How changes get there | you edit and test | **push to `v2/faculty-workflow`**, then Tanish deploys it by hand (tests, DB dump, rebuild, health check) |
 
 Rules (also in `CLAUDE.md` → Environments and `docs/DEPLOYMENT.md`):
 1. Build and test on your laptop first: `cd backend && python -m pytest -q`, `cd frontend && npm run lint && npx tsc --noEmit`.
-2. Deploy only by pushing to `v2/faculty-workflow`. Nobody edits files on the server. If tests fail, Jenkins doesn't deploy.
+2. Production only runs what is pushed to `v2/faculty-workflow`. Nobody edits files on the server. Failing tests block a deploy.
 3. Any change to `backend/app/models/structured.py` needs an Alembic migration that works on existing rows.
    The live database migrates itself on deploy.
 4. Real data never goes into git. If you need production data locally, ask Tanish for a snapshot
    (sent privately) and load it with `./snapshot_restore.ps1`.
-5. Server logins, Jenkins and secrets are in Tanish's private passwords file. Ask for what you need.
+5. Server logins and secrets are in Tanish's private passwords file. Ask for what you need.
 
 **First time on your machine:** clone, `git checkout v2/faculty-workflow`, `cp .env.example .env` (add `GROQ_API_KEY`,
 `SECRET_KEY`), `docker compose up -d --build`, `python ingest_institutional.py`. See `docs/USAGE.md`.
@@ -49,13 +49,12 @@ Rules (also in `CLAUDE.md` → Environments and `docs/DEPLOYMENT.md`):
 
 ## Pending
 
-- [ ] Vivan (repo owner): add the read-only **deploy key** and the **GitHub webhook** for Jenkins (values from Tanish).
-      Until then, deploys are done by hand. Watch the first automatic Jenkins deploy.
-- [x] Oracle: $1 budget alert set. The account stays on Always Free (no paid upgrade), so the `keepalive`
-      service is permanent.
+- [x] 3 Nov: production moved from the Oracle VM to tanish-lab. Jenkins, the GitHub webhook/deploy key and
+      `keepalive` are retired; deploys are manual (`docs/DEPLOYMENT.md` §3). Vivan can skip the webhook setup.
+- [ ] Confirm the nightly backup cron runs on tanish-lab.
 - [ ] Free uptime monitor (UptimeRobot) on the live URL; an off-server copy of the nightly backups.
 - [ ] Faculty: send real emails and temporary passwords to the CE staff, then collect feedback.
-- [ ] Decide when to merge `v2/faculty-workflow` into `main` (and whether Jenkins should then deploy `main`).
+- [ ] Decide when to merge `v2/faculty-workflow` into `main` (and whether production should then track `main`).
 
 ---
 

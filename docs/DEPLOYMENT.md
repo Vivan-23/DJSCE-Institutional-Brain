@@ -1,64 +1,67 @@
 # Production deployment & operations
 
-> The production runbook. **Production** = the Oracle VM serving https://djsce.tanishthar.com, with real
-> CE faculty data. **Development** = your laptop (`docker compose up`, see [USAGE.md](USAGE.md)) with synthetic
-> or snapshot data. Last verified: 2026-10-28.
+> The production runbook. **Production** = the tanish-lab homelab server serving https://djsce.tanishthar.com,
+> with real CE faculty data. **Development** = your laptop (`docker compose up`, see [USAGE.md](USAGE.md)) with synthetic
+> or snapshot data. Last verified: 2026-11-03.
 
 ## 1. Environments
 
-| | Development (laptop) | Production (VM) |
+| | Development (laptop) | Production (tanish-lab) |
 |---|---|---|
 | URL | http://localhost:3000 | https://djsce.tanishthar.com |
 | Data | synthetic demo data, or a copied snapshot | **real** staff, timetables, tickets |
-| Compose files | `docker-compose.yml` | `docker-compose.yml` + `deploy/prod/docker-compose.prod.yml` (via `COMPOSE_FILE` in `.env`) |
-| `institution.yaml` | repo copy (demo members, `demo123`) | VM's own copy, never overwritten by deploys |
+| Compose files | `docker-compose.yml` | `docker-compose.yml` + `deploy/prod/docker-compose.prod.yml` + homelab `compose.limits.yml` |
+| `institution.yaml` | repo copy (demo members, `demo123`) | server's own copy, never overwritten by deploys |
 | Registration / demo logins | on | off (`ALLOW_SELF_REGISTRATION=false`, `SHOW_DEMO_LOGINS=false`) |
-| How code gets there | you edit it | **only** by pushing to the deploy branch → Jenkins |
+| How code gets there | you edit it | push to the deploy branch, then a manual deploy (section 3) |
 
 Rules:
 - Build and test on the laptop. Never point dev tools, `ingest_institutional.py` or the evaluator at production.
 - Every schema change needs an Alembic migration that works on existing rows. Startup runs `alembic upgrade head`
   on the real database.
-- Production config changes go in `deploy/prod/` and ship through the pipeline. Don't hand-edit files on the VM
+- Production config changes go in `deploy/prod/` and ship through the pipeline. Don't hand-edit files on the server
   (the next deploy overwrites everything except `.env` and `institution.yaml`).
 - Real data never goes into git. It moves only as snapshots in the private folder.
 
 ## 2. Topology
 
 ```
-browser ─HTTPS─> Cloudflare (proxied, SSL mode "Full") ─> VM :80/:443 Caddy (tls internal)
-                                                            ├─ /github-webhook/* → Jenkins (djsce_jenkins:8080)
-                                                            └─ everything else  → frontend:3000 ─/api→ backend:8001
+browser ─HTTPS─> Cloudflare (proxied) ─> tanish-lab edge Caddy (10.0.0.11:443) ─> 127.0.0.1:3000 frontend ─/api→ backend:8001
 ```
-- VM: Oracle Cloud Always Free, Ubuntu 24.04 **ARM64**, 2 OCPU / 12 GB, 4 GB swap, Mumbai. Public IP 132.226.190.80.
-- Open ports: 22 (SSH), 80, 443. Every other container port is bound to 127.0.0.1 (`deploy/prod/docker-compose.prod.yml`).
-- `/home/ubuntu/djsce-brain`: the app (deploy target; `REVISION` holds the deployed commit).
-- `/home/ubuntu/jenkins`: Jenkins compose + `secrets/` (admin password, deploy key, webhook secret).
-- `/home/ubuntu/backups`: nightly snapshots + pre-deploy dumps.
-- Secrets and logins: the private `PASSWORDS.md` (outside the repo). Never paste them into chats or commits.
+- Host: **tanish-lab** (Tanish's homelab node). Production since 2026-11-03; the Oracle VM is retired.
+- The edge Caddy belongs to the homelab (`~/tanpi-infra`), not to this repo. The app's own `caddy` service from
+  `deploy/prod/` must **not** run there (it would take 80/443). Routes, DNS and edge changes are made in the
+  homelab infra, not here.
+- 8 services run: postgres, redis, chromadb, neo4j, backend, celery_worker, celery_beat, frontend. Not run:
+  `caddy`, `keepalive` (Oracle-only), Jenkins.
+- All ports are loopback only: frontend 3000, backend 8001, chroma 8002, neo4j 7474/7687, postgres 5432, redis 6379.
+- App dir: `~/djsce-brain` on tanish-lab. Memory caps live outside the repo in
+  `~/tanpi-infra/hosts/tanish-lab/djsce-brain/compose.limits.yml`.
+- Secrets and logins: the server's `.env` and the private `PASSWORDS.md` (outside the repo). Never paste them into chats or commits.
 
 ## 3. Deploying
 
-Push to the deploy branch (**`v2/faculty-workflow`** for now) on github.com/Vivan-23/DJSCE-Institutional-Brain.
-The GitHub webhook triggers the Jenkins job `djsce-brain-deploy` ([`Jenkinsfile`](../Jenkinsfile)):
+Deploys are **manual** (Jenkins is retired). Push to the deploy branch (**`v2/faculty-workflow`**) on
+github.com/Vivan-23/DJSCE-Institutional-Brain first, then:
 
-1. Backend tests (pytest in the freshly built backend image).
-2. Frontend `npm run lint` + `tsc --noEmit`.
-3. Pre-deploy `pg_dump` → `~/backups/predeploy-<date>-<sha>.dump` (last 10 kept).
-4. rsync the commit into the app dir (keeps `.env`, `institution.yaml`), `docker compose up -d --build`.
-5. Health check on backend `/health` and the frontend.
+1. Test on the laptop: `cd backend && python -m pytest -q`; `cd frontend && npm run lint && npx tsc --noEmit`.
+2. On tanish-lab, dump the database:
+   `docker compose exec -T postgres pg_dump -U djsce_brain_user -Fc djsce_brain_db > ~/backups/predeploy-<date>-<sha>.dump`.
+3. Update `~/djsce-brain` to the pushed commit, keeping its `.env` and `institution.yaml`.
+4. Rebuild with the three compose files, naming the services so `caddy` and `keepalive` stay off:
+   ```bash
+   cd ~/djsce-brain && docker compose -f docker-compose.yml -f deploy/prod/docker-compose.prod.yml \
+     -f ~/tanpi-infra/hosts/tanish-lab/djsce-brain/compose.limits.yml up -d --build \
+     postgres redis chromadb neo4j backend celery_worker celery_beat frontend
+   ```
+5. Check `curl -fsS http://127.0.0.1:8001/health` and https://djsce.tanishthar.com/.
 
-If any step fails, nothing after it runs. If tests or a build fail, the old containers keep serving.
-Jenkins UI: `ssh -i ~/.ssh/oracle_djsce -L 8080:127.0.0.1:8080 ubuntu@132.226.190.80` → http://localhost:8080.
+The `Jenkinsfile` and `deploy/jenkins/` are kept for reference only; nothing runs them.
 
 ### Rollback
-1. `git revert <bad commit>` and push. Jenkins redeploys the previous code.
-2. If the bad deploy ran a migration that damaged data, restore the pre-deploy dump:
-   ```bash
-   cd ~/djsce-brain && docker compose stop backend celery_worker celery_beat
-   docker compose exec -T postgres pg_restore -U djsce_brain_user -d djsce_brain_db --clean --if-exists < ~/backups/predeploy-<...>.dump
-   docker compose up -d
-   ```
+1. Check out the previous good commit in `~/djsce-brain` and repeat step 4.
+2. If the bad deploy ran a migration that damaged data, stop `backend celery_worker celery_beat`, restore the
+   pre-deploy dump with `pg_restore -U djsce_brain_user -d djsce_brain_db --clean --if-exists`, then repeat step 4.
 
 ## 4. Backups
 
@@ -66,49 +69,40 @@ Jenkins UI: `ssh -i ~/.ssh/oracle_djsce -L 8080:127.0.0.1:8080 ubuntu@132.226.19
   Neo4j and Chroma volumes into `~/backups/djsce-brain-snapshot-<stamp>.zip` (14 kept). The format matches
   `snapshot_export.ps1`, so `snapshot_restore.ps1` loads it onto a laptop.
 - **Before every deploy**: Postgres dump (above).
-- **Off the VM**: not automated yet. Copy a snapshot to the laptop now and then:
-  `scp -i ~/.ssh/oracle_djsce ubuntu@132.226.190.80:backups/djsce-brain-snapshot-<stamp>.zip .`
-  An Oracle Object Storage copy is planned.
-- Restore on the VM: stop the stack, then for each volume run the alpine `find -delete && tar xzf` step from
+- **Off the server**: not automated yet. Copy a snapshot to the laptop now and then with `scp`.
+- On tanish-lab, the nightly cron for `backup.sh` has not been verified since the move. Confirm it is installed.
+- Restore on the server: stop the stack, then for each volume run the alpine `find -delete && tar xzf` step from
   `snapshot_restore.ps1` against `djsce-brain_<volume>`, then `docker compose up -d`.
 
 ## 5. Logs and health
 
-- `cd ~/djsce-brain && docker compose logs -f --tail=100 backend` (also `celery_worker`, `frontend`, `caddy`).
+- `cd ~/djsce-brain && docker compose logs -f --tail=100 backend` (also `celery_worker`, `frontend`).
 - Docker rotates container logs (20 MB × 5 per container, `/etc/docker/daemon.json`).
 - `docker compose ps`, `free -m`, `df -h /`.
 - Uptime: add a free UptimeRobot check on https://djsce.tanishthar.com/ (email alert).
 - OpenTelemetry/tracing: deliberately not used. One server and one API process; structured logs + uptime
   checks are enough. Revisit only if the app grows to multiple servers.
 
-## 6. Oracle Always Free notes
+## 6. Oracle VM (retired 2026-11-03)
 
-- Always Free VMs run indefinitely, but Oracle **stops** ones that stay under 20% CPU, network and memory
-  for 7 days. The `keepalive` service holds ~2 GB of memory to stay above that line. **Keep it**: the account
-  stays on Always Free (decision 2026-10-28, no Pay-As-You-Go upgrade). A $1 budget alert is set as a safety net.
-  If the site is ever down for no clear reason, check the Oracle console first: the instance may have been stopped.
-- Don't resize above the Always Free A1 cap (check Governance → Limits). Stopping the VM gives back its
-  capacity, and Mumbai has been out of A1 capacity before.
+Production ran on an Oracle Always Free ARM VM from 2026-10-28 to 2026-11-03, with its own Caddy, the
+`keepalive` service and Jenkins CI/CD. Those files stay in `deploy/prod/` and `deploy/jenkins/` for reference
+but are not used on tanish-lab.
 
 ## 7. Never do this in production
 
 - `docker compose down -v`, `docker volume prune`, or deleting `djsce-brain_*` volumes.
 - Running `ingest_institutional.py`, the evaluator profile, or test suites against the live stack.
 - Committing `.env`, `institution.yaml` from the VM, snapshots, dumps or anything from the private folder.
-- Opening database ports in the Oracle security list.
+- Starting the app's `caddy` (it would take 80/443 from the homelab edge) or binding a port to a non-loopback address.
 
-## 8. First-time server setup (for rebuilding the VM)
+## 8. Rebuilding the server
 
-1. Ubuntu 24.04 A1 VM; open TCP 80/443 in the security list; on the VM: `iptables -I INPUT 5 -p tcp --dport 80/443 -j ACCEPT`
-   (+ `netfilter-persistent save`).
-2. Install Docker (`curl -fsSL https://get.docker.com | sudo sh`), add 4 GB swap, set log rotation in `/etc/docker/daemon.json`.
-3. Copy the code to `~/djsce-brain`; create `.env` from `deploy/prod/env.prod.example`; copy production `institution.yaml`.
-4. Restore the latest snapshot (section 4), then `docker compose up -d --build`.
-5. Jenkins: copy `deploy/jenkins/*` to `~/jenkins`, generate `secrets/{deploy_key,admin_password,webhook_secret}`,
-   write `DOCKER_GID=<docker group id>` to `~/jenkins/.env`, `docker compose up -d --build`. Add the deploy key
-   (read-only) and the webhook (`https://djsce.tanishthar.com/github-webhook/`, JSON, push events, secret) on GitHub.
-6. Cron: `30 20 * * * /home/ubuntu/djsce-brain/deploy/prod/backup.sh >> /home/ubuntu/backups/backup.log 2>&1` (UTC).
-7. DNS: Cloudflare A record `djsce` → VM IP, proxied, SSL mode Full.
-8. Cloudflare custom rules: the zone's "Block the scanners" rule (for the portfolio) blocks `/login`, among other paths.
+1. Docker on the host; copy the code to `~/djsce-brain`; create `.env` from `deploy/prod/env.prod.example`;
+   copy the production `institution.yaml`.
+2. Restore the latest snapshot (section 4), then start the 8 services as in section 3, step 4.
+3. Ask the homelab owner to route `djsce.tanishthar.com` → `127.0.0.1:3000` on the edge Caddy.
+4. Cron for `deploy/prod/backup.sh` (section 4).
+5. Cloudflare custom rules: the zone's "Block the scanners" rule (for the portfolio) blocks `/login`, among other paths.
    Rule #1 **"Allow DJSCE Brain"** (`http.host eq "djsce.tanishthar.com"` → Skip all remaining custom rules + rate
    limiting; managed rules stay on) must stay first, or faculty get "Sorry, you have been blocked".

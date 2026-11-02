@@ -2,7 +2,7 @@
 
 > **Read this first.** This file is the orientation layer so you don't have to
 > re-read the whole codebase. When you change structure, update this file in the
-> same change. Last verified: 2026-10-28.
+> same change. Last verified: 2026-11-03.
 
 DJSCE Institutional Brain turns scattered institutional knowledge (committee
 transcripts, reference documents, faculty check-ins) into decisions, tracked
@@ -251,9 +251,10 @@ autogenerates `UTCDateTime` columns the deployed version doesn't have.
 ---
 
 ## Deployment (production)
-Production runs the same compose stack on an Oracle ARM VM, layered with `deploy/prod/docker-compose.prod.yml`
-(127.0.0.1-only ports, restarts, Neo4j memory caps, Caddy on 80/443, `keepalive`) behind Cloudflare. Jenkins
-(`deploy/jenkins/`, root `Jenkinsfile`) deploys pushes to `v2/faculty-workflow`. Settings `ALLOW_SELF_REGISTRATION` and
+Production runs the same compose stack on the tanish-lab homelab node, layered with `deploy/prod/docker-compose.prod.yml`
+(127.0.0.1-only ports, restarts, Neo4j memory caps) plus homelab memory limits, behind Cloudflare and the homelab edge
+Caddy. Its own `caddy`/`keepalive` services are not started there; deploys of `v2/faculty-workflow` are manual
+(Jenkins files kept for reference only). Settings `ALLOW_SELF_REGISTRATION` and
 `SHOW_DEMO_LOGINS` (exposed on `GET /api/v1/institution`) close registration and hide demo logins in production.
 Details: [DEPLOYMENT.md](DEPLOYMENT.md).
 

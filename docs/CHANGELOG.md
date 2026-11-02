@@ -8,6 +8,13 @@ Format: `## YYYY-MM-DD — title` then bullets of what/why.
 
 ---
 
+## 2026-11-03 — Production moved to tanish-lab; manual deploys
+- https://djsce.tanishthar.com now runs on the tanish-lab homelab node behind Cloudflare and the homelab edge Caddy
+  (→ 127.0.0.1:3000). The Oracle VM, Jenkins, the GitHub webhook and `keepalive` are retired; the app's own `caddy`
+  must not run there. Memory caps come from the homelab repo's `compose.limits.yml`.
+- Deploys are manual: push `v2/faculty-workflow`, pg_dump, update `~/djsce-brain`, rebuild the 8 services
+  (`docs/DEPLOYMENT.md` §3). `Jenkinsfile` / `deploy/jenkins/` kept for reference only.
+
 ## 2026-10-28 — Production on an Oracle VM, Jenkins CI/CD
 - Production is now https://djsce.tanishthar.com (Oracle Always Free ARM VM, Cloudflare → Caddy). The laptop is
   development only. Runbook: `docs/DEPLOYMENT.md`; agent rules in `CLAUDE.md` → Environments.
